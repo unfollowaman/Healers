@@ -1,17 +1,8 @@
 import https from 'node:https';
+import { requireEnv } from './utils.js';
 
 const TELEGRAM_API_BASE = 'https://api.telegram.org/bot';
 const TELEGRAM_FILE_BASE = 'https://api.telegram.org/file/bot';
-
-function requireEnv(name) {
-  const value = process.env[name];
-  if (!value) {
-    const error = new Error(`${name} is not configured.`);
-    error.statusCode = 500;
-    throw error;
-  }
-  return value;
-}
 
 function validateFileId(fileId) {
   if (!fileId || typeof fileId !== 'string') {

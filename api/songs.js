@@ -1,19 +1,11 @@
+import { requireEnv } from './utils.js';
+
 const TELEGRAM_API_BASE = 'https://api.telegram.org/bot';
 const MAX_UPDATE_PAGES = 25;
 const UPDATE_PAGE_SIZE = 100;
 
 let memoryCatalog = [];
 let lastScannedAt = 0;
-
-function requireEnv(name) {
-  const value = process.env[name];
-  if (!value) {
-    const error = new Error(`${name} is not configured.`);
-    error.statusCode = 500;
-    throw error;
-  }
-  return value;
-}
 
 function normalizeChannelId(value) {
   return String(value || '').trim();
