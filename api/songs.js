@@ -7,7 +7,7 @@ const UPDATE_PAGE_SIZE = 100;
 let memoryCatalog = [];
 let lastScannedAt = 0;
 
-function normalizeChannelId(value) {
+export function normalizeChannelId(value) {
   return String(value || '').trim();
 }
 
