@@ -79,7 +79,10 @@ async function telegramRequest(token, method, params = {}) {
 function mergeSongs(existingSongs, incomingSongs) {
   const byUniqueId = new Map();
 
-  for (const song of [...existingSongs, ...incomingSongs]) {
+  for (const song of existingSongs) {
+    byUniqueId.set(song.file_unique_id || song.file_id, song);
+  }
+  for (const song of incomingSongs) {
     byUniqueId.set(song.file_unique_id || song.file_id, song);
   }
 
