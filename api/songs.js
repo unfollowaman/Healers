@@ -4,6 +4,10 @@ const TELEGRAM_API_BASE = 'https://api.telegram.org/bot';
 const MAX_UPDATE_PAGES = 25;
 const UPDATE_PAGE_SIZE = 100;
 
+const CACHE_TTL_MS = 5 * 60 * 1000;
+const CACHE_S_MAXAGE = 3600;
+const CACHE_STALE_WHILE_REVALIDATE = 86400;
+
 let memoryCatalog = [];
 let lastScannedAt = 0;
 
@@ -136,10 +140,10 @@ export default async function handler(req, res) {
 
   try {
     const refresh = req.query?.refresh === '1';
-    const cacheIsWarm = memoryCatalog.length > 0 && Date.now() - lastScannedAt < 5 * 60 * 1000;
+    const cacheIsWarm = memoryCatalog.length > 0 && Date.now() - lastScannedAt < CACHE_TTL_MS;
     const songs = refresh || !cacheIsWarm ? await discoverSongs() : memoryCatalog;
 
-    res.setHeader('Cache-Control', refresh ? 'no-store' : 's-maxage=3600, stale-while-revalidate=86400');
+    res.setHeader('Cache-Control', refresh ? 'no-store' : `s-maxage=${CACHE_S_MAXAGE}, stale-while-revalidate=${CACHE_STALE_WHILE_REVALIDATE}`);
     return res.status(200).json(songs.map(publicSong));
   } catch (error) {
     const statusCode = error.statusCode || 500;
