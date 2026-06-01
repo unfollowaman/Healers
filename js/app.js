@@ -35,7 +35,8 @@ function formatDuration(seconds) {
 function setStatus(message, { loading = false, error = false } = {}) {
   elements.statusCard.hidden = false;
   elements.statusCard.classList.toggle('error', error);
-  elements.statusCard.innerHTML = `${loading ? '<div class="loader" aria-hidden="true"></div>' : ''}<p>${message}</p>`;
+  elements.statusCard.innerHTML = `${loading ? '<div class="loader" aria-hidden="true"></div>' : ''}<p></p>`;
+  elements.statusCard.querySelector('p').textContent = message;
 }
 
 function hideStatus() {
