@@ -11,11 +11,19 @@ const elements = {
   searchToggle: document.querySelector('#search-toggle'),
   refreshButton: document.querySelector('#refresh-button'),
   statusCard: document.querySelector('#status-card'),
+  contentWrapper: document.querySelector('#content-wrapper'),
   songList: document.querySelector('#song-list'),
   audio: document.querySelector('#audio-player'),
   player: document.querySelector('#player'),
   header: document.querySelector('.header'),
   bottomSeparator: document.querySelector('#bottom-separator'),
+  statSongs: document.querySelector('#stat-songs'),
+  statArtists: document.querySelector('#stat-artists'),
+  statAlbums: document.querySelector('#stat-albums'),
+  statDuration: document.querySelector('#stat-duration'),
+  recentlyAddedStrip: document.querySelector('#recently-added-strip'),
+  allSongsCount: document.querySelector('#all-songs-count'),
+  btnRecentlyAdded: document.querySelector('#btn-recently-added'),
   nowTitle: document.querySelector('#now-title'),
   nowArtist: document.querySelector('#now-artist'),
   playButton: document.querySelector('#play-button'),
@@ -205,7 +213,64 @@ function getCurrentSong() {
   return state.queue[state.currentIndex] || null;
 }
 
+function updateStats() {
+  const songs = state.songs.length;
+  elements.statSongs.textContent = songs;
+
+  const artists = new Set(state.songs.map(s => s.performer || 'Unknown Artist')).size;
+  elements.statArtists.textContent = artists;
+
+  // Assuming albums aren't available, we show Tracks and repeat song count
+  elements.statAlbums.textContent = songs;
+
+  const totalSeconds = state.songs.reduce((acc, song) => acc + (song.duration || 0), 0);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  elements.statDuration.textContent = `${hours}h ${minutes}m`;
+
+  elements.allSongsCount.textContent = state.filteredSongs.length;
+}
+
+function renderRecentlyAdded() {
+  const recentSongs = state.songs.slice(0, 8); // Assuming first 8 are recently added
+
+  const gradients = [
+    'linear-gradient(135deg, #1a1a2e, #16213e, #0f3460)',
+    'linear-gradient(135deg, #2d1b33, #11998e, #38ef7d)',
+    'linear-gradient(135deg, #373B44, #4286f4)',
+    'linear-gradient(135deg, #c94b4b, #4b134f)',
+    'linear-gradient(135deg, #0f2027, #203a43, #2c5364)',
+    'linear-gradient(135deg, #1d2671, #c33764)',
+    'linear-gradient(135deg, #434343, #000000)',
+    'linear-gradient(135deg, #005c97, #363795)'
+  ];
+
+  elements.recentlyAddedStrip.innerHTML = recentSongs.map((song, idx) => {
+    const bg = gradients[idx % gradients.length];
+
+    // Find the actual index of this song in filteredSongs so clicking works correctly
+    const filteredIndex = state.filteredSongs.findIndex(s => s.file_id === song.file_id);
+
+    return `
+      <div class="thumbnail-card" data-index="${filteredIndex > -1 ? filteredIndex : ''}">
+        <div class="thumbnail-art" style="background: ${bg}; opacity: ${filteredIndex > -1 ? 1 : 0.5}">
+          <div class="hover-overlay">
+            <div class="hover-overlay-icon">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="thumbnail-title">${escapeHtml(song.title)}</div>
+        <div class="thumbnail-artist">${escapeHtml(song.performer || 'Unknown Artist')}</div>
+      </div>
+    `;
+  }).join('');
+}
+
 function renderSongs() {
+  updateStats();
+  renderRecentlyAdded();
+
   const currentSong = getCurrentSong();
 
   elements.songList.innerHTML = state.filteredSongs.map((song, index) => {
@@ -214,11 +279,13 @@ function renderSongs() {
 
     return `
       <article class="song-row ${isActive ? 'active' : ''}" data-index="${index}" tabindex="0" role="button" aria-label="Play ${escapeHtml(song.title)} by ${escapeHtml(song.performer || 'Unknown Artist')}">
+        <div class="song-index">${index + 1}</div>
         <div class="song-details">
           <strong class="song-title">${escapeHtml(song.title)}</strong>
-          <div class="song-artist">${escapeHtml(song.performer || 'Unknown Artist')}</div>
+          <div class="song-artist-sub">${escapeHtml(song.performer || 'Unknown Artist')}</div>
         </div>
-        <span class="song-duration">${formatDuration(song.duration)}</span>
+        <div class="song-artist-col">${escapeHtml(song.performer || 'Unknown Artist')}</div>
+        <div class="song-duration">${formatDuration(song.duration)}</div>
         <button class="song-play-button" type="button" aria-label="Play ${escapeHtml(song.title)}" tabindex="-1">
           ${buttonIcon === '▶' ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>' : '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>'}
         </button>
@@ -228,9 +295,10 @@ function renderSongs() {
 
   if (!state.filteredSongs.length) {
     setStatus('No songs found. Upload audio to your Telegram channel then tap Refresh.');
-    elements.songList.innerHTML = '';
+    elements.contentWrapper.hidden = true;
   } else {
     hideStatus();
+    elements.contentWrapper.hidden = false;
   }
 }
 
@@ -314,7 +382,17 @@ function setPlayerPlayingState(isPlaying) {
     elements.bottomSeparator.style.display = 'none';
     const headerHeight = elements.header.offsetHeight;
     const sepHeight = 14;
-    elements.player.style.top = (headerHeight + sepHeight) + 'px';
+    const playerTop = headerHeight + sepHeight;
+    elements.player.style.top = playerTop + 'px';
+
+    // We also need to add padding-top to the library so it scrolls below the player
+    // Note: clientHeight doesn't include margins, but gets height dynamically
+    // Wait for a frame so CSS transitions are initialized, but clientHeight should be accurate enough
+    requestAnimationFrame(() => {
+        const playingPlayerHeight = elements.player.offsetHeight;
+        // The prompt says: padding-top on the scroll container = height of playing player + 14px (separator)
+        document.querySelector('.library').style.paddingTop = (playingPlayerHeight + 14) + 'px';
+    });
 
     if (audioCtx && audioCtx.state === 'suspended') {
       audioCtx.resume();
@@ -323,6 +401,8 @@ function setPlayerPlayingState(isPlaying) {
     // Only go completely IDLE if stopped
     elements.player.classList.remove('player--playing');
     elements.bottomSeparator.style.display = 'block';
+    elements.player.style.top = 'auto';
+    document.querySelector('.library').style.paddingTop = '0';
   }
 }
 
@@ -415,11 +495,20 @@ function bindEvents() {
   elements.searchToggle.addEventListener('click', toggleSearch);
   elements.refreshButton.addEventListener('click', () => loadSongs({ refresh: true }));
 
-  elements.songList.addEventListener('click', (event) => {
-    const row = event.target.closest('.song-row');
-    if (!row) return;
+  if (elements.btnRecentlyAdded) {
+    elements.btnRecentlyAdded.addEventListener('click', () => {
+      document.querySelector('#all-songs-section').scrollIntoView({ behavior: 'smooth' });
+    });
+  }
 
-    const filteredIndex = Number(row.dataset.index);
+  const handleSongClick = (event) => {
+    const item = event.target.closest('.song-row, .thumbnail-card');
+    if (!item) return;
+
+    const indexAttr = item.dataset.index;
+    if (indexAttr === undefined || indexAttr === '') return;
+
+    const filteredIndex = Number(indexAttr);
     const selectedSong = state.filteredSongs[filteredIndex];
     const currentSong = getCurrentSong();
 
@@ -429,7 +518,10 @@ function bindEvents() {
     }
 
     playSongFromFilteredIndex(filteredIndex);
-  });
+  };
+
+  elements.songList.addEventListener('click', handleSongClick);
+  elements.recentlyAddedStrip.addEventListener('click', handleSongClick);
 
   elements.playButton.addEventListener('click', togglePlayPause);
   elements.prevButton.addEventListener('click', () => playRelative(-1));
