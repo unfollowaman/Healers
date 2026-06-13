@@ -12,20 +12,23 @@
 </head>
 <body>
   <div class="app-shell">
-    <header class="hero">
-      <div>
-        <p class="eyebrow">Personal Telegram Library</p>
-        <h1>Your music, streamed privately.</h1>
-        <p class="hero-copy">Search and play the audio files stored in your Telegram channel without exposing your bot token.</p>
+    <header class="header">
+      <div class="header-text">
+        <div class="eyebrow">Personal Telegram Library</div>
+        <div class="hero-copy">Your music, streamed privately.</div>
       </div>
-      <button class="refresh-button" id="refresh-button" type="button" aria-label="Refresh songs from Telegram">Refresh</button>
+      <div class="header-controls">
+        <div class="search-container">
+          <input id="search-input" type="search" autocomplete="off" placeholder="Search songs...">
+          <button class="icon-button search-icon-btn" id="search-toggle" type="button" aria-label="Toggle search">⌕</button>
+        </div>
+        <button class="icon-button refresh-button" id="refresh-button" type="button" aria-label="Refresh songs from Telegram">↻</button>
+      </div>
     </header>
 
+    <div class="separator-layer" id="top-separator"></div>
+
     <main class="library" aria-live="polite">
-      <label class="search-card" for="search-input">
-        <span class="search-icon" aria-hidden="true">⌕</span>
-        <input id="search-input" type="search" autocomplete="off" placeholder="Search songs or artists">
-      </label>
 
       <section class="status-card" id="status-card">
         <div class="loader" aria-hidden="true"></div>
@@ -34,36 +37,52 @@
 
       <section class="song-list" id="song-list" aria-label="Song list"></section>
     </main>
+    <div class="separator-layer" id="bottom-separator"></div>
   </div>
 
-  <footer class="player-bar" aria-label="Audio player">
+  <footer class="player" id="player" aria-label="Audio player">
     <audio id="audio-player" preload="metadata"></audio>
 
-    <div class="now-playing">
-      <div class="album-art" aria-hidden="true">♪</div>
+    <!-- Row 1: Waveform (Only visible/active in PLAYING state) -->
+    <canvas id="waveform-canvas"></canvas>
+
+    <!-- Row 2: Song Info -->
+    <div class="player-info">
+      <div class="album-art-placeholder" aria-hidden="true"></div>
       <div class="track-meta">
         <strong id="now-title">Select a song</strong>
         <span id="now-artist">Ready to play</span>
       </div>
+      <div class="flex-spacer"></div>
     </div>
 
-    <div class="transport">
-      <div class="transport-buttons">
-        <button class="icon-button" id="prev-button" type="button" aria-label="Previous song">⏮</button>
-        <button class="play-button" id="play-button" type="button" aria-label="Play or pause">▶</button>
-        <button class="icon-button" id="next-button" type="button" aria-label="Next song">⏭</button>
-      </div>
-      <div class="progress-wrap">
+    <!-- Row 3: Progress Bar -->
+    <div class="progress-container">
+      <input id="progress-bar" class="progress-track" type="range" min="0" max="100" value="0" step="0.1" aria-label="Playback progress">
+      <div class="time-labels">
         <span id="current-time">0:00</span>
-        <input id="progress-bar" class="progress" type="range" min="0" max="100" value="0" step="0.1" aria-label="Playback progress">
         <span id="total-time">0:00</span>
       </div>
     </div>
 
-    <label class="volume-wrap" for="volume-slider">
-      <span aria-hidden="true">🔊</span>
-      <input id="volume-slider" type="range" min="0" max="1" value="0.85" step="0.01" aria-label="Volume">
-    </label>
+    <!-- Row 4: Controls -->
+    <div class="player-controls">
+      <button class="icon-button prev-button" id="prev-button" type="button" aria-label="Previous song">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+      </button>
+      <button class="play-button" id="play-button" type="button" aria-label="Play">
+        <svg class="play-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+      <button class="icon-button next-button" id="next-button" type="button" aria-label="Next song">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+      </button>
+
+      <div class="volume-knob-container">
+        <div id="volume-knob" class="volume-knob" role="slider" aria-label="Volume" aria-valuemin="0" aria-valuemax="100" aria-valuenow="85" tabindex="0">
+          <div class="volume-knob-pointer"></div>
+        </div>
+      </div>
+    </div>
   </footer>
 
   <script src="/js/app.js" defer></script>
