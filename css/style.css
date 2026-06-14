@@ -1153,6 +1153,12 @@ button {
   flex: 1;
 }
 
+.volume-btn {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
 .volume-icon {
   width: 20px;
   height: 20px;

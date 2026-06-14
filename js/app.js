@@ -36,6 +36,8 @@ const elements = {
   currentTime: document.querySelector('#current-time'),
   totalTime: document.querySelector('#total-time'),
   volumeSlider: document.querySelector('#volume-slider'),
+  muteButton: document.querySelector('#mute-button'),
+  fullVolumeButton: document.querySelector('#full-volume-button'),
   waveformCanvasMobile: document.querySelector('#waveform-canvas-mobile'),
   waveformCanvasDesktop: document.querySelector('#waveform-canvas-desktop'),
   desktopNowTitle: document.querySelector('#desktop-now-title'),
@@ -623,6 +625,20 @@ function bindEvents() {
 
   // Volume Slider Events
   elements.volumeSlider.addEventListener('input', updateVolume);
+
+  if (elements.muteButton) {
+    elements.muteButton.addEventListener('click', () => {
+      elements.volumeSlider.value = 0;
+      updateVolume();
+    });
+  }
+
+  if (elements.fullVolumeButton) {
+    elements.fullVolumeButton.addEventListener('click', () => {
+      elements.volumeSlider.value = 100;
+      updateVolume();
+    });
+  }
 
   // Keyboard accessibility
   document.addEventListener('keydown', (e) => {
