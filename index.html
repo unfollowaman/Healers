@@ -11,8 +11,10 @@
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <div class="app-shell">
-    <header class="header">
+  <div class="app-layout">
+    <div class="separator-layer--vertical"></div>
+    <div class="main-content">
+      <header class="header">
       <div class="header-text">
         <div class="eyebrow">Personal Telegram Library</div>
         <div class="hero-copy">Your music, streamed privately.</div>
@@ -124,52 +126,71 @@
       </div>
     </main>
     <div class="separator-layer" id="bottom-separator"></div>
-  </div>
-
-  <footer class="player" id="player" aria-label="Audio player">
-    <audio id="audio-player" preload="metadata"></audio>
-
-    <!-- Row 1: Waveform (Only visible/active in PLAYING state) -->
-    <canvas id="waveform-canvas"></canvas>
-
-    <!-- Row 2: Song Info -->
-    <div class="player-info">
-      <div class="album-art-placeholder" aria-hidden="true"></div>
-      <div class="track-meta">
-        <strong id="now-title">Select a song</strong>
-        <span id="now-artist">Ready to play</span>
-      </div>
-      <div class="flex-spacer"></div>
     </div>
 
-    <!-- Row 3: Progress Bar -->
-    <div class="progress-container">
-      <input id="progress-bar" class="progress-track" type="range" min="0" max="100" value="0" step="0.1" aria-label="Playback progress">
-      <div class="time-labels">
-        <span id="current-time">0:00</span>
-        <span id="total-time">0:00</span>
+    <footer class="sidebar-player player" id="player" aria-label="Audio player">
+      <audio id="audio-player" preload="metadata"></audio>
+
+      <!-- Desktop Cover Art / Waveform Area -->
+      <div class="desktop-art-container" id="desktop-art-container">
+        <div class="desktop-art-placeholder" id="desktop-art-placeholder">
+          <div class="desktop-art-text-overlay">
+            <div class="line1" id="desktop-now-title"></div>
+            <div class="line2" id="desktop-now-artist"></div>
+          </div>
+        </div>
+        <canvas id="waveform-canvas-desktop"></canvas>
       </div>
-    </div>
 
-    <!-- Row 4: Controls -->
-    <div class="player-controls">
-      <button class="icon-button prev-button" id="prev-button" type="button" aria-label="Previous song">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
-      </button>
-      <button class="play-button" id="play-button" type="button" aria-label="Play">
-        <svg class="play-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-      </button>
-      <button class="icon-button next-button" id="next-button" type="button" aria-label="Next song">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
-      </button>
+      <!-- Row 1: Waveform (Mobile) -->
+      <canvas id="waveform-canvas-mobile"></canvas>
 
-      <div class="volume-knob-container">
-        <div id="volume-knob" class="volume-knob" role="slider" aria-label="Volume" aria-valuemin="0" aria-valuemax="100" aria-valuenow="85" tabindex="0">
-          <div class="volume-knob-pointer"></div>
+      <!-- Row 2: Song Info -->
+      <div class="player-info">
+        <div class="album-art-placeholder" aria-hidden="true"></div>
+        <div class="track-meta">
+          <strong id="now-title">Select a song</strong>
+          <span id="now-artist">Ready to play</span>
+        </div>
+        <div class="flex-spacer"></div>
+      </div>
+
+      <!-- Row 3: Progress Bar -->
+      <div class="progress-container">
+        <input id="progress-bar" class="progress-track" type="range" min="0" max="100" value="0" step="0.1" aria-label="Playback progress">
+        <div class="time-labels">
+          <span id="current-time">0:00</span>
+          <span id="total-time">0:00</span>
         </div>
       </div>
-    </div>
-  </footer>
+
+      <!-- Row 4: Controls -->
+      <div class="player-controls">
+        <button class="control-button shuffle-button" id="shuffle-button" type="button" aria-label="Shuffle" aria-pressed="false">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
+        </button>
+        <button class="icon-button prev-button" id="prev-button" type="button" aria-label="Previous song">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+        </button>
+        <button class="play-button" id="play-button" type="button" aria-label="Play">
+          <svg class="play-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <button class="icon-button next-button" id="next-button" type="button" aria-label="Next song">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+        </button>
+        <button class="control-button repeat-button" id="repeat-button" type="button" aria-label="Repeat off">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+          <span class="repeat-one-badge" style="display: none;">1</span>
+        </button>
+
+        <div class="volume-knob-container">
+          <div id="volume-knob" class="volume-knob" role="slider" aria-label="Volume" aria-valuemin="0" aria-valuemax="100" aria-valuenow="85" tabindex="0">
+            <div class="volume-knob-pointer"></div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
 
   <script src="/js/app.js" defer></script>
 </body>
