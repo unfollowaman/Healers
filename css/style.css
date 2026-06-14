@@ -155,9 +155,17 @@ button {
 
 .refresh-button,
 .icon-button,
-.play-button,
 .song-play-button {
-  background: var(--bg);
+  background: #111111; /* Changed to dark per user request */
+  border: none;
+  cursor: pointer;
+  user-select: none;
+  box-shadow: var(--shadow-out-sm);
+  transition: box-shadow var(--transition-fast);
+}
+
+.play-button {
+  background: var(--accent); /* Keep play/pause button red */
   border: none;
   cursor: pointer;
   user-select: none;
@@ -175,6 +183,16 @@ button {
 .icon-button:active,
 .song-play-button:active {
   box-shadow: var(--shadow-in-sm);
+}
+
+/* Ensure images inside buttons cover neatly without distortion and handle brightness if needed */
+.icon-button img,
+.refresh-button img,
+.control-button img,
+.song-play-button img,
+.play-button img {
+  display: block;
+  object-fit: contain;
 }
 
 .icon-button {
@@ -491,8 +509,8 @@ button {
 }
 
 .thumbnail-art .hover-overlay-icon {
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: var(--accent);
   color: #FFFFFF;
@@ -500,6 +518,10 @@ button {
   align-items: center;
   justify-content: center;
   box-shadow: var(--shadow-out-sm);
+}
+
+.thumbnail-art .hover-overlay-icon img {
+  display: block;
 }
 
 .thumbnail-card:hover .hover-overlay {
@@ -676,8 +698,8 @@ button {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  color: var(--accent);
-  background: var(--bg);
+  color: #FFFFFF;
+  background: var(--accent); /* Changed to accent (red) since it's a play button per user request to keep play/pause buttons red */
   box-shadow: var(--shadow-out-sm);
   display: none;
   place-items: center;
@@ -1025,7 +1047,7 @@ button {
   width: 40px;
   height: 40px;
   border-radius: var(--radius-sm);
-  background: var(--bg);
+  background: #111111; /* Changed to dark per user request */
   border: none;
   cursor: pointer;
   display: flex;
