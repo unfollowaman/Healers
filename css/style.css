@@ -502,12 +502,6 @@ button {
   width: 100%; /* Force it to wrap properly */
 }
 
-@media (min-width: 900px) {
-  .volume-knob-container {
-    margin-top: 10px;
-  }
-}
-
 .thumbnail-art .hover-overlay-icon {
   width: 32px;
   height: 32px;
@@ -1133,51 +1127,36 @@ button {
               inset -2px -2px 6px rgba(255, 80, 80, 0.20);
 }
 
-.volume-knob-container {
-  display: flex;
+.volume-container {
+  display: none; /* Hidden on mobile idle */
   align-items: center;
   justify-content: center;
+  gap: 12px;
+  width: 90%;
+  margin: 16px auto 0 auto;
 }
 
-.volume-knob {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  position: relative;
-  cursor: grab;
-  background: radial-gradient(circle at 35% 30%, #FFFFFF 0%, #DEDAD4 40%, #C5C2BA 100%);
-  box-shadow:
-    5px 5px 10px #C5C2BA,
-    -5px -5px 10px #FFFFFF,
-    inset 1px 1px 3px rgba(255, 255, 255, 0.90),
-    inset -1px -1px 3px rgba(0, 0, 0, 0.12);
-  /* The rotation is applied dynamically via JS to the transform property */
-}
-
-.volume-knob:active {
-  cursor: grabbing;
-}
-
-.volume-knob-pointer {
-  position: absolute;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--accent);
-  top: 7px;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-@keyframes rise {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
+@media (min-width: 900px) {
+  .volume-container {
+    display: flex;
+    width: 100%;
+    margin-top: 10px;
   }
+}
+
+.player--playing .volume-container {
+  display: flex;
+}
+
+.volume-container .progress-track {
+  margin-bottom: 0;
+  flex: 1;
+}
+
+.volume-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--text-secondary);
 }
 
 

@@ -35,7 +35,7 @@ const elements = {
   progressBar: document.querySelector('#progress-bar'),
   currentTime: document.querySelector('#current-time'),
   totalTime: document.querySelector('#total-time'),
-  volumeKnob: document.querySelector('#volume-knob'),
+  volumeSlider: document.querySelector('#volume-slider'),
   waveformCanvasMobile: document.querySelector('#waveform-canvas-mobile'),
   waveformCanvasDesktop: document.querySelector('#waveform-canvas-desktop'),
   desktopNowTitle: document.querySelector('#desktop-now-title'),
@@ -60,55 +60,14 @@ function toggleSearch() {
   }
 }
 
-// --- Volume Knob Logic ---
-let isDraggingKnob = false;
-let startY = 0;
-let currentRotation = 0; // Starts at 0 degrees = middle volume
-
-function updateVolumeFromRotation() {
-  // Map rotation (-135 to 135) to volume (0.0 to 1.0)
-  const volume = (currentRotation + 135) / 270;
+// --- Volume Slider Logic ---
+function updateVolume() {
+  const volume = Number(elements.volumeSlider.value) / 100;
   elements.audio.volume = Math.max(0, Math.min(1, volume));
-  elements.volumeKnob.setAttribute('aria-valuenow', Math.round(volume * 100));
-}
-
-function handleKnobStart(e) {
-  isDraggingKnob = true;
-  startY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
-  e.preventDefault(); // Prevent scrolling on touch
-}
-
-function handleKnobMove(e) {
-  if (!isDraggingKnob) return;
-
-  const currentY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
-  const deltaY = currentY - startY;
-
-  // Every 2px of drag = 3 degrees of rotation
-  // Negative deltaY (moving up) should INCREASE volume (positive rotation)
-  const rotationChange = -(deltaY / 2) * 3;
-
-  currentRotation += rotationChange;
-
-  // Clamp between -135 and +135
-  currentRotation = Math.max(-135, Math.min(135, currentRotation));
-
-  elements.volumeKnob.style.transform = `rotate(${currentRotation}deg)`;
-  updateVolumeFromRotation();
-
-  startY = currentY;
-}
-
-function handleKnobEnd() {
-  isDraggingKnob = false;
 }
 
 // Initial volume state setup
-// Default volume in old app was 0.85.
-// Volume 0.85 = (rotation + 135) / 270 => 229.5 = rotation + 135 => rotation = 94.5
-currentRotation = 94.5;
-elements.volumeKnob.style.transform = `rotate(${currentRotation}deg)`;
-
+elements.audio.volume = 0.85;
 
 // --- Waveform Canvas Logic ---
 let audioCtx;
@@ -662,13 +621,8 @@ function bindEvents() {
   });
   elements.progressBar.addEventListener('change', seekToProgress);
 
-  // Volume Knob Events
-  elements.volumeKnob.addEventListener('mousedown', handleKnobStart);
-  elements.volumeKnob.addEventListener('touchstart', handleKnobStart, { passive: false });
-  document.addEventListener('mousemove', handleKnobMove);
-  document.addEventListener('touchmove', handleKnobMove, { passive: false });
-  document.addEventListener('mouseup', handleKnobEnd);
-  document.addEventListener('touchend', handleKnobEnd);
+  // Volume Slider Events
+  elements.volumeSlider.addEventListener('input', updateVolume);
 
   // Keyboard accessibility
   document.addEventListener('keydown', (e) => {
@@ -689,7 +643,7 @@ function bindEvents() {
 }
 
 function init() {
-  updateVolumeFromRotation();
+  updateVolume();
   bindEvents();
   loadSongs();
 }
