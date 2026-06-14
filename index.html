@@ -22,9 +22,13 @@
       <div class="header-controls">
         <div class="search-container">
           <input id="search-input" type="search" autocomplete="off" placeholder="Search songs...">
-          <button class="icon-button search-icon-btn" id="search-toggle" type="button" aria-label="Toggle search">⌕</button>
+          <button class="icon-button search-icon-btn" id="search-toggle" type="button" aria-label="Toggle search">
+            <img src="/assets/icons/search.png" alt="Search" width="20" height="20">
+          </button>
         </div>
-        <button class="icon-button refresh-button" id="refresh-button" type="button" aria-label="Refresh songs from Telegram">↻</button>
+        <button class="icon-button refresh-button" id="refresh-button" type="button" aria-label="Refresh songs from Telegram">
+          <img src="/assets/icons/refresh.png" alt="Refresh" width="20" height="20">
+        </button>
       </div>
     </header>
 
@@ -167,19 +171,19 @@
       <!-- Row 4: Controls -->
       <div class="player-controls">
         <button class="control-button shuffle-button" id="shuffle-button" type="button" aria-label="Shuffle" aria-pressed="false">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
+          <img src="/assets/icons/shuffle.png" alt="Shuffle" width="20" height="20">
         </button>
         <button class="icon-button prev-button" id="prev-button" type="button" aria-label="Previous song">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+          <img src="/assets/icons/prev.png" alt="Previous" width="20" height="20">
         </button>
         <button class="play-button" id="play-button" type="button" aria-label="Play">
-          <svg class="play-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          <img id="play-icon-img" src="/assets/icons/play.png" alt="Play" width="28" height="28">
         </button>
         <button class="icon-button next-button" id="next-button" type="button" aria-label="Next song">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+          <img src="/assets/icons/next.png" alt="Next" width="20" height="20">
         </button>
         <button class="control-button repeat-button" id="repeat-button" type="button" aria-label="Repeat off">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+          <img src="/assets/icons/repeat.png" alt="Repeat" width="20" height="20">
           <span class="repeat-one-badge" style="display: none;">1</span>
         </button>
 

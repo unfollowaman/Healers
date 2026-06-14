@@ -287,7 +287,7 @@ function renderRecentlyAdded() {
         <div class="thumbnail-art" style="background: ${bg}; opacity: ${filteredIndex > -1 ? 1 : 0.5}">
           <div class="hover-overlay">
             <div class="hover-overlay-icon">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+              <img src="/assets/icons/play.png" alt="Play" width="16" height="16">
             </div>
           </div>
         </div>
@@ -318,7 +318,7 @@ function renderSongs() {
         <div class="song-artist-col">${escapeHtml(song.performer || 'Unknown Artist')}</div>
         <div class="song-duration">${formatDuration(song.duration)}</div>
         <button class="song-play-button" type="button" aria-label="Play ${escapeHtml(song.title)}" tabindex="-1">
-          ${buttonIcon === '▶' ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>' : '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>'}
+          ${buttonIcon === '▶' ? '<img src="/assets/icons/play.png" alt="Play" width="20" height="20">' : '<img src="/assets/icons/pause.png" alt="Pause" width="20" height="20">'}
         </button>
       </article>
     `;
@@ -575,9 +575,13 @@ function handleSongEnded() {
 
 function updatePlayButton() {
   const isPlaying = !elements.audio.paused && !elements.audio.ended;
+
+  // Note: we now have an img inside elements.playButton
+  // We can either replace its src, or replace the innerHTML.
   elements.playButton.innerHTML = isPlaying
-    ? '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>'
-    : '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+    ? '<img id="play-icon-img" src="/assets/icons/pause.png" alt="Pause" width="28" height="28">'
+    : '<img id="play-icon-img" src="/assets/icons/play.png" alt="Play" width="28" height="28">';
+
   elements.playButton.setAttribute('aria-label', isPlaying ? 'Pause' : 'Play');
   renderSongs();
 }
