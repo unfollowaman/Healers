@@ -29,12 +29,22 @@ const elements = {
   playButton: document.querySelector('#play-button'),
   prevButton: document.querySelector('#prev-button'),
   nextButton: document.querySelector('#next-button'),
+  shuffleButton: document.querySelector('#shuffle-button'),
+  repeatButton: document.querySelector('#repeat-button'),
+  repeatBadge: document.querySelector('.repeat-one-badge'),
   progressBar: document.querySelector('#progress-bar'),
   currentTime: document.querySelector('#current-time'),
   totalTime: document.querySelector('#total-time'),
   volumeKnob: document.querySelector('#volume-knob'),
-  waveformCanvas: document.querySelector('#waveform-canvas')
+  waveformCanvasMobile: document.querySelector('#waveform-canvas-mobile'),
+  waveformCanvasDesktop: document.querySelector('#waveform-canvas-desktop'),
+  desktopNowTitle: document.querySelector('#desktop-now-title'),
+  desktopNowArtist: document.querySelector('#desktop-now-artist')
 };
+
+let isShuffle = false;
+let repeatMode = 0; // 0: off, 1: all, 2: one
+let unplayedIndices = [];
 
 // Search toggle logic
 let isSearchExpanded = false;
@@ -105,10 +115,13 @@ let audioCtx;
 let analyser;
 let source;
 let dataArray;
-let canvasCtx;
+let canvasCtxMobile;
+let canvasCtxDesktop;
 
 function setupWaveform() {
-  canvasCtx = elements.waveformCanvas.getContext('2d');
+  canvasCtxMobile = elements.waveformCanvasMobile.getContext('2d');
+  canvasCtxDesktop = elements.waveformCanvasDesktop.getContext('2d');
+
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   analyser = audioCtx.createAnalyser();
   source = audioCtx.createMediaElementSource(elements.audio);
@@ -126,63 +139,81 @@ function setupWaveform() {
 }
 
 function resizeCanvas() {
-  elements.waveformCanvas.width = elements.waveformCanvas.offsetWidth;
-  // Height is handled via CSS but canvas inner height needs setting too
-  elements.waveformCanvas.height = 110;
+  elements.waveformCanvasMobile.width = elements.waveformCanvasMobile.offsetWidth;
+  elements.waveformCanvasMobile.height = 110;
+
+  elements.waveformCanvasDesktop.width = elements.waveformCanvasDesktop.offsetWidth;
+  elements.waveformCanvasDesktop.height = elements.waveformCanvasDesktop.offsetWidth; // Square
 }
 
-function drawIdleBars() {
-  canvasCtx.fillStyle = '#111111';
-  canvasCtx.fillRect(0, 0, elements.waveformCanvas.width, elements.waveformCanvas.height);
+function drawIdleBarsForCanvas(canvas, ctx) {
+  if (canvas.offsetWidth === 0) return;
+
+  ctx.fillStyle = '#111111';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   const barCount = 64;
   const gap = 3;
-  const barWidth = (elements.waveformCanvas.width - (barCount - 1) * gap) / barCount;
+  const barWidth = (canvas.width - (barCount - 1) * gap) / barCount;
   const idleHeight = 4;
 
-  canvasCtx.fillStyle = '#444444'; // var(--waveform-idle)
+  ctx.fillStyle = '#444444'; // var(--waveform-idle)
   for (let i = 0; i < barCount; i++) {
     const x = i * (barWidth + gap);
-    canvasCtx.fillRect(x, elements.waveformCanvas.height - idleHeight, barWidth, idleHeight);
+    ctx.fillRect(x, canvas.height - idleHeight, barWidth, idleHeight);
+  }
+}
+
+function drawActiveBarsForCanvas(canvas, ctx) {
+  if (canvas.offsetWidth === 0) return;
+
+  ctx.fillStyle = '#111111'; // var(--waveform-bg)
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  const barCount = 64;
+  const gap = 3;
+  const barWidth = (canvas.width - (barCount - 1) * gap) / barCount;
+
+  for (let i = 0; i < barCount; i++) {
+    const value = dataArray[i];
+    const barHeight = (value / 255) * canvas.height * 0.9;
+    const x = i * (barWidth + gap);
+    const y = canvas.height - barHeight;
+
+    const gradient = ctx.createLinearGradient(x, y, x, canvas.height);
+    gradient.addColorStop(0, '#FF0800'); // var(--accent-bright)
+    gradient.addColorStop(1, '#880000');
+
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    if (ctx.roundRect) {
+      ctx.roundRect(x, y, barWidth, barHeight, 2);
+    } else {
+      ctx.fillRect(x, y, barWidth, barHeight);
+    }
+    ctx.fill();
   }
 }
 
 function drawWaveform() {
   requestAnimationFrame(drawWaveform);
 
+  // Re-check desktop canvas width in case layout changed
+  if (elements.waveformCanvasDesktop.offsetWidth > 0 && elements.waveformCanvasDesktop.width !== elements.waveformCanvasDesktop.offsetWidth) {
+      elements.waveformCanvasDesktop.width = elements.waveformCanvasDesktop.offsetWidth;
+      elements.waveformCanvasDesktop.height = elements.waveformCanvasDesktop.offsetWidth;
+  }
+
   if (elements.audio.paused) {
-    drawIdleBars();
+    drawIdleBarsForCanvas(elements.waveformCanvasMobile, canvasCtxMobile);
+    drawIdleBarsForCanvas(elements.waveformCanvasDesktop, canvasCtxDesktop);
     return;
   }
 
   analyser.getByteFrequencyData(dataArray);
 
-  canvasCtx.fillStyle = '#111111'; // var(--waveform-bg)
-  canvasCtx.fillRect(0, 0, elements.waveformCanvas.width, elements.waveformCanvas.height);
-
-  const barCount = 64;
-  const gap = 3;
-  const barWidth = (elements.waveformCanvas.width - (barCount - 1) * gap) / barCount;
-
-  for (let i = 0; i < barCount; i++) {
-    const value = dataArray[i];
-    const barHeight = (value / 255) * elements.waveformCanvas.height * 0.9;
-    const x = i * (barWidth + gap);
-    const y = elements.waveformCanvas.height - barHeight;
-
-    const gradient = canvasCtx.createLinearGradient(x, y, x, elements.waveformCanvas.height);
-    gradient.addColorStop(0, '#FF0800'); // var(--accent-bright)
-    gradient.addColorStop(1, '#880000');
-
-    canvasCtx.fillStyle = gradient;
-    canvasCtx.beginPath();
-    if (canvasCtx.roundRect) {
-      canvasCtx.roundRect(x, y, barWidth, barHeight, 2);
-    } else {
-      canvasCtx.fillRect(x, y, barWidth, barHeight);
-    }
-    canvasCtx.fill();
-  }
+  drawActiveBarsForCanvas(elements.waveformCanvasMobile, canvasCtxMobile);
+  drawActiveBarsForCanvas(elements.waveformCanvasDesktop, canvasCtxDesktop);
 }
 
 function formatDuration(seconds) {
@@ -358,13 +389,37 @@ function updateNowPlaying(song) {
   if (!song) {
     elements.nowTitle.textContent = 'Select a song';
     elements.nowArtist.textContent = 'Ready to play';
+    elements.desktopNowTitle.textContent = '';
+    elements.desktopNowArtist.textContent = '';
     elements.totalTime.textContent = '0:00';
     return;
   }
 
   elements.nowTitle.textContent = song.title;
   elements.nowArtist.textContent = song.performer || 'Unknown Artist';
+  elements.desktopNowTitle.textContent = song.title;
+  elements.desktopNowArtist.textContent = song.performer || 'Unknown Artist';
   elements.totalTime.textContent = formatDuration(song.duration);
+}
+
+function initShuffleQueue() {
+  unplayedIndices = Array.from({ length: state.queue.length }, (_, i) => i);
+  // Remove current playing so we don't immediately play it again
+  if (state.currentIndex >= 0 && state.currentIndex < state.queue.length) {
+    unplayedIndices.splice(state.currentIndex, 1);
+  }
+}
+
+function getRandomUnplayedIndex() {
+  if (unplayedIndices.length === 0) {
+    initShuffleQueue(); // Reshuffle
+  }
+  if (unplayedIndices.length === 0) return state.currentIndex; // Fallback
+
+  const randIdx = Math.floor(Math.random() * unplayedIndices.length);
+  const queueIndex = unplayedIndices[randIdx];
+  unplayedIndices.splice(randIdx, 1);
+  return queueIndex;
 }
 
 async function playSongFromFilteredIndex(filteredIndex) {
@@ -373,26 +428,54 @@ async function playSongFromFilteredIndex(filteredIndex) {
 
   state.queue = [...state.filteredSongs];
   state.currentIndex = filteredIndex;
+  if (isShuffle) initShuffleQueue();
   await startCurrentSong();
+}
+
+function toggleShuffle() {
+  isShuffle = !isShuffle;
+  elements.shuffleButton.classList.toggle('is-active', isShuffle);
+  elements.shuffleButton.setAttribute('aria-pressed', String(isShuffle));
+  if (isShuffle) {
+    initShuffleQueue();
+  }
+}
+
+function toggleRepeat() {
+  repeatMode = (repeatMode + 1) % 3;
+
+  if (repeatMode === 0) {
+    elements.repeatButton.classList.remove('is-active');
+    elements.repeatBadge.style.display = 'none';
+    elements.repeatButton.setAttribute('aria-label', 'Repeat off');
+  } else if (repeatMode === 1) {
+    elements.repeatButton.classList.add('is-active');
+    elements.repeatBadge.style.display = 'none';
+    elements.repeatButton.setAttribute('aria-label', 'Repeat all');
+  } else if (repeatMode === 2) {
+    elements.repeatButton.classList.add('is-active');
+    elements.repeatBadge.style.display = 'block';
+    elements.repeatButton.setAttribute('aria-label', 'Repeat one');
+  }
 }
 
 function setPlayerPlayingState(isPlaying) {
   if (isPlaying) {
     elements.player.classList.add('player--playing');
     elements.bottomSeparator.style.display = 'none';
-    const headerHeight = elements.header.offsetHeight;
-    const sepHeight = 14;
-    const playerTop = headerHeight + sepHeight;
-    elements.player.style.top = playerTop + 'px';
 
-    // We also need to add padding-top to the library so it scrolls below the player
-    // Note: clientHeight doesn't include margins, but gets height dynamically
-    // Wait for a frame so CSS transitions are initialized, but clientHeight should be accurate enough
-    requestAnimationFrame(() => {
-        const playingPlayerHeight = elements.player.offsetHeight;
-        // The prompt says: padding-top on the scroll container = height of playing player + 14px (separator)
-        document.querySelector('.library').style.paddingTop = (playingPlayerHeight + 14) + 'px';
-    });
+    // Only apply top offset dynamically on mobile
+    if (window.innerWidth < 900) {
+      const headerHeight = elements.header.offsetHeight;
+      const sepHeight = 14;
+      const playerTop = headerHeight + sepHeight;
+      elements.player.style.top = playerTop + 'px';
+
+      requestAnimationFrame(() => {
+          const playingPlayerHeight = elements.player.offsetHeight;
+          document.querySelector('.library').style.paddingTop = (playingPlayerHeight + 14) + 'px';
+      });
+    }
 
     if (audioCtx && audioCtx.state === 'suspended') {
       audioCtx.resume();
@@ -456,8 +539,38 @@ function playRelative(offset) {
     return;
   }
 
-  state.currentIndex = (state.currentIndex + offset + state.queue.length) % state.queue.length;
+  if (offset > 0 && isShuffle) {
+    state.currentIndex = getRandomUnplayedIndex();
+  } else {
+    state.currentIndex = (state.currentIndex + offset + state.queue.length) % state.queue.length;
+  }
   startCurrentSong();
+}
+
+function handleSongEnded() {
+  if (repeatMode === 2) {
+    // Repeat one
+    elements.audio.currentTime = 0;
+    elements.audio.play();
+  } else if (repeatMode === 1) {
+    // Repeat all
+    playRelative(1);
+  } else {
+    // Off
+    if (isShuffle) {
+      if (unplayedIndices.length === 0) {
+         // Stop
+         return;
+      }
+      playRelative(1);
+    } else {
+      if (state.currentIndex === state.queue.length - 1) {
+        // Stop
+        return;
+      }
+      playRelative(1);
+    }
+  }
 }
 
 function updatePlayButton() {
@@ -526,10 +639,12 @@ function bindEvents() {
   elements.playButton.addEventListener('click', togglePlayPause);
   elements.prevButton.addEventListener('click', () => playRelative(-1));
   elements.nextButton.addEventListener('click', () => playRelative(1));
+  elements.shuffleButton.addEventListener('click', toggleShuffle);
+  elements.repeatButton.addEventListener('click', toggleRepeat);
 
   elements.audio.addEventListener('play', updatePlayButton);
   elements.audio.addEventListener('pause', updatePlayButton);
-  elements.audio.addEventListener('ended', () => playRelative(1));
+  elements.audio.addEventListener('ended', handleSongEnded);
   elements.audio.addEventListener('timeupdate', updateProgress);
   elements.audio.addEventListener('loadedmetadata', updateProgress);
   elements.audio.addEventListener('error', () => {
