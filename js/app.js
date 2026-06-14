@@ -62,14 +62,22 @@ function toggleSearch() {
   }
 }
 
+// --- Progress Track Styling ---
+function updateRangeStyle(slider) {
+  const percent = ((slider.value - slider.min) / (slider.max - slider.min)) * 100;
+  slider.style.background = `linear-gradient(to right, #CC0000 ${percent}%, var(--surface) ${percent}%)`;
+}
+
 // --- Volume Slider Logic ---
 function updateVolume() {
   const volume = Number(elements.volumeSlider.value) / 100;
   elements.audio.volume = Math.max(0, Math.min(1, volume));
+  updateRangeStyle(elements.volumeSlider);
 }
 
 // Initial volume state setup
 elements.audio.volume = 0.85;
+updateRangeStyle(elements.volumeSlider);
 
 // --- Waveform Canvas Logic ---
 let audioCtx;
@@ -555,6 +563,7 @@ function updateProgress() {
   const percent = duration ? (current / duration) * 100 : 0;
 
   elements.progressBar.value = String(percent);
+  updateRangeStyle(elements.progressBar);
   elements.currentTime.textContent = formatDuration(current);
   elements.totalTime.textContent = formatDuration(duration);
 }
@@ -618,6 +627,7 @@ function bindEvents() {
 
   elements.progressBar.addEventListener('input', () => {
     state.isSeeking = true;
+    updateRangeStyle(elements.progressBar);
     const duration = elements.audio.duration || getCurrentSong()?.duration || 0;
     elements.currentTime.textContent = formatDuration((Number(elements.progressBar.value) / 100) * duration);
   });
