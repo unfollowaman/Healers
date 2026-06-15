@@ -1,206 +1,266 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#0b0d12">
-  <title>Telegram Music Player</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0b0d12">
+    <title>Telegram Music Player</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
 </head>
+
 <body>
-  <div class="app-layout">
-    <div class="separator-layer--vertical"></div>
-    <div class="main-content">
-      <header class="header">
-      <div class="header-text">
-        <div class="eyebrow">Personal Telegram Library</div>
-        <div class="hero-copy">Your music, streamed privately.</div>
-      </div>
-      <div class="header-controls">
-        <div class="search-container">
-          <input id="search-input" type="search" autocomplete="off" placeholder="Search songs...">
-          <button class="icon-button search-icon-btn" id="search-toggle" type="button" aria-label="Toggle search">
-            <img src="/assets/icons/search.png" alt="Search" width="20" height="20">
-          </button>
+    <div class="app-layout">
+        <div class="separator-layer--vertical"></div>
+        <div class="main-content">
+            <header class="header">
+                <div class="header-text">
+                    <div class="eyebrow">Personal Telegram Library</div>
+                    <div class="hero-copy">Your music, streamed privately.</div>
+                </div>
+                <div class="header-controls">
+                    <div class="search-container">
+                        <input id="search-input" type="search" autocomplete="off" placeholder="Search songs...">
+                        <button class="icon-button search-icon-btn" id="search-toggle" type="button" aria-label="Toggle search">
+                            <img src="/assets/icons/search.png" alt="Search" width="20" height="20">
+                        </button>
+                    </div>
+                    <button class="icon-button refresh-button" id="refresh-button" type="button" aria-label="Refresh songs from Telegram">
+                        <img src="/assets/icons/refresh.png" alt="Refresh" width="20" height="20">
+                    </button>
+                </div>
+            </header>
+
+            <div class="separator-layer" id="top-separator"></div>
+
+            <main class="library" aria-live="polite">
+
+                <section class="status-card" id="status-card">
+                    <div class="loader" aria-hidden="true"></div>
+                    <p>Loading songs from Telegram…</p>
+                </section>
+
+                <div class="dashboard-grid">
+
+                    <aside class="sidebar" id="sidebar">
+                        <div class="nav-list">
+                            <div class="nav-item active" data-view="home">
+                                <span class="nav-icon"><img src="/assets/icons/home.png" onerror="this.style.display='none'"></span>
+                                <span>Home</span>
+                            </div>
+                            <div class="nav-item" data-view="all-songs">
+                                <span class="nav-icon"><img src="/assets/icons/all-songs.png" onerror="this.style.display='none'"></span>
+                                <span>All Songs</span>
+                            </div>
+                            <div class="nav-item" data-view="artists">
+                                <span class="nav-icon"><img src="/assets/icons/artists.png" onerror="this.style.display='none'"></span>
+                                <span>Artists</span>
+                            </div>
+                            <div class="nav-item" data-view="albums">
+                                <span class="nav-icon"><img src="/assets/icons/albums.png" onerror="this.style.display='none'"></span>
+                                <span>Albums</span>
+                            </div>
+                            <div class="nav-item" data-view="playlists">
+                                <span class="nav-icon"><img src="/assets/icons/playlists.png" onerror="this.style.display='none'"></span>
+                                <span>Playlists</span>
+                            </div>
+                            <div class="nav-item" data-view="favorites">
+                                <span class="nav-icon"><img src="/assets/icons/favorites.png" onerror="this.style.display='none'"></span>
+                                <span>Favorites</span>
+                            </div>
+                            <div class="nav-item" data-view="recently-played">
+                                <span class="nav-icon"><img src="/assets/icons/recently-played.png" onerror="this.style.display='none'"></span>
+                                <span>Recently Played</span>
+                            </div>
+                            <div class="nav-item" data-view="most-played">
+                                <span class="nav-icon"><img src="/assets/icons/most-played.png" onerror="this.style.display='none'"></span>
+                                <span>Most Played</span>
+                            </div>
+                        </div>
+                        <div class="queue-divider"></div>
+                        <div class="queue-label">PLAYING QUEUE</div>
+                        <div class="playing-queue" id="playing-queue">
+                            <!-- Queue items inserted here by JS -->
+                        </div>
+                    </aside>
+                    <div class="content-wrapper" id="content-wrapper">
+                        <div class="mainTop-container">
+                            <footer class="sidebar-player player" id="player" aria-label="Audio player">
+                                <audio id="audio-player" preload="metadata"></audio>
+
+                                <!-- Desktop Cover Art / Waveform Area -->
+                                <div class="desktop-art-container" id="desktop-art-container">
+                                    <div class="desktop-art-placeholder" id="desktop-art-placeholder">
+                                        <div class="desktop-art-text-overlay">
+                                            <div class="line1" id="desktop-now-title"></div>
+                                            <div class="line2" id="desktop-now-artist"></div>
+                                        </div>
+                                    </div>
+                                    <canvas id="waveform-canvas-desktop"></canvas>
+                                </div>
+
+                                <!-- Row 1: Waveform (Mobile) -->
+                                <canvas id="waveform-canvas-mobile"></canvas>
+
+                                <!-- Row 2: Song Info -->
+                                <div class="player-info">
+                                    <div class="album-art-placeholder" aria-hidden="true"></div>
+                                    <div class="track-meta">
+                                        <strong id="now-title">Select a song</strong>
+                                        <span id="now-artist">Ready to play</span>
+                                    </div>
+                                    <div class="flex-spacer"></div>
+                                </div>
+
+                                <!-- Row 3: Progress Bar -->
+                                <div class="progress-container">
+                                    <input id="progress-bar" class="progress-track" type="range" min="0" max="100" value="0" step="0.1" aria-label="Playback progress">
+                                    <div class="time-labels">
+                                        <span id="current-time">0:00</span>
+                                        <span id="total-time">0:00</span>
+                                    </div>
+                                </div>
+
+                                <!-- Row 4: Controls -->
+                                <div class="player-controls">
+                                    <button class="control-button shuffle-button" id="shuffle-button" type="button" aria-label="Shuffle" aria-pressed="false">
+                                        <img src="/assets/icons/shuffle.png" alt="Shuffle" width="20" height="20">
+                                    </button>
+                                    <button class="icon-button prev-button" id="prev-button" type="button" aria-label="Previous song">
+                                        <img src="/assets/icons/prev.png" alt="Previous" width="20" height="20">
+                                    </button>
+                                    <button class="play-button" id="play-button" type="button" aria-label="Play">
+                                        <img id="play-icon-img" src="/assets/icons/play.png" alt="Play" width="28" height="28">
+                                    </button>
+                                    <button class="icon-button next-button" id="next-button" type="button" aria-label="Next song">
+                                        <img src="/assets/icons/next.png" alt="Next" width="20" height="20">
+                                    </button>
+                                    <button class="control-button repeat-button" id="repeat-button" type="button" aria-label="Repeat off">
+                                        <img src="/assets/icons/repeat.png" alt="Repeat" width="20" height="20">
+                                        <span class="repeat-one-badge" style="display: none;">1</span>
+                                    </button>
+                                </div>
+
+                                <!-- Row 5: Volume Slider -->
+                                <div class="volume-container">
+                                    <button class="icon-button volume-btn" id="mute-button" type="button" aria-label="Mute">
+                                        <img src="/assets/icons/mute.png" alt="Mute" width="20" height="20">
+                                    </button>
+                                    <input id="volume-slider" class="progress-track" type="range" min="0" max="100" value="85" aria-label="Volume">
+                                    <button class="icon-button volume-btn" id="full-volume-button" type="button" aria-label="Full Volume">
+                                        <img src="/assets/icons/high-volume.png" alt="Full Volume" width="20" height="20">
+                                    </button>
+                                </div>
+                            </footer>
+                            <section class="hero-section" id="hero-section">
+                                <div class="hero-left">
+                                    <div class="hero-cover-art">
+                                        <div class="hero-gradient-overlay"></div>
+                                        <div class="hero-text-overlay">
+                                            <div class="line1">Every collection</div>
+                                            <div class="line2">has a soundtrack.</div>
+                                            <div class="line3">Find yours.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="hero-right">
+                                    <div class="stats-card">
+                                        <div class="stat-item">
+                                            <span class="stat-label">Songs</span>
+                                            <span class="stat-value" id="stat-songs">0</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span class="stat-label">Artists</span>
+                                            <span class="stat-value" id="stat-artists">0</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span class="stat-label">Tracks</span>
+                                            <span class="stat-value" id="stat-albums">0</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span class="stat-label">Duration</span>
+                                            <span class="stat-value" id="stat-duration">0h 0m</span>
+                                        </div>
+                                    </div>
+                                    <div class="quick-access-card">
+                                        <div class="quick-access-label">Quick Access</div>
+                                        <div class="quick-access-grid">
+                                            <button class="quick-access-btn" id="btn-recently-added">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+                                                </svg>
+                                                <span>Recently Added</span>
+                                            </button>
+                                            <button class="quick-access-btn">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" />
+                                                </svg>
+                                                <span>Recently Played</span>
+                                            </button>
+                                            <button class="quick-access-btn">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+                                                </svg>
+                                                <span>Most Played</span>
+                                            </button>
+                                            <button class="quick-access-btn">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                                                </svg>
+                                                <span>Favorites</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+
+                        <div class="separator-layer sep-desktop-hide"></div>
+
+                        <section class="recently-added-section" id="recently-added-section">
+                            <div class="section-header-row">
+                                <span class="section-title">Recently Added</span>
+                                <span class="section-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+                                    </svg>
+                                </span>
+                            </div>
+                            <div class="recently-added-strip" id="recently-added-strip">
+                                <!-- Thumbnails inserted here by JS -->
+                            </div>
+                        </section>
+
+                        <div class="separator-layer sep-desktop-hide"></div>
+
+                        <section class="all-songs-section" id="all-songs-section">
+                            <div class="section-header-row">
+                                <span class="section-title">All Songs</span>
+                                <span class="count-badge" id="all-songs-count">0</span>
+                            </div>
+                            <div class="column-headers">
+                                <div class="col-index">#</div>
+                                <div class="col-title">TITLE</div>
+                                <div class="col-artist">ARTIST</div>
+                                <div class="col-time">TIME</div>
+                            </div>
+                            <div class="song-list" id="song-list" aria-label="Song list">
+                                <!-- Song rows inserted here by JS -->
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </main>
+            <div class="separator-layer sep-desktop-hide" id="bottom-separator"></div>
         </div>
-        <button class="icon-button refresh-button" id="refresh-button" type="button" aria-label="Refresh songs from Telegram">
-          <img src="/assets/icons/refresh.png" alt="Refresh" width="20" height="20">
-        </button>
-      </div>
-    </header>
 
-    <div class="separator-layer" id="top-separator"></div>
 
-    <main class="library" aria-live="polite">
-
-      <section class="status-card" id="status-card">
-        <div class="loader" aria-hidden="true"></div>
-        <p>Loading songs from Telegram…</p>
-      </section>
-
-      <div class="content-wrapper" id="content-wrapper">
-        <section class="hero-section" id="hero-section">
-          <div class="hero-left">
-            <div class="hero-cover-art">
-              <div class="hero-gradient-overlay"></div>
-              <div class="hero-text-overlay">
-                <div class="line1">Every collection</div>
-                <div class="line2">has a soundtrack.</div>
-                <div class="line3">Find yours.</div>
-              </div>
-            </div>
-          </div>
-          <div class="hero-right">
-            <div class="stats-card">
-              <div class="stat-item">
-                <span class="stat-label">Songs</span>
-                <span class="stat-value" id="stat-songs">0</span>
-              </div>
-              <div class="stat-item">
-                <span class="stat-label">Artists</span>
-                <span class="stat-value" id="stat-artists">0</span>
-              </div>
-              <div class="stat-item">
-                <span class="stat-label">Tracks</span>
-                <span class="stat-value" id="stat-albums">0</span>
-              </div>
-              <div class="stat-item">
-                <span class="stat-label">Duration</span>
-                <span class="stat-value" id="stat-duration">0h 0m</span>
-              </div>
-            </div>
-            <div class="quick-access-card">
-              <div class="quick-access-label">Quick Access</div>
-              <div class="quick-access-grid">
-                <button class="quick-access-btn" id="btn-recently-added">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-                  <span>Recently Added</span>
-                </button>
-                <button class="quick-access-btn">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
-                  <span>Recently Played</span>
-                </button>
-                <button class="quick-access-btn">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-                  <span>Most Played</span>
-                </button>
-                <button class="quick-access-btn">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                  <span>Favorites</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <div class="separator-layer"></div>
-
-        <section class="recently-added-section" id="recently-added-section">
-          <div class="section-header-row">
-            <span class="section-title">Recently Added</span>
-            <span class="section-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-            </span>
-          </div>
-          <div class="recently-added-strip" id="recently-added-strip">
-            <!-- Thumbnails inserted here by JS -->
-          </div>
-        </section>
-
-        <div class="separator-layer"></div>
-
-        <section class="all-songs-section" id="all-songs-section">
-          <div class="section-header-row">
-            <span class="section-title">All Songs</span>
-            <span class="count-badge" id="all-songs-count">0</span>
-          </div>
-          <div class="column-headers">
-            <div class="col-index">#</div>
-            <div class="col-title">TITLE</div>
-            <div class="col-artist">ARTIST</div>
-            <div class="col-time">TIME</div>
-          </div>
-          <div class="song-list" id="song-list" aria-label="Song list">
-            <!-- Song rows inserted here by JS -->
-          </div>
-        </section>
-      </div>
-    </main>
-    <div class="separator-layer" id="bottom-separator"></div>
     </div>
 
-    <footer class="sidebar-player player" id="player" aria-label="Audio player">
-      <audio id="audio-player" preload="metadata"></audio>
-
-      <!-- Desktop Cover Art / Waveform Area -->
-      <div class="desktop-art-container" id="desktop-art-container">
-        <div class="desktop-art-placeholder" id="desktop-art-placeholder">
-          <div class="desktop-art-text-overlay">
-            <div class="line1" id="desktop-now-title"></div>
-            <div class="line2" id="desktop-now-artist"></div>
-          </div>
-        </div>
-        <canvas id="waveform-canvas-desktop"></canvas>
-      </div>
-
-      <!-- Row 1: Waveform (Mobile) -->
-      <canvas id="waveform-canvas-mobile"></canvas>
-
-      <!-- Row 2: Song Info -->
-      <div class="player-info">
-        <div class="album-art-placeholder" aria-hidden="true"></div>
-        <div class="track-meta">
-          <strong id="now-title">Select a song</strong>
-          <span id="now-artist">Ready to play</span>
-        </div>
-        <div class="flex-spacer"></div>
-      </div>
-
-      <!-- Row 3: Progress Bar -->
-      <div class="progress-container">
-        <input id="progress-bar" class="progress-track" type="range" min="0" max="100" value="0" step="0.1" aria-label="Playback progress">
-        <div class="time-labels">
-          <span id="current-time">0:00</span>
-          <span id="total-time">0:00</span>
-        </div>
-      </div>
-
-      <!-- Row 4: Controls -->
-      <div class="player-controls">
-        <button class="control-button shuffle-button" id="shuffle-button" type="button" aria-label="Shuffle" aria-pressed="false">
-          <img src="/assets/icons/shuffle.png" alt="Shuffle" width="20" height="20">
-        </button>
-        <button class="icon-button prev-button" id="prev-button" type="button" aria-label="Previous song">
-          <img src="/assets/icons/prev.png" alt="Previous" width="20" height="20">
-        </button>
-        <button class="play-button" id="play-button" type="button" aria-label="Play">
-          <img id="play-icon-img" src="/assets/icons/play.png" alt="Play" width="28" height="28">
-        </button>
-        <button class="icon-button next-button" id="next-button" type="button" aria-label="Next song">
-          <img src="/assets/icons/next.png" alt="Next" width="20" height="20">
-        </button>
-        <button class="control-button repeat-button" id="repeat-button" type="button" aria-label="Repeat off">
-          <img src="/assets/icons/repeat.png" alt="Repeat" width="20" height="20">
-          <span class="repeat-one-badge" style="display: none;">1</span>
-        </button>
-      </div>
-
-      <!-- Row 5: Volume Slider -->
-      <div class="volume-container">
-        <button class="icon-button volume-btn" id="mute-button" type="button" aria-label="Mute">
-          <img src="/assets/icons/mute.png" alt="Mute" width="20" height="20">
-        </button>
-        <input id="volume-slider" class="progress-track" type="range" min="0" max="100" value="85" aria-label="Volume">
-        <button class="icon-button volume-btn" id="full-volume-button" type="button" aria-label="Full Volume">
-          <img src="/assets/icons/high-volume.png" alt="Full Volume" width="20" height="20">
-        </button>
-      </div>
-    </footer>
-  </div>
-
-  <script src="/js/app.js" defer></script>
+    <script src="/js/app.js" defer></script>
 </body>
+
 </html>
