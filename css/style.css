@@ -434,6 +434,11 @@ button {
   color: var(--accent);
 }
 
+.quick-access-btn .icon-button img {
+  width: 20px;
+  height: 20px;
+}
+
 /* SECTION B - RECENTLY ADDED STRIP */
 .recently-added-section {
   padding-top: 14px;
@@ -1321,7 +1326,8 @@ button {
     width: 20px;
     height: 20px;
     object-fit: contain;
-}
+    filter: drop-shadow(0 0 1px #111111) drop-shadow(0 0 2px #111111) drop-shadow(0 0 3px #111111);
+  }
 
   .nav-item:hover {
     box-shadow: var(--shadow-out-sm);
