@@ -48,35 +48,35 @@
                     <aside class="sidebar" id="sidebar">
                         <div class="nav-list">
                             <div class="nav-item active" data-view="home">
-                                <span class="nav-icon"><img src="/assets/icons/home.png" onerror="this.style.display='none'"></span>
+                                <span class="nav-icon icon-button"><img src="/assets/icons/home.png" onerror="this.style.display='none'"></span>
                                 <span>Home</span>
                             </div>
                             <div class="nav-item" data-view="all-songs">
-                                <span class="nav-icon"><img src="/assets/icons/all-songs.png" onerror="this.style.display='none'"></span>
+                                <span class="nav-icon icon-button"><img src="/assets/icons/all-songs.png" onerror="this.style.display='none'"></span>
                                 <span>All Songs</span>
                             </div>
                             <div class="nav-item" data-view="artists">
-                                <span class="nav-icon"><img src="/assets/icons/artists.png" onerror="this.style.display='none'"></span>
+                                <span class="nav-icon icon-button"><img src="/assets/icons/artists.png" onerror="this.style.display='none'"></span>
                                 <span>Artists</span>
                             </div>
                             <div class="nav-item" data-view="albums">
-                                <span class="nav-icon"><img src="/assets/icons/albums.png" onerror="this.style.display='none'"></span>
+                                <span class="nav-icon icon-button"><img src="/assets/icons/albums.png" onerror="this.style.display='none'"></span>
                                 <span>Albums</span>
                             </div>
                             <div class="nav-item" data-view="playlists">
-                                <span class="nav-icon"><img src="/assets/icons/playlists.png" onerror="this.style.display='none'"></span>
+                                <span class="nav-icon icon-button"><img src="/assets/icons/playlists.png" onerror="this.style.display='none'"></span>
                                 <span>Playlists</span>
                             </div>
                             <div class="nav-item" data-view="favorites">
-                                <span class="nav-icon"><img src="/assets/icons/favorites.png" onerror="this.style.display='none'"></span>
+                                <span class="nav-icon icon-button"><img src="/assets/icons/favorites.png" onerror="this.style.display='none'"></span>
                                 <span>Favorites</span>
                             </div>
                             <div class="nav-item" data-view="recently-played">
-                                <span class="nav-icon"><img src="/assets/icons/recently-played.png" onerror="this.style.display='none'"></span>
+                                <span class="nav-icon icon-button"><img src="/assets/icons/recently-played.png" onerror="this.style.display='none'"></span>
                                 <span>Recently Played</span>
                             </div>
                             <div class="nav-item" data-view="most-played">
-                                <span class="nav-icon"><img src="/assets/icons/most-played.png" onerror="this.style.display='none'"></span>
+                                <span class="nav-icon icon-button"><img src="/assets/icons/most-played.png" onerror="this.style.display='none'"></span>
                                 <span>Most Played</span>
                             </div>
                         </div>
@@ -189,27 +189,19 @@
                                         <div class="quick-access-label">Quick Access</div>
                                         <div class="quick-access-grid">
                                             <button class="quick-access-btn" id="btn-recently-added">
-                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
-                                                </svg>
+                                                <span class="icon-button"><img src="/assets/icons/recently-added.png" alt="Recently Added"></span>
                                                 <span>Recently Added</span>
                                             </button>
                                             <button class="quick-access-btn">
-                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" />
-                                                </svg>
+                                                <span class="icon-button"><img src="/assets/icons/recently-played.png" alt="Recently Played"></span>
                                                 <span>Recently Played</span>
                                             </button>
                                             <button class="quick-access-btn">
-                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
-                                                </svg>
+                                                <span class="icon-button"><img src="/assets/icons/most-played.png" alt="Most Played"></span>
                                                 <span>Most Played</span>
                                             </button>
                                             <button class="quick-access-btn">
-                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                                                </svg>
+                                                <span class="icon-button"><img src="/assets/icons/favorites.png" alt="Favorites"></span>
                                                 <span>Favorites</span>
                                             </button>
                                         </div>
@@ -223,10 +215,8 @@
                         <section class="recently-added-section" id="recently-added-section">
                             <div class="section-header-row">
                                 <span class="section-title">Recently Added</span>
-                                <span class="section-icon">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
-                                    </svg>
+                                <span class="section-icon icon-button">
+                                    <img src="/assets/icons/recently-added.png" alt="Recently Added">
                                 </span>
                             </div>
                             <div class="recently-added-strip" id="recently-added-strip">
