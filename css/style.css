@@ -1326,7 +1326,7 @@ button {
     width: 20px;
     height: 20px;
     object-fit: contain;
-    filter: drop-shadow(0 0 1px #111111) drop-shadow(0 0 2px #111111) drop-shadow(0 0 3px #111111);
+    filter: drop-shadow(1px 0 0 var(--accent)) drop-shadow(-1px 0 0 var(--accent)) drop-shadow(0 1px 0 var(--accent)) drop-shadow(0 -1px 0 var(--accent));
   }
 
   .nav-item:hover {
