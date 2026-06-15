@@ -49,6 +49,8 @@ Set these variables locally and in Vercel:
 | --- | --- |
 | `TELEGRAM_BOT_TOKEN` | Bot token from BotFather. |
 | `TELEGRAM_CHANNEL_ID` | Channel numeric ID, for example `-1001234567890`, or public username, for example `@my_music_channel`. |
+| `UPSTASH_REDIS_REST_URL` | The REST URL of an Upstash Redis database. |
+| `UPSTASH_REDIS_REST_TOKEN` | The REST token for the Upstash database. |
 
 ## Local setup
 
@@ -64,6 +66,8 @@ Set these variables locally and in Vercel:
    cat > .env.local <<'ENV'
    TELEGRAM_BOT_TOKEN=123456789:replace_with_your_token
    TELEGRAM_CHANNEL_ID=-1001234567890
+   UPSTASH_REDIS_REST_URL=https://your-database.upstash.io
+   UPSTASH_REDIS_REST_TOKEN=your_upstash_token
    ENV
    ```
 
@@ -82,6 +86,8 @@ Set these variables locally and in Vercel:
 3. In **Project Settings → Environment Variables**, add:
    - `TELEGRAM_BOT_TOKEN`
    - `TELEGRAM_CHANNEL_ID`
+   - `UPSTASH_REDIS_REST_URL`
+   - `UPSTASH_REDIS_REST_TOKEN`
 4. Deploy the project.
 5. Visit `/api/songs` once after deployment to build and cache the song catalog.
 6. Use the **Refresh** button in the UI, or call `/api/songs?refresh=1`, after uploading new audio to the Telegram channel.
