@@ -1,16 +1,11 @@
 import { requireEnv } from './utils.js';
-import { getCatalogFromStore } from './_lib/catalogStore.js';
+import { getCatalogFromStore, saveCatalogToStore } from './_lib/catalogStore.js';
 
 const TELEGRAM_API_BASE = 'https://api.telegram.org/bot';
-const MAX_UPDATE_PAGES = 25;
 const UPDATE_PAGE_SIZE = 100;
 
-const CACHE_TTL_MS = 5 * 60 * 1000;
 const CACHE_S_MAXAGE = 3600;
 const CACHE_STALE_WHILE_REVALIDATE = 86400;
-
-let memoryCatalog = [];
-let lastScannedAt = 0;
 
 export function normalizeChannelId(value) {
   return String(value || '').trim();
@@ -88,7 +83,10 @@ function mergeSongs(existingSongs, incomingSongs) {
     byUniqueId.set(song.file_unique_id || song.file_id, song);
   }
   for (const song of incomingSongs) {
-    byUniqueId.set(song.file_unique_id || song.file_id, song);
+    const key = song.file_unique_id || song.file_id;
+    if (!byUniqueId.has(key)) {
+      byUniqueId.set(key, song);
+    }
   }
 
   return [...byUniqueId.values()].sort((a, b) => {
@@ -100,37 +98,50 @@ function mergeSongs(existingSongs, incomingSongs) {
 async function discoverSongs() {
   const token = requireEnv('TELEGRAM_BOT_TOKEN');
   const channelId = normalizeChannelId(requireEnv('TELEGRAM_CHANNEL_ID'));
-  const discovered = [];
-  let offset;
 
-  for (let page = 0; page < MAX_UPDATE_PAGES; page += 1) {
-    const updates = await telegramRequest(token, 'getUpdates', {
-      offset,
-      limit: UPDATE_PAGE_SIZE,
-      timeout: 0,
-      allowed_updates: JSON.stringify(['message', 'channel_post'])
-    });
+  const { catalog: existingCatalog, offset } = await getCatalogFromStore();
 
-    if (!updates.length) break;
+  let currentOffset = offset;
+  let allNewAudioMessages = [];
+  let highestUpdateId = offset - 1;
 
-    let highestUpdateId = offset ? offset - 1 : -1;
+  try {
+    while (true) {
+      const updates = await telegramRequest(token, 'getUpdates', {
+        offset: currentOffset,
+        limit: UPDATE_PAGE_SIZE,
+        timeout: 0,
+        allowed_updates: JSON.stringify(['message', 'channel_post'])
+      });
 
-    for (const update of updates) {
-      highestUpdateId = Math.max(highestUpdateId, update.update_id);
-      const message = update.channel_post || update.message;
-      if (!isExpectedChannel(message?.chat, channelId)) continue;
+      for (const update of updates) {
+        if (highestUpdateId < update.update_id) {
+          highestUpdateId = update.update_id;
+        }
 
-      const song = toSong(update);
-      if (song) discovered.push(song);
+        const message = update.channel_post || update.message;
+        if (!isExpectedChannel(message?.chat, channelId)) continue;
+
+        const song = toSong(update);
+        if (song) allNewAudioMessages.push(song);
+      }
+
+      if (updates.length === UPDATE_PAGE_SIZE) {
+        currentOffset = highestUpdateId + 1;
+      } else {
+        break;
+      }
     }
-
-    offset = highestUpdateId + 1;
-    if (updates.length < UPDATE_PAGE_SIZE) break;
+  } catch (error) {
+    console.error('Telegram getUpdates pagination loop failed partway through:', error);
   }
 
-  memoryCatalog = mergeSongs(memoryCatalog, discovered);
-  lastScannedAt = Date.now();
-  return memoryCatalog;
+  const mergedCatalog = mergeSongs(existingCatalog, allNewAudioMessages);
+  const newOffset = highestUpdateId + 1;
+
+  await saveCatalogToStore(mergedCatalog, newOffset);
+
+  return mergedCatalog;
 }
 
 export default async function handler(req, res) {
@@ -153,6 +164,7 @@ export default async function handler(req, res) {
     res.setHeader('Cache-Control', refresh ? 'no-store' : `s-maxage=${CACHE_S_MAXAGE}, stale-while-revalidate=${CACHE_STALE_WHILE_REVALIDATE}`);
     return res.status(200).json(songs.map(publicSong));
   } catch (error) {
+    console.error('Error handling /api/songs request:', error);
     const statusCode = error.statusCode || 500;
     return res.status(statusCode).json({
       error: error.message || 'Unable to load songs from Telegram.'
