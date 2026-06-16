@@ -49,8 +49,17 @@ Set these variables locally and in Vercel:
 | --- | --- |
 | `TELEGRAM_BOT_TOKEN` | Bot token from BotFather. |
 | `TELEGRAM_CHANNEL_ID` | Channel numeric ID, for example `-1001234567890`, or public username, for example `@my_music_channel`. |
-| `UPSTASH_REDIS_REST_URL` | The REST URL of an Upstash Redis database. |
-| `UPSTASH_REDIS_REST_TOKEN` | The REST token for the Upstash database. |
+| `UPSTASH_REDIS_REST_URL` | REST URL of your Upstash Redis database. |
+| `UPSTASH_REDIS_REST_TOKEN` | REST token for your Upstash Redis database. |
+
+## Persistent catalog storage (Upstash Redis)
+
+To store the song catalog persistently across Vercel serverless function restarts, this project uses Upstash Redis:
+
+1. Go to [upstash.com](https://upstash.com), create a free account, and create a Redis database (REST API is enabled by default on all Upstash Redis databases).
+2. Copy the REST URL and REST token from the database details page.
+3. Add both as environment variables locally (`.env.local`) and in Vercel **Project Settings → Environment Variables**.
+4. The free tier (256MB, 10,000 commands/day) is far more than enough - the entire catalog for a personal library is typically under 100KB.
 
 ## Local setup
 
@@ -89,8 +98,8 @@ Set these variables locally and in Vercel:
    - `UPSTASH_REDIS_REST_URL`
    - `UPSTASH_REDIS_REST_TOKEN`
 4. Deploy the project.
-5. Visit `/api/songs` once after deployment to build and cache the song catalog.
-6. Use the **Refresh** button in the UI, or call `/api/songs?refresh=1`, after uploading new audio to the Telegram channel.
+5. After deploying and uploading songs to the Telegram channel, visit `/api/songs?refresh=1` once (or tap **Refresh** in the UI) to build the initial persisted catalog. This single refresh now handles bulk uploads of any size via pagination, not just the most recent 100.
+6. For future additions (weeks or months later): upload new audio to the channel, then tap **Refresh** once. New songs are merged into the existing persisted catalog automatically - nothing is lost even if the app hasn't been opened in days.
 
 ## API reference
 
@@ -109,7 +118,7 @@ Returns audio messages discovered from the configured Telegram channel:
 ]
 ```
 
-The endpoint filters updates by `TELEGRAM_CHANNEL_ID`, extracts Telegram `audio` attachments, deduplicates songs by Telegram file identity, and caches the catalog for fast repeat loads.
+The endpoint filters updates by `TELEGRAM_CHANNEL_ID`, extracts Telegram `audio` attachments, deduplicates songs by Telegram file identity, and persists the catalog in Upstash Redis for fast repeat loads.
 
 ### `GET /api/stream?file_id=...`
 
@@ -152,8 +161,7 @@ Use `drop_pending_updates=false` if you want to preserve pending song updates.
 ### New uploads do not appear immediately
 
 - Use the **Refresh** button in the app.
-- Or call `/api/songs?refresh=1` directly.
-- Vercel may serve a cached catalog for normal `/api/songs` requests, which improves performance for everyday listening.
+- Or call `/api/songs?refresh=1` directly to merge newly uploaded songs into the persisted catalog.
 
 ## Security notes
 
