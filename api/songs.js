@@ -1,4 +1,5 @@
 import { requireEnv } from './utils.js';
+import { getCatalogFromStore } from './_lib/catalogStore.js';
 
 const TELEGRAM_API_BASE = 'https://api.telegram.org/bot';
 const MAX_UPDATE_PAGES = 25;
@@ -140,8 +141,14 @@ export default async function handler(req, res) {
 
   try {
     const refresh = req.query?.refresh === '1';
-    const cacheIsWarm = memoryCatalog.length > 0 && Date.now() - lastScannedAt < CACHE_TTL_MS;
-    const songs = refresh || !cacheIsWarm ? await discoverSongs() : memoryCatalog;
+
+    let songs;
+    if (refresh) {
+      songs = await discoverSongs();
+    } else {
+      const storeData = await getCatalogFromStore();
+      songs = storeData.catalog;
+    }
 
     res.setHeader('Cache-Control', refresh ? 'no-store' : `s-maxage=${CACHE_S_MAXAGE}, stale-while-revalidate=${CACHE_STALE_WHILE_REVALIDATE}`);
     return res.status(200).json(songs.map(publicSong));
