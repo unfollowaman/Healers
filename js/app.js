@@ -27,6 +27,16 @@ const elements = {
     statArtists: document.querySelector('#stat-artists'),
     statAlbums: document.querySelector('#stat-albums'),
     statDuration: document.querySelector('#stat-duration'),
+    statSongsMobile: document.querySelector('#stat-songs-mobile'),
+    statArtistsMobile: document.querySelector('#stat-artists-mobile'),
+    statAlbumsMobile: document.querySelector('#stat-albums-mobile'),
+    statDurationMobile: document.querySelector('#stat-duration-mobile'),
+    mobileNowPlayingFullscreen: document.querySelector('#mobile-nowplaying-fullscreen'),
+    mobileQueueList: document.querySelector('#mobile-queue-list'),
+    mobileMiniPlayer: document.querySelector('#mobile-mini-player'),
+    miniTitle: document.querySelector('#mini-title'),
+    miniArtist: document.querySelector('#mini-artist'),
+    miniPlayButton: document.querySelector('#mini-play-button'),
     recentlyAddedStrip: document.querySelector('#recently-added-strip'),
     allSongsCount: document.querySelector('#all-songs-count'),
     btnRecentlyAdded: document.querySelector('#btn-recently-added'),
@@ -49,6 +59,7 @@ const elements = {
     desktopNowTitle: document.querySelector('#desktop-now-title'),
     desktopNowArtist: document.querySelector('#desktop-now-artist'),
     navItems: document.querySelectorAll('.nav-item'),
+    tabButtons: document.querySelectorAll('.tab-btn'),
     playingQueue: document.querySelector('#playing-queue'),
     allSongsSection: document.querySelector('#all-songs-section'),
     recentlyAddedSection: document.querySelector('#recently-added-section'),
@@ -231,17 +242,21 @@ function getCurrentSong() {
 function updateStats() {
     const songs = state.songs.length;
     elements.statSongs.textContent = songs;
+    if (elements.statSongsMobile) elements.statSongsMobile.textContent = songs;
 
     const artists = new Set(state.songs.map(s => s.performer || 'Unknown Artist')).size;
     elements.statArtists.textContent = artists;
+    if (elements.statArtistsMobile) elements.statArtistsMobile.textContent = artists;
 
     // Assuming albums aren't available, we show Tracks and repeat song count
     elements.statAlbums.textContent = songs;
+    if (elements.statAlbumsMobile) elements.statAlbumsMobile.textContent = songs;
 
     const totalSeconds = state.songs.reduce((acc, song) => acc + (song.duration || 0), 0);
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     elements.statDuration.textContent = `${hours}h ${minutes}m`;
+    if (elements.statDurationMobile) elements.statDurationMobile.textContent = `${hours}h ${minutes}m`;
 
     elements.allSongsCount.textContent = state.filteredSongs.length;
 }
@@ -426,45 +441,84 @@ function renderSongs() {
 }
 
 function renderQueue() {
-    if (!elements.playingQueue) return;
     const currentSong = getCurrentSong();
 
-    let queueList = state.filteredSongs;
-    if (state.activeView === 'home' && !elements.searchInput.value) {
-        queueList = state.songs;
+    // Desktop queue
+    if (elements.playingQueue) {
+        let queueList = state.filteredSongs;
+        if (state.activeView === 'home' && !elements.searchInput.value) {
+            queueList = state.songs;
+        }
+
+        elements.playingQueue.innerHTML = queueList.map((song, idx) => {
+            const isActive = currentSong?.file_id === song.file_id;
+            // Same gradients logic
+            const gradients = [
+                'linear-gradient(135deg, #1a1a2e, #16213e, #0f3460)',
+                'linear-gradient(135deg, #2d1b33, #11998e, #38ef7d)',
+                'linear-gradient(135deg, #373B44, #4286f4)',
+                'linear-gradient(135deg, #c94b4b, #4b134f)',
+                'linear-gradient(135deg, #0f2027, #203a43, #2c5364)',
+                'linear-gradient(135deg, #1d2671, #c33764)',
+                'linear-gradient(135deg, #434343, #000000)',
+                'linear-gradient(135deg, #005c97, #363795)'
+            ];
+            // Find index in overall songs to keep colors consistent
+            const globalIdx = state.songs.findIndex(s => s.file_id === song.file_id);
+            const bg = gradients[Math.max(0, globalIdx) % gradients.length];
+
+            return `
+        <div class="queue-row ${isActive ? 'active' : ''}" data-fileid="${song.file_id}">
+            <div class="queue-thumbnail" style="background: ${bg}"></div>
+            <div class="queue-info">
+            <div class="queue-title">${escapeHtml(song.title)}</div>
+            <div class="queue-artist">${escapeHtml(song.performer || 'Unknown Artist')}</div>
+            </div>
+        </div>
+        `;
+        }).join('');
     }
 
-    elements.playingQueue.innerHTML = queueList.map((song, idx) => {
-        const isActive = currentSong?.file_id === song.file_id;
-        // Same gradients logic
-        const gradients = [
-            'linear-gradient(135deg, #1a1a2e, #16213e, #0f3460)',
-            'linear-gradient(135deg, #2d1b33, #11998e, #38ef7d)',
-            'linear-gradient(135deg, #373B44, #4286f4)',
-            'linear-gradient(135deg, #c94b4b, #4b134f)',
-            'linear-gradient(135deg, #0f2027, #203a43, #2c5364)',
-            'linear-gradient(135deg, #1d2671, #c33764)',
-            'linear-gradient(135deg, #434343, #000000)',
-            'linear-gradient(135deg, #005c97, #363795)'
-        ];
-        // Find index in overall songs to keep colors consistent
-        const globalIdx = state.songs.findIndex(s => s.file_id === song.file_id);
-        const bg = gradients[Math.max(0, globalIdx) % gradients.length];
+    // Mobile queue peek
+    if (elements.mobileQueueList && state.queue.length > 0) {
+        let upcoming = [];
+        if (isShuffle) {
+            upcoming = unplayedIndices.slice(0, 2).map(idx => state.queue[idx]);
+        } else {
+            let nextIdx1 = (state.currentIndex + 1) % state.queue.length;
+            let nextIdx2 = (state.currentIndex + 2) % state.queue.length;
 
-        // We will use a data-queueindex to tell the click handler what to play
-        // But since playing from queue uses same filtered logic, we need to match it correctly.
-        // If queue shows state.songs, we play from state.songs.
+            if (state.currentIndex === state.queue.length - 1 && repeatMode === 0) {
+                upcoming = []; // No more songs
+            } else if (state.currentIndex === state.queue.length - 1 && repeatMode === 1) {
+                upcoming = [state.queue[0], state.queue[1]].filter(Boolean);
+            } else if (state.currentIndex === state.queue.length - 2 && repeatMode === 0) {
+                upcoming = [state.queue[nextIdx1]];
+            } else {
+                upcoming = [state.queue[nextIdx1], state.queue[nextIdx2]].filter(Boolean);
+            }
+        }
 
-        return `
-      <div class="queue-row ${isActive ? 'active' : ''}" data-fileid="${song.file_id}">
-        <div class="queue-thumbnail" style="background: ${bg}"></div>
-        <div class="queue-info">
-          <div class="queue-title">${escapeHtml(song.title)}</div>
-          <div class="queue-artist">${escapeHtml(song.performer || 'Unknown Artist')}</div>
-        </div>
-      </div>
-    `;
-    }).join('');
+        if (upcoming.length === 0) {
+            elements.mobileQueueList.innerHTML = `<div style="color: var(--text-muted); font-size: 13px;">No songs in queue</div>`;
+        } else {
+            elements.mobileQueueList.innerHTML = upcoming.map((song) => {
+                // Find index to be able to click and play
+                const qIdx = state.queue.findIndex(s => s.file_id === song.file_id);
+                return `
+                <div class="mobile-queue-row" data-queueindex="${qIdx}">
+                    <div style="flex: 1; min-width: 0;">
+                        <div class="mobile-queue-title">${escapeHtml(song.title)}</div>
+                        <div class="mobile-queue-artist">${escapeHtml(song.performer || 'Unknown Artist')}</div>
+                    </div>
+                    <div class="mobile-queue-duration">${formatDuration(song.duration)}</div>
+                </div>
+                `;
+            }).join('');
+        }
+    } else if (elements.mobileQueueList) {
+        elements.mobileQueueList.innerHTML = `<div style="color: var(--text-muted); font-size: 13px;">No songs in queue</div>`;
+    }
 }
 
 
@@ -615,6 +669,8 @@ function updateNowPlaying(song) {
         elements.nowArtist.textContent = 'Ready to play';
         elements.desktopNowTitle.textContent = '';
         elements.desktopNowArtist.textContent = '';
+        if (elements.miniTitle) elements.miniTitle.textContent = 'Select a song';
+        if (elements.miniArtist) elements.miniArtist.textContent = 'Ready to play';
         elements.totalTime.textContent = '0:00';
         return;
     }
@@ -623,6 +679,8 @@ function updateNowPlaying(song) {
     elements.nowArtist.textContent = song.performer || 'Unknown Artist';
     elements.desktopNowTitle.textContent = song.title;
     elements.desktopNowArtist.textContent = song.performer || 'Unknown Artist';
+    if (elements.miniTitle) elements.miniTitle.textContent = song.title;
+    if (elements.miniArtist) elements.miniArtist.textContent = song.performer || 'Unknown Artist';
     elements.totalTime.textContent = formatDuration(song.duration);
 }
 
@@ -699,19 +757,27 @@ function setPlayerPlayingState(isPlaying) {
 
             requestAnimationFrame(() => {
                 const playingPlayerHeight = elements.player.offsetHeight;
-                document.querySelector('.library').style.paddingTop = (playingPlayerHeight + 14) + 'px';
+                // padding applied centrally based on mini player
             });
         }
 
         if (audioCtx && audioCtx.state === 'suspended') {
             audioCtx.resume();
         }
+
+        if (elements.mobileMiniPlayer) {
+            elements.mobileMiniPlayer.style.display = 'flex';
+        }
     } else if (!getCurrentSong()) {
         // Only go completely IDLE if stopped
         elements.player.classList.remove('player--playing');
         elements.bottomSeparator.style.display = 'block';
         elements.player.style.top = 'auto';
-        document.querySelector('.library').style.paddingTop = '0';
+        // padding removed centrally
+
+        if (elements.mobileMiniPlayer) {
+            elements.mobileMiniPlayer.style.display = 'none';
+        }
     }
 }
 
@@ -830,6 +896,22 @@ function updatePlayButton() {
         '<img id="play-icon-img" src="/assets/icons/play.png" alt="Play" width="28" height="28">';
 
     elements.playButton.setAttribute('aria-label', isPlaying ? 'Pause' : 'Play');
+
+    if (elements.miniPlayButton) {
+        elements.miniPlayButton.innerHTML = isPlaying ?
+            '<img src="/assets/icons/pause.png" alt="Pause" width="16" height="16">' :
+            '<img src="/assets/icons/play.png" alt="Play" width="16" height="16">';
+        elements.miniPlayButton.setAttribute('aria-label', isPlaying ? 'Pause' : 'Play');
+    }
+
+    if (elements.mobileMiniPlayer) {
+        if (isPlaying) {
+            elements.mobileMiniPlayer.classList.add('is-playing');
+        } else {
+            elements.mobileMiniPlayer.classList.remove('is-playing');
+        }
+    }
+
     renderSongs();
 }
 
@@ -861,6 +943,108 @@ function bindEvents() {
             item.addEventListener('click', () => {
                 switchNavView(item.dataset.view);
             });
+        });
+    }
+
+    if (elements.tabButtons) {
+        elements.tabButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tab = btn.dataset.tab;
+
+                // Update active class on tab buttons
+                elements.tabButtons.forEach(b => b.classList.remove('tab-active'));
+                btn.classList.add('tab-active');
+
+                // Switch mobile views
+                document.querySelectorAll('.mobile-view').forEach(v => {
+                    v.style.display = 'none';
+                    v.classList.remove('active-view');
+                });
+
+                const targetView = document.getElementById(`mobile-view-${tab}`);
+                if (targetView) {
+                    targetView.style.display = 'block';
+                    targetView.classList.add('active-view');
+                }
+
+                if (tab === 'home') switchNavView('home');
+                else if (tab === 'songs') switchNavView('all-songs');
+                else if (tab === 'artists') switchNavView('artists');
+                else if (tab === 'library') switchNavView('albums');
+                else if (tab === 'more') switchNavView('playlists');
+            });
+        });
+    }
+
+    if (elements.mobileQueueList) {
+        elements.mobileQueueList.addEventListener('click', (e) => {
+            const row = e.target.closest('.mobile-queue-row');
+            if (!row) return;
+            const qIdx = Number(row.dataset.queueindex);
+            if (!isNaN(qIdx) && qIdx >= 0 && qIdx < state.queue.length) {
+                state.currentIndex = qIdx;
+                startCurrentSong();
+            }
+        });
+    }
+
+    // Fullscreen Drag to dismiss logic
+    if (elements.mobileNowPlayingFullscreen) {
+        let startY = 0;
+        let currentY = 0;
+        let isDragging = false;
+
+        elements.mobileNowPlayingFullscreen.addEventListener('touchstart', (e) => {
+            // Only allow dragging from the top area or handle
+            if (e.target.closest('.progress-container') || e.target.closest('.player-controls')) return;
+
+            startY = e.touches[0].clientY;
+            isDragging = true;
+            elements.mobileNowPlayingFullscreen.style.transition = 'none'; // Disable transition for direct manipulation
+        }, { passive: true });
+
+        elements.mobileNowPlayingFullscreen.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            currentY = e.touches[0].clientY;
+            let deltaY = currentY - startY;
+            if (deltaY > 0) { // Only drag down
+                elements.mobileNowPlayingFullscreen.style.transform = `translateY(${deltaY}px)`;
+            }
+        }, { passive: true });
+
+        elements.mobileNowPlayingFullscreen.addEventListener('touchend', (e) => {
+            if (!isDragging) return;
+            isDragging = false;
+            let deltaY = currentY - startY;
+            elements.mobileNowPlayingFullscreen.style.transition = 'transform var(--transition-slow)';
+
+            if (deltaY > 120) {
+                // Close
+                elements.mobileNowPlayingFullscreen.classList.remove('is-open');
+                elements.mobileNowPlayingFullscreen.style.transform = ''; // Clear inline
+            } else {
+                // Snap back
+                elements.mobileNowPlayingFullscreen.style.transform = 'translateY(0)';
+                // Delay clearing inline style to not break class transform
+                setTimeout(() => {
+                    if (elements.mobileNowPlayingFullscreen.classList.contains('is-open')) {
+                        elements.mobileNowPlayingFullscreen.style.transform = '';
+                    }
+                }, 500);
+            }
+        });
+    }
+
+    // Mini Player Events
+    if (elements.mobileMiniPlayer) {
+        elements.mobileMiniPlayer.addEventListener('click', (e) => {
+            // Check if play/pause button was clicked
+            if (e.target.closest('#mini-play-button')) {
+                e.stopPropagation();
+                togglePlayPause();
+            } else if (elements.mobileNowPlayingFullscreen) {
+                elements.mobileNowPlayingFullscreen.classList.add('is-open');
+            }
         });
     }
 

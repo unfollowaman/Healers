@@ -1,0 +1,98 @@
+npm warn exec The following package was not found and will be installed: http-server@14.1.1
+npm warn deprecated whatwg-encoding@2.0.0: Use @exodus/bytes instead for a more spec-conformant and faster implementation
+Starting up http-server, serving ./
+
+http-server version: 14.1.1
+
+http-server settings:
+CORS: disabled
+Cache: 3600 seconds
+Connection Timeout: 120 seconds
+Directory Listings: visible
+AutoIndex: visible
+Serve GZIP Files: false
+Serve Brotli Files: false
+Default File Extension: none
+
+Available on:
+  http://127.0.0.1:8080
+  http://192.168.0.2:8080
+Hit CTRL-C to stop the server
+
+[2026-06-16T21:07:58.603Z]  "GET /" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+(node:52443) [DEP0066] DeprecationWarning: OutgoingMessage.prototype._headers is deprecated
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[2026-06-16T21:07:58.780Z]  "GET /css/style.css" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:07:58.782Z]  "GET /assets/icons/home.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:07:58.783Z]  "GET /assets/icons/all-songs.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:07:58.805Z]  "GET /assets/icons/artists.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:07:58.806Z]  "GET /assets/icons/albums.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:07:58.808Z]  "GET /assets/icons/playlists.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:07:58.809Z]  "GET /assets/icons/search.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:07:58.811Z]  "GET /assets/icons/refresh.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:07:58.813Z]  "GET /assets/icons/favorites.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:07:58.825Z]  "GET /assets/icons/recently-played.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:07:58.826Z]  "GET /assets/icons/most-played.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:07:58.827Z]  "GET /assets/icons/shuffle.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:07:58.828Z]  "GET /assets/icons/prev.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:07:58.828Z]  "GET /assets/icons/play.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:07:58.829Z]  "GET /assets/icons/next.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:07:58.846Z]  "GET /assets/icons/repeat.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:07:58.846Z]  "GET /assets/icons/mute.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:07:58.847Z]  "GET /assets/icons/high-volume.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:07:58.848Z]  "GET /assets/icons/recently-added.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:07:58.848Z]  "GET /assets/icons/library.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:07:58.849Z]  "GET /assets/icons/more.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:07:58.863Z]  "GET /js/app.js" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:07:59.321Z]  "GET /api/songs" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:07:59.323Z]  "GET /api/songs" Error (404): "Not found"
+[2026-06-16T21:09:39.984Z]  "GET /" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:09:39.997Z]  "GET /css/style.css" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:09:39.997Z]  "GET /assets/icons/home.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:09:40.000Z]  "GET /assets/icons/all-songs.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:09:40.010Z]  "GET /assets/icons/artists.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:09:40.011Z]  "GET /assets/icons/search.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:09:40.013Z]  "GET /assets/icons/albums.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:09:40.013Z]  "GET /assets/icons/playlists.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:09:40.014Z]  "GET /assets/icons/refresh.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:09:40.015Z]  "GET /assets/icons/favorites.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:09:40.016Z]  "GET /assets/icons/recently-played.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:09:40.017Z]  "GET /assets/icons/most-played.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:09:40.022Z]  "GET /assets/icons/shuffle.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:09:40.022Z]  "GET /assets/icons/prev.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:09:40.022Z]  "GET /assets/icons/play.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:09:40.025Z]  "GET /assets/icons/next.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:09:40.026Z]  "GET /assets/icons/repeat.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:09:40.027Z]  "GET /assets/icons/mute.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:09:40.031Z]  "GET /assets/icons/high-volume.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:09:40.032Z]  "GET /assets/icons/recently-added.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:09:40.032Z]  "GET /assets/icons/library.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:09:40.033Z]  "GET /assets/icons/more.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:09:40.033Z]  "GET /js/app.js" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:09:40.102Z]  "GET /api/songs" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:09:40.103Z]  "GET /api/songs" Error (404): "Not found"
+[2026-06-16T21:11:55.331Z]  "GET /" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:11:55.345Z]  "GET /css/style.css" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:11:55.346Z]  "GET /assets/icons/home.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:11:55.346Z]  "GET /assets/icons/all-songs.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:11:55.354Z]  "GET /assets/icons/artists.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:11:55.356Z]  "GET /assets/icons/albums.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:11:55.359Z]  "GET /assets/icons/playlists.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:11:55.359Z]  "GET /assets/icons/search.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:11:55.360Z]  "GET /assets/icons/refresh.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:11:55.360Z]  "GET /assets/icons/favorites.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:11:55.365Z]  "GET /assets/icons/recently-played.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:11:55.366Z]  "GET /assets/icons/most-played.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:11:55.366Z]  "GET /assets/icons/shuffle.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:11:55.366Z]  "GET /assets/icons/prev.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:11:55.367Z]  "GET /assets/icons/play.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:11:55.367Z]  "GET /assets/icons/next.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:11:55.373Z]  "GET /assets/icons/repeat.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:11:55.373Z]  "GET /assets/icons/mute.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:11:55.373Z]  "GET /assets/icons/high-volume.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:11:55.374Z]  "GET /assets/icons/recently-added.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:11:55.374Z]  "GET /assets/icons/library.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:11:55.375Z]  "GET /assets/icons/more.png" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:11:55.379Z]  "GET /js/app.js" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:11:55.453Z]  "GET /api/songs" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-16T21:11:55.454Z]  "GET /api/songs" Error (404): "Not found"

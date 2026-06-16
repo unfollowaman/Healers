@@ -91,68 +91,83 @@
                             <footer class="sidebar-player player" id="player" aria-label="Audio player">
                                 <audio id="audio-player" preload="metadata"></audio>
 
-                                <!-- Desktop Cover Art / Waveform Area -->
-                                <div class="desktop-art-container" id="desktop-art-container">
-                                    <div class="desktop-art-placeholder" id="desktop-art-placeholder">
-                                        <div class="desktop-art-text-overlay">
-                                            <div class="line1" id="desktop-now-title"></div>
-                                            <div class="line2" id="desktop-now-artist"></div>
+                                <div id="mobile-nowplaying-fullscreen">
+                                    <!-- Mobile Drag Handle -->
+                                    <div class="nowplaying-drag-handle"></div>
+
+                                    <!-- Desktop Cover Art / Waveform Area -->
+                                    <div class="desktop-art-container" id="desktop-art-container">
+                                        <div class="desktop-art-placeholder" id="desktop-art-placeholder">
+                                            <div class="desktop-art-text-overlay">
+                                                <div class="line1" id="desktop-now-title"></div>
+                                                <div class="line2" id="desktop-now-artist"></div>
+                                            </div>
+                                        </div>
+                                        <canvas id="waveform-canvas-desktop"></canvas>
+                                    </div>
+
+                                    <!-- Row 1: Waveform (Mobile) -->
+                                    <canvas id="waveform-canvas-mobile"></canvas>
+
+                                    <!-- Row 2: Song Info -->
+                                    <div class="player-info">
+                                        <div class="album-art-placeholder" aria-hidden="true"></div>
+                                        <div class="track-meta">
+                                            <strong id="now-title">Select a song</strong>
+                                            <span id="now-artist">Ready to play</span>
+                                        </div>
+                                        <div class="flex-spacer"></div>
+                                    </div>
+
+                                    <!-- Row 3: Progress Bar -->
+                                    <div class="progress-container">
+                                        <input id="progress-bar" class="progress-track" type="range" min="0" max="100" value="0" step="0.1" aria-label="Playback progress">
+                                        <div class="time-labels">
+                                            <span id="current-time">0:00</span>
+                                            <span id="total-time">0:00</span>
                                         </div>
                                     </div>
-                                    <canvas id="waveform-canvas-desktop"></canvas>
-                                </div>
 
-                                <!-- Row 1: Waveform (Mobile) -->
-                                <canvas id="waveform-canvas-mobile"></canvas>
-
-                                <!-- Row 2: Song Info -->
-                                <div class="player-info">
-                                    <div class="album-art-placeholder" aria-hidden="true"></div>
-                                    <div class="track-meta">
-                                        <strong id="now-title">Select a song</strong>
-                                        <span id="now-artist">Ready to play</span>
+                                    <!-- Row 4: Controls -->
+                                    <div class="player-controls">
+                                        <button class="control-button shuffle-button" id="shuffle-button" type="button" aria-label="Shuffle" aria-pressed="false">
+                                            <img src="/assets/icons/shuffle.png" alt="Shuffle" width="20" height="20">
+                                        </button>
+                                        <button class="icon-button prev-button" id="prev-button" type="button" aria-label="Previous song">
+                                            <img src="/assets/icons/prev.png" alt="Previous" width="20" height="20">
+                                        </button>
+                                        <button class="play-button" id="play-button" type="button" aria-label="Play">
+                                            <img id="play-icon-img" src="/assets/icons/play.png" alt="Play" width="28" height="28">
+                                        </button>
+                                        <button class="icon-button next-button" id="next-button" type="button" aria-label="Next song">
+                                            <img src="/assets/icons/next.png" alt="Next" width="20" height="20">
+                                        </button>
+                                        <button class="control-button repeat-button" id="repeat-button" type="button" aria-label="Repeat off">
+                                            <img src="/assets/icons/repeat.png" alt="Repeat" width="20" height="20">
+                                            <span class="repeat-one-badge" style="display: none;">1</span>
+                                        </button>
                                     </div>
-                                    <div class="flex-spacer"></div>
-                                </div>
 
-                                <!-- Row 3: Progress Bar -->
-                                <div class="progress-container">
-                                    <input id="progress-bar" class="progress-track" type="range" min="0" max="100" value="0" step="0.1" aria-label="Playback progress">
-                                    <div class="time-labels">
-                                        <span id="current-time">0:00</span>
-                                        <span id="total-time">0:00</span>
+                                    <!-- Row 5: Volume Slider -->
+                                    <div class="volume-container">
+                                        <button class="icon-button volume-btn" id="mute-button" type="button" aria-label="Mute">
+                                            <img src="/assets/icons/mute.png" alt="Mute" width="20" height="20">
+                                        </button>
+                                        <input id="volume-slider" class="progress-track" type="range" min="0" max="100" value="85" aria-label="Volume">
+                                        <button class="icon-button volume-btn" id="full-volume-button" type="button" aria-label="Full Volume">
+                                            <img src="/assets/icons/high-volume.png" alt="Full Volume" width="20" height="20">
+                                        </button>
                                     </div>
-                                </div>
 
-                                <!-- Row 4: Controls -->
-                                <div class="player-controls">
-                                    <button class="control-button shuffle-button" id="shuffle-button" type="button" aria-label="Shuffle" aria-pressed="false">
-                                        <img src="/assets/icons/shuffle.png" alt="Shuffle" width="20" height="20">
-                                    </button>
-                                    <button class="icon-button prev-button" id="prev-button" type="button" aria-label="Previous song">
-                                        <img src="/assets/icons/prev.png" alt="Previous" width="20" height="20">
-                                    </button>
-                                    <button class="play-button" id="play-button" type="button" aria-label="Play">
-                                        <img id="play-icon-img" src="/assets/icons/play.png" alt="Play" width="28" height="28">
-                                    </button>
-                                    <button class="icon-button next-button" id="next-button" type="button" aria-label="Next song">
-                                        <img src="/assets/icons/next.png" alt="Next" width="20" height="20">
-                                    </button>
-                                    <button class="control-button repeat-button" id="repeat-button" type="button" aria-label="Repeat off">
-                                        <img src="/assets/icons/repeat.png" alt="Repeat" width="20" height="20">
-                                        <span class="repeat-one-badge" style="display: none;">1</span>
-                                    </button>
-                                </div>
+                                    <!-- Mobile Queue Peek -->
+                                    <div class="mobile-queue-peek">
+                                        <div class="queue-peek-label">UP NEXT</div>
+                                        <div id="mobile-queue-list">
+                                            <!-- Next 2 songs will go here -->
+                                        </div>
+                                    </div>
 
-                                <!-- Row 5: Volume Slider -->
-                                <div class="volume-container">
-                                    <button class="icon-button volume-btn" id="mute-button" type="button" aria-label="Mute">
-                                        <img src="/assets/icons/mute.png" alt="Mute" width="20" height="20">
-                                    </button>
-                                    <input id="volume-slider" class="progress-track" type="range" min="0" max="100" value="85" aria-label="Volume">
-                                    <button class="icon-button volume-btn" id="full-volume-button" type="button" aria-label="Full Volume">
-                                        <img src="/assets/icons/high-volume.png" alt="Full Volume" width="20" height="20">
-                                    </button>
+                                    <div class="mobile-safe-area-spacer"></div>
                                 </div>
                             </footer>
                             <section class="hero-section" id="hero-section">
@@ -210,37 +225,105 @@
                             </section>
                         </div>
 
-                        <div class="separator-layer sep-desktop-hide"></div>
+                        <!-- Mobile Views -->
+                        <div class="mobile-views-container">
+                            <!-- Home View -->
+                            <div id="mobile-view-home" class="mobile-view active-view">
+                                <div class="hero-right">
+                                    <div class="stats-card">
+                                        <div class="stat-item">
+                                            <span class="stat-label">Songs</span>
+                                            <span class="stat-value" id="stat-songs-mobile">0</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span class="stat-label">Artists</span>
+                                            <span class="stat-value" id="stat-artists-mobile">0</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span class="stat-label">Tracks</span>
+                                            <span class="stat-value" id="stat-albums-mobile">0</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span class="stat-label">Duration</span>
+                                            <span class="stat-value" id="stat-duration-mobile">0h 0m</span>
+                                        </div>
+                                    </div>
+                                </div>
 
-                        <section class="recently-added-section" id="recently-added-section">
-                            <div class="section-header-row">
-                                <span class="section-title">Recently Added</span>
-                                <span class="section-icon icon-button">
-                                    <img src="/assets/icons/recently-added.png" alt="Recently Added">
-                                </span>
-                            </div>
-                            <div class="recently-added-strip" id="recently-added-strip">
-                                <!-- Thumbnails inserted here by JS -->
-                            </div>
-                        </section>
+                                <div class="separator-layer sep-desktop-hide" style="margin-top: 16px;"></div>
 
-                        <div class="separator-layer sep-desktop-hide"></div>
+                                <section class="recently-added-section" id="recently-added-section">
+                                    <div class="section-header-row">
+                                        <span class="section-title">Recently Added</span>
+                                        <span class="section-icon icon-button">
+                                            <img src="/assets/icons/recently-added.png" alt="Recently Added">
+                                        </span>
+                                    </div>
+                                    <div class="recently-added-strip" id="recently-added-strip">
+                                        <!-- Thumbnails inserted here by JS -->
+                                    </div>
+                                </section>
+                            </div>
 
-                        <section class="all-songs-section" id="all-songs-section">
-                            <div class="section-header-row">
-                                <span class="section-title">All Songs</span>
-                                <span class="count-badge" id="all-songs-count">0</span>
+                            <!-- Songs View -->
+                            <div id="mobile-view-songs" class="mobile-view" style="display: none;">
+                                <section class="all-songs-section" id="all-songs-section">
+                                    <div class="section-header-row">
+                                        <span class="section-title">All Songs</span>
+                                        <span class="count-badge" id="all-songs-count">0</span>
+                                    </div>
+                                    <div class="column-headers">
+                                        <div class="col-index">#</div>
+                                        <div class="col-title">TITLE</div>
+                                        <div class="col-artist">ARTIST</div>
+                                        <div class="col-time">TIME</div>
+                                    </div>
+                                    <div class="song-list" id="song-list" aria-label="Song list">
+                                        <!-- Song rows inserted here by JS -->
+                                    </div>
+                                </section>
                             </div>
-                            <div class="column-headers">
-                                <div class="col-index">#</div>
-                                <div class="col-title">TITLE</div>
-                                <div class="col-artist">ARTIST</div>
-                                <div class="col-time">TIME</div>
+
+                            <!-- Artists View -->
+                            <div id="mobile-view-artists" class="mobile-view" style="display: none;">
+                                <div class="placeholder-text">Artists view coming soon.</div>
                             </div>
-                            <div class="song-list" id="song-list" aria-label="Song list">
-                                <!-- Song rows inserted here by JS -->
+
+                            <!-- Library View -->
+                            <div id="mobile-view-library" class="mobile-view" style="display: none;">
+                                <div class="placeholder-text">Library view coming soon.</div>
                             </div>
-                        </section>
+
+                            <!-- More View -->
+                            <div id="mobile-view-more" class="mobile-view" style="display: none;">
+                                <div class="more-list">
+                                    <button class="more-item-btn">
+                                        <div class="tab-icon">
+                                            <img src="/assets/icons/favorites.png" onerror="this.style.display='none'">
+                                        </div>
+                                        Favorites
+                                    </button>
+                                    <button class="more-item-btn">
+                                        <div class="tab-icon">
+                                            <img src="/assets/icons/recently-played.png" onerror="this.style.display='none'">
+                                        </div>
+                                        Recently Played
+                                    </button>
+                                    <button class="more-item-btn">
+                                        <div class="tab-icon">
+                                            <img src="/assets/icons/most-played.png" onerror="this.style.display='none'">
+                                        </div>
+                                        Most Played
+                                    </button>
+                                    <button class="more-item-btn">
+                                        <div class="tab-icon">
+                                            <img src="/assets/icons/playlists.png" onerror="this.style.display='none'">
+                                        </div>
+                                        Playlists
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </main>
@@ -249,6 +332,57 @@
 
 
     </div>
+
+    <div id="mobile-mini-player">
+        <!-- Left: small waveform animation -->
+        <div class="mini-waveform">
+            <div class="mini-bar mini-bar-1"></div>
+            <div class="mini-bar mini-bar-2"></div>
+            <div class="mini-bar mini-bar-3"></div>
+        </div>
+        <!-- Center -->
+        <div class="mini-info">
+            <strong id="mini-title">Select a song</strong>
+            <span id="mini-artist">Ready to play</span>
+        </div>
+        <!-- Right: play/pause -->
+        <button id="mini-play-button" type="button" aria-label="Play">
+            <img src="/assets/icons/play.png" alt="Play" width="16" height="16">
+        </button>
+    </div>
+
+    <nav id="mobile-tab-bar">
+        <button class="tab-btn tab-active" data-tab="home" type="button" aria-label="Home">
+            <div class="tab-icon">
+                <img src="/assets/icons/home.png" onerror="this.style.display='none'">
+            </div>
+            <span>Home</span>
+        </button>
+        <button class="tab-btn" data-tab="songs" type="button" aria-label="Songs">
+            <div class="tab-icon">
+                <img src="/assets/icons/all-songs.png" onerror="this.style.display='none'">
+            </div>
+            <span>Songs</span>
+        </button>
+        <button class="tab-btn" data-tab="artists" type="button" aria-label="Artists">
+            <div class="tab-icon">
+                <img src="/assets/icons/artists.png" onerror="this.style.display='none'">
+            </div>
+            <span>Artists</span>
+        </button>
+        <button class="tab-btn" data-tab="library" type="button" aria-label="Library">
+            <div class="tab-icon">
+                <img src="/assets/icons/library.png" onerror="this.style.display='none'">
+            </div>
+            <span>Library</span>
+        </button>
+        <button class="tab-btn" data-tab="more" type="button" aria-label="More">
+            <div class="tab-icon">
+                <img src="/assets/icons/more.png" onerror="this.style.display='none'">
+            </div>
+            <span>More</span>
+        </button>
+    </nav>
 
     <script src="/js/app.js" defer></script>
 </body>
