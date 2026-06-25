@@ -1,0 +1,10 @@
+--- js/app.js
++++ js/app.js
+@@ -904,6 +904,8 @@
+         if (elements.mobileMiniPlayer) {
+             elements.mobileMiniPlayer.style.display = 'none';
+         }
++
++        document.body.classList.remove('is-playback-mode');
+     }
+ }

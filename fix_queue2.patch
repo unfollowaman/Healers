@@ -1,0 +1,11 @@
+--- js/app.js
++++ js/app.js
+@@ -598,6 +598,8 @@
+         </div>
+         `;
+         }).join('');
++
++        renderDesktopHomePanels(); // Update the right column desktop queue too
+     }
+
+     // Mobile queue peek
