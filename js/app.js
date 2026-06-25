@@ -44,6 +44,8 @@ const elements = {
     mobileShuffleAll: document.querySelector('#mobile-shuffle-all'),
     mobileArtistList: document.querySelector('#mobile-artist-list'),
     mobileHomeQueueCard: document.querySelector('#mobile-home-queue-card'),
+    desktopQueueTable: document.querySelector('#desktop-queue-table'),
+    desktopShuffleAll: document.querySelector('#desktop-shuffle-all'),
     nowTitle: document.querySelector('#now-title'),
     nowArtist: document.querySelector('#now-artist'),
     playButton: document.querySelector('#play-button'),
@@ -319,6 +321,64 @@ function getArtistSummaries(limit = 4) {
         .map(([name, count]) => ({ name, count }));
 }
 
+function getArtworkGradient(song, index = 0) {
+    const gradients = [
+        'linear-gradient(135deg, #1a1a2e, #16213e, #0f3460)',
+        'linear-gradient(135deg, #2d1b33, #11998e, #38ef7d)',
+        'linear-gradient(135deg, #373B44, #4286f4)',
+        'linear-gradient(135deg, #c94b4b, #4b134f)',
+        'linear-gradient(135deg, #0f2027, #203a43, #2c5364)',
+        'linear-gradient(135deg, #1d2671, #c33764)',
+        'linear-gradient(135deg, #434343, #000000)',
+        'linear-gradient(135deg, #005c97, #363795)'
+    ];
+    const globalIdx = song ? state.songs.findIndex(s => s.file_id === song.file_id) : index;
+    return gradients[Math.max(0, globalIdx) % gradients.length];
+}
+
+function renderDesktopHomePanels() {
+    if (window.innerWidth < 900) return;
+
+    if (elements.mobileArtistList) {
+        const artists = getArtistSummaries(4);
+        elements.mobileArtistList.innerHTML = artists.length ? artists.map(({ name, count }) => `
+            <button class="mobile-artist-row" type="button" data-artist="${escapeHtml(name)}">
+                <span class="artist-avatar">${escapeHtml(name.charAt(0).toUpperCase())}</span>
+                <span class="artist-row-copy">
+                    <strong>${escapeHtml(name)}</strong>
+                    <span>${count} track${count !== 1 ? 's' : ''}</span>
+                </span>
+                <span class="artist-chevron" aria-hidden="true">›</span>
+            </button>
+        `).join('') : '<div class="mobile-empty-row">Artists will appear here after your library loads.</div>';
+    }
+
+    if (elements.desktopQueueTable) {
+        const queueList = state.songs.slice(0, 8);
+        if (!queueList.length) {
+            elements.desktopQueueTable.innerHTML = '<div class="desktop-empty-row">Your queue is ready when your library loads.</div>';
+            return;
+        }
+
+        elements.desktopQueueTable.innerHTML = `
+            <div class="desktop-queue-head">
+                <span>#</span><span>Song</span><span>Artist</span><span>Album</span><span>Duration</span><span>Added</span><span></span>
+            </div>
+            ${queueList.map((song, index) => `
+                <div class="desktop-queue-row" data-fileid="${song.file_id}">
+                    <span class="desktop-queue-index">${index + 1}</span>
+                    <span class="desktop-queue-song"><span class="desktop-queue-art" style="background: ${getArtworkGradient(song, index)}"></span><strong>${escapeHtml(song.title)}</strong></span>
+                    <span>${escapeHtml(song.performer || 'Unknown Artist')}</span>
+                    <span>${escapeHtml(song.album || `${song.title} - Single`)}</span>
+                    <span>${formatDuration(song.duration)}</span>
+                    <span>${index * 3 + 2} mins ago</span>
+                    <button class="desktop-queue-menu" type="button" aria-label="More options">⋮</button>
+                </div>
+            `).join('')}
+        `;
+    }
+}
+
 function renderMobileHomePreviews() {
     if (elements.mobileArtistList) {
         const artists = getArtistSummaries(3);
@@ -363,6 +423,7 @@ function renderSongs() {
     updateStats();
     renderRecentlyAdded();
     renderMobileHomePreviews();
+    renderDesktopHomePanels();
 
     if (window.innerWidth >= 900) {
         renderQueue();
@@ -1033,6 +1094,22 @@ function bindEvents() {
                 else if (tab === 'library') switchNavView('albums');
                 else if (tab === 'more') switchNavView('playlists');
             });
+        });
+    }
+
+    if (elements.desktopShuffleAll) {
+        elements.desktopShuffleAll.addEventListener('click', () => {
+            if (!state.songs.length) return;
+            state.queue = [...state.songs];
+            state.filteredSongs = [...state.songs];
+            isShuffle = true;
+            if (elements.shuffleButton) {
+                elements.shuffleButton.classList.add('is-active');
+                elements.shuffleButton.setAttribute('aria-pressed', 'true');
+            }
+            state.currentIndex = Math.floor(Math.random() * state.queue.length);
+            initShuffleQueue();
+            startCurrentSong();
         });
     }
 
