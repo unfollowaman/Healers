@@ -1,0 +1,26 @@
+--- js/app.js
++++ js/app.js
+@@ -363,10 +363,12 @@
+         elements.desktopQueueTable.innerHTML = `
+             <div class="desktop-queue-head">
+                 <span>#</span><span>Song</span><span>Artist</span><span>Album</span><span>Duration</span><span>Added</span><span></span>
+             </div>
+-            ${queueList.map((song, index) => `
+-                <div class="desktop-queue-row" data-fileid="${song.file_id}">
++            ${queueList.map((song, index) => {
++                const isActive = getCurrentSong()?.file_id === song.file_id ? 'active' : '';
++                return `
++                <div class="desktop-queue-row ${isActive}" data-fileid="${song.file_id}">
+                     <span class="desktop-queue-index">${index + 1}</span>
+                     <span class="desktop-queue-song"><span class="desktop-queue-art" style="background: ${getArtworkGradient(song, index)}"></span><strong>${escapeHtml(song.title)}</strong></span>
+                     <span>${escapeHtml(song.performer || 'Unknown Artist')}</span>
+                     <span>${escapeHtml(song.album || `${song.title} - Single`)}</span>
+                     <span>${formatDuration(song.duration)}</span>
+                     <span>${index * 3 + 2} mins ago</span>
+                     <button class="desktop-queue-menu" type="button" aria-label="More options">⋮</button>
+                 </div>
+-            `).join('')}
++            `}).join('')}
+         `;
+     }
+ }

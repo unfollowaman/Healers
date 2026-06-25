@@ -1,0 +1,12 @@
+--- js/app.js
++++ js/app.js
+@@ -365,7 +365,7 @@
+                 <span>#</span><span>Song</span><span>Artist</span><span>Album</span><span>Duration</span><span>Added</span><span></span>
+             </div>
+             ${queueList.map((song, index) => {
+-                const isActive = getCurrentSong()?.file_id === song.file_id;
++                const isActive = getCurrentSong()?.file_id === song.file_id ? 'active' : '';
+                 return `
+-                <div class="desktop-queue-row" data-fileid="${song.file_id}">
++                <div class="desktop-queue-row ${isActive}" data-fileid="${song.file_id}">
+                     <span class="desktop-queue-index">${index + 1}</span>

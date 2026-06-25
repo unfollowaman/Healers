@@ -2711,6 +2711,7 @@ button {
   body.is-playback-mode .hero-section,
   body.is-playback-mode #quick-access-section,
   body.is-playback-mode .mobile-artists-preview,
+  body.is-playback-mode .all-songs-section,
   body.is-playback-mode .desktop-shuffle-all,
   body.is-playback-mode #sidebar .queue-divider,
   body.is-playback-mode #sidebar .queue-label,

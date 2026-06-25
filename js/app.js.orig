@@ -1148,22 +1148,6 @@ function bindEvents() {
         });
     }
 
-    const btnClearQueue = document.getElementById('desktop-clear-queue-btn');
-    if (btnClearQueue) {
-        btnClearQueue.addEventListener('click', () => {
-            state.queue = [];
-            state.currentIndex = -1;
-            elements.audio.pause();
-            elements.audio.currentTime = 0;
-            setPlayerPlayingState(false);
-            renderSongs();
-        });
-    }
-    const btnSaveQueue = document.getElementById('desktop-save-queue-btn');
-    if (btnSaveQueue) {
-        btnSaveQueue.addEventListener('click', () => alert('Save as Playlist clicked'));
-    }
-
     if (elements.btnRecentlyAddedMobile) {
         elements.btnRecentlyAddedMobile.addEventListener('click', () => {
             document.querySelector('#recently-added-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
