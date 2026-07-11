@@ -1,6 +1,14 @@
 :root {
-  --bg:               #F2F0EC;
-  --surface:          #EDEAE4;
+  --bg:               #EAEEDE;
+  --surface:          #F3F5EA;
+  --canvas:           #DCDFCF;
+  --ink:              #14160F;
+  --ink-soft:         #6B6F5F;
+  --ink-faint:        #A9AC98;
+  --border-w:         1.6px;
+  --border-hair-w:    1px;
+  --border-color:     var(--ink);
+  --border-hair:      rgba(20, 22, 15, 0.14);
   --surface-raised:   #F7F5F1;
   --text-primary:     #1A1A18;
   --text-secondary:   #7A7A78;
@@ -19,9 +27,9 @@
   --waveform-bg:      #111111;
   --waveform-bar:     #CC0000;
   --waveform-idle:    #444444;
-  --radius-sm:        10px;
-  --radius-md:        16px;
-  --radius-lg:        24px;
+  --radius-sm:        12px;
+  --radius-md:        18px;
+  --radius-lg:        28px;
   --transition-fast:  0.12s ease;
   --transition-mid:   0.30s ease;
   --transition-slow:  0.50s cubic-bezier(0.4, 0, 0.2, 1);
@@ -100,7 +108,7 @@ button {
 }
 
 .eyebrow {
-  color: var(--text-secondary);
+  color: var(--ink-soft);
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.18em;
@@ -109,7 +117,7 @@ button {
 
 .hero-copy {
   margin: 0;
-  color: var(--text-primary);
+  color: var(--ink);
   font-weight: 600;
   font-size: 16px;
   line-height: 1.2;
@@ -129,9 +137,8 @@ button {
 #search-input {
   width: 0;
   opacity: 0;
-  border: none;
+  border: var(--border-w) solid var(--border-color);
   background: var(--surface);
-  box-shadow: var(--shadow-in-sm);
   border-radius: var(--radius-md);
   padding: 0;
   color: var(--text-primary);
@@ -154,8 +161,7 @@ button {
 }
 
 .refresh-button,
-.icon-button,
-.song-play-button {
+.icon-button {
   background: #111111; /* Changed to dark per user request */
   border: none;
   cursor: pointer;
@@ -174,15 +180,35 @@ button {
 }
 
 .refresh-button:hover,
-.icon-button:hover,
-.song-play-button:hover {
+.icon-button:hover {
   box-shadow: var(--shadow-out);
 }
 
 .refresh-button:active,
-.icon-button:active,
-.song-play-button:active {
+.icon-button:active {
   box-shadow: var(--shadow-in-sm);
+}
+
+#search-toggle,
+#refresh-button {
+  box-shadow: none;
+  border: var(--border-w) solid var(--border-color);
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  color: var(--ink-soft);
+}
+
+#search-toggle:hover,
+#refresh-button:hover {
+  background: var(--bg);
+  box-shadow: none;
+}
+
+#search-toggle:active,
+#refresh-button:active {
+  background: var(--ink);
+  color: var(--bg);
+  box-shadow: none;
 }
 
 /* Ensure images inside buttons cover neatly without distortion and handle brightness if needed */
@@ -206,12 +232,11 @@ button {
 
 .separator-layer {
   width: 100%;
-  height: 14px;
-  background: var(--sep-blue-bg);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-top: 1px solid var(--sep-blue-border);
-  border-bottom: 1px solid var(--sep-blue-border);
+  height: 1px;
+  background: var(--border-hair);
+  border: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   pointer-events: none;
   z-index: 50;
 }
@@ -223,14 +248,13 @@ button {
 @media (min-width: 900px) {
   .separator-layer--vertical {
     display: block;
-    width: 14px;
+    width: 1px;
     flex-shrink: 0;
     align-self: stretch;
-    background: var(--sep-blue-bg);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-left: 1px solid var(--sep-blue-border);
-    border-right: 1px solid var(--sep-blue-border);
+    background: var(--border-hair);
+    border: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     pointer-events: none;
     z-index: 50;
   }
@@ -590,13 +614,16 @@ button {
   grid-template-columns: 32px 1fr 1fr 60px;
   align-items: center;
   padding: 12px 16px;
-  margin: 0 16px 10px 16px;
-  background: var(--surface-raised);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-out-sm);
+  margin: 0 16px 0 16px;
+  background: transparent;
+  border-bottom: var(--border-hair-w) solid var(--border-hair);
   cursor: pointer;
-  transition: box-shadow var(--transition-fast), background var(--transition-fast);
+  transition: background var(--transition-fast);
   user-select: none;
+}
+
+.song-row:last-child {
+  border-bottom: none;
 }
 
 .song-index {
@@ -608,18 +635,17 @@ button {
 }
 
 .song-row:hover {
-  box-shadow: var(--shadow-out);
+  background: var(--surface);
 }
 
 .song-row:active {
-  box-shadow: var(--shadow-in-sm);
-  background: var(--surface);
+  background: var(--bg);
 }
 
 .song-row.active {
   background: var(--surface);
-  box-shadow: var(--shadow-in);
-  border-left: 3px solid var(--accent);
+  border-left: 3px solid var(--ink);
+  border-bottom: var(--border-hair-w) solid var(--border-hair);
   padding-left: 13px; /* Compensate for border */
 }
 
@@ -685,7 +711,6 @@ button {
   font-variant-numeric: tabular-nums;
 }
 
-.song-play-button,
 .icon-button,
 .play-button {
   display: inline-grid;
@@ -694,12 +719,11 @@ button {
 }
 
 .song-play-button {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  color: #FFFFFF;
-  background: var(--accent); /* Changed to accent (red) since it's a play button per user request to keep play/pause buttons red */
-  box-shadow: var(--shadow-out-sm);
+  width: 20px;
+  height: 20px;
+  color: var(--ink);
+  background: transparent;
+  border: none;
   display: none;
   place-items: center;
   position: absolute;
@@ -719,7 +743,7 @@ button {
 }
 
 .song-play-button:active {
-  box-shadow: var(--shadow-in-sm);
+  color: var(--ink-soft);
 }
 
 .song-row.active .song-play-button {
@@ -1229,8 +1253,8 @@ button {
   .song-play-button {
       right: auto;
       left: 12px;
-      width: 24px;
-      height: 24px;
+      width: 20px;
+      height: 20px;
   }
   .song-row:hover .song-index {
       opacity: 0;
@@ -1244,7 +1268,6 @@ button {
   .refresh-button:hover,
   .icon-button:hover,
   .play-button:hover,
-  .song-play-button:hover,
   .quick-access-btn:hover {
     transform: none;
     box-shadow: var(--shadow-out-sm);
