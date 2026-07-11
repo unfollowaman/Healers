@@ -289,13 +289,13 @@ function renderRecentlyAdded() {
 
         return `
       <div class="thumbnail-card" data-index="${filteredIndex > -1 ? filteredIndex : ''}">
-        <div class="thumbnail-art" style="background: ${bg}; opacity: ${filteredIndex > -1 ? 1 : 0.5}">
+        <div class="thumbnail-art" style="opacity: ${filteredIndex > -1 ? 1 : 0.5}">
           <button class="icon-button fav-button" data-fileid="${song.file_id}" type="button" aria-label="Favorite" style="width: 20px; height: 20px; position: absolute; top: 4px; right: 4px; display: block; background: transparent; box-shadow: none; z-index: 2;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="${state.favorites.includes(song.file_id) ? 'var(--accent)' : 'none'}" stroke="${state.favorites.includes(song.file_id) ? 'var(--accent)' : 'var(--text-muted)'}" stroke-width="2"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
           </button>
           <div class="hover-overlay">
             <div class="hover-overlay-icon">
-              <img src="/assets/icons/play.png" alt="Play" width="16" height="16">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-play"><polygon points="6 3 20 12 6 21 6 3"/></svg>
             </div>
           </div>
         </div>
@@ -601,7 +601,7 @@ function renderQueue() {
 
             return `
         <div class="queue-row ${isActive ? 'active' : ''}" data-fileid="${song.file_id}">
-            <div class="queue-thumbnail" style="background: ${bg}"></div>
+            <div class="queue-thumbnail"></div>
             <div class="queue-info">
             <div class="queue-title">${escapeHtml(song.title)}</div>
             <div class="queue-artist">${escapeHtml(song.performer || 'Unknown Artist')}</div>
