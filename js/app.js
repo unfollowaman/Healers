@@ -584,24 +584,10 @@ function renderQueue() {
 
         elements.playingQueue.innerHTML = queueList.map((song, idx) => {
             const isActive = currentSong?.file_id === song.file_id;
-            // Same gradients logic
-            const gradients = [
-                'linear-gradient(135deg, #1a1a2e, #16213e, #0f3460)',
-                'linear-gradient(135deg, #2d1b33, #11998e, #38ef7d)',
-                'linear-gradient(135deg, #373B44, #4286f4)',
-                'linear-gradient(135deg, #c94b4b, #4b134f)',
-                'linear-gradient(135deg, #0f2027, #203a43, #2c5364)',
-                'linear-gradient(135deg, #1d2671, #c33764)',
-                'linear-gradient(135deg, #434343, #000000)',
-                'linear-gradient(135deg, #005c97, #363795)'
-            ];
-            // Find index in overall songs to keep colors consistent
-            const globalIdx = state.songs.findIndex(s => s.file_id === song.file_id);
-            const bg = gradients[Math.max(0, globalIdx) % gradients.length];
 
             return `
         <div class="queue-row ${isActive ? 'active' : ''}" data-fileid="${song.file_id}">
-            <div class="queue-thumbnail"></div>
+            <div class="queue-thumbnail placeholder-flat"></div>
             <div class="queue-info">
             <div class="queue-title">${escapeHtml(song.title)}</div>
             <div class="queue-artist">${escapeHtml(song.performer || 'Unknown Artist')}</div>
