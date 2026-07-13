@@ -116,6 +116,7 @@ let dataArray;
 let canvasCtxMobile;
 let canvasCtxDesktop;
 
+let cachedWaveformBg, cachedWaveformBar, cachedWaveformIdle;
 function setupWaveform() {
     canvasCtxMobile = elements.waveformCanvasMobile.getContext('2d');
     canvasCtxDesktop = elements.waveformCanvasDesktop.getContext('2d');
@@ -133,6 +134,16 @@ function setupWaveform() {
 
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
+    const rootStyles = getComputedStyle(document.documentElement);
+    const bgStr = rootStyles.getPropertyValue("--waveform-bg").trim();
+    cachedWaveformBg = bgStr.startsWith("var(") ? rootStyles.getPropertyValue(bgStr.substring(4, bgStr.length-1)).trim() : bgStr;
+    if (!cachedWaveformBg) cachedWaveformBg = "#111111";
+    const barStr = rootStyles.getPropertyValue("--waveform-bar").trim();
+    cachedWaveformBar = barStr.startsWith("var(") ? rootStyles.getPropertyValue(barStr.substring(4, barStr.length-1)).trim() : barStr;
+    if (!cachedWaveformBar) cachedWaveformBar = "#CC0000";
+    const idleStr = rootStyles.getPropertyValue("--waveform-idle").trim();
+    cachedWaveformIdle = idleStr.startsWith("var(") ? rootStyles.getPropertyValue(idleStr.substring(4, idleStr.length-1)).trim() : idleStr;
+    if (!cachedWaveformIdle) cachedWaveformIdle = "#444444";
     drawWaveform();
 }
 
@@ -147,7 +158,7 @@ function resizeCanvas() {
 function drawIdleBarsForCanvas(canvas, ctx) {
     if (canvas.offsetWidth === 0) return;
 
-    ctx.fillStyle = '#111111';
+    ctx.fillStyle = cachedWaveformBg;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     const barCount = 64;
@@ -155,7 +166,7 @@ function drawIdleBarsForCanvas(canvas, ctx) {
     const barWidth = (canvas.width - (barCount - 1) * gap) / barCount;
     const idleHeight = 4;
 
-    ctx.fillStyle = '#444444'; // var(--waveform-idle)
+    ctx.fillStyle = cachedWaveformIdle;
     for (let i = 0; i < barCount; i++) {
         const x = i * (barWidth + gap);
         ctx.fillRect(x, canvas.height - idleHeight, barWidth, idleHeight);
@@ -165,7 +176,7 @@ function drawIdleBarsForCanvas(canvas, ctx) {
 function drawActiveBarsForCanvas(canvas, ctx) {
     if (canvas.offsetWidth === 0) return;
 
-    ctx.fillStyle = '#111111'; // var(--waveform-bg)
+    ctx.fillStyle = cachedWaveformBg;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     const barCount = 64;
@@ -178,11 +189,8 @@ function drawActiveBarsForCanvas(canvas, ctx) {
         const x = i * (barWidth + gap);
         const y = canvas.height - barHeight;
 
-        const gradient = ctx.createLinearGradient(x, y, x, canvas.height);
-        gradient.addColorStop(0, '#FF0800'); // var(--accent-bright)
-        gradient.addColorStop(1, '#880000');
 
-        ctx.fillStyle = gradient;
+        ctx.fillStyle = cachedWaveformBar;
         ctx.beginPath();
         if (ctx.roundRect) {
             ctx.roundRect(x, y, barWidth, barHeight, 2);
