@@ -772,7 +772,10 @@ async function loadSongs({
         });
         const payload = await response.json().catch(() => null);
 
-        if (!response.ok) {
+        if (!response.ok || payload?.error) {
+            if (payload?.error === 'Catalog store unavailable') {
+                throw new Error('Could not reach catalog storage — try again shortly');
+            }
             throw new Error(payload?.error || 'Unable to load songs.');
         }
 
