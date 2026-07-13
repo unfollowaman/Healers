@@ -165,6 +165,12 @@ export default async function handler(req, res) {
     return res.status(200).json(songs.map(publicSong));
   } catch (error) {
     console.error('Error handling /api/songs request:', error);
+    if (error.message && error.message.includes('Upstash request failed')) {
+      return res.status(503).json({
+        error: 'Catalog store unavailable',
+        detail: error.message
+      });
+    }
     const statusCode = error.statusCode || 500;
     return res.status(statusCode).json({
       error: error.message || 'Unable to load songs from Telegram.'

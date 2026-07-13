@@ -17,6 +17,9 @@ export async function getCatalogFromStore() {
     }
 
     const catalogData = await catalogResponse.json();
+    if (catalogData.error) {
+      throw new Error(`murex:catalog read failed: ${catalogData.error}`);
+    }
 
     const offsetResponse = await fetch(url, {
       method: 'POST',
@@ -32,6 +35,9 @@ export async function getCatalogFromStore() {
     }
 
     const offsetData = await offsetResponse.json();
+    if (offsetData.error) {
+      throw new Error(`murex:offset read failed: ${offsetData.error}`);
+    }
 
     const catalog = catalogData.result ? JSON.parse(catalogData.result) : [];
     const offset = offsetData.result ? parseInt(offsetData.result, 10) : 0;
@@ -59,6 +65,10 @@ export async function saveCatalogToStore(catalog, offset) {
     if (!catalogResponse.ok) {
       throw new Error(`status ${catalogResponse.status}`);
     }
+    const catalogData = await catalogResponse.json();
+    if (catalogData.error) {
+      throw new Error(`murex:catalog write failed: ${catalogData.error}`);
+    }
 
     const offsetResponse = await fetch(url, {
       method: 'POST',
@@ -71,6 +81,10 @@ export async function saveCatalogToStore(catalog, offset) {
 
     if (!offsetResponse.ok) {
       throw new Error(`status ${offsetResponse.status}`);
+    }
+    const offsetData = await offsetResponse.json();
+    if (offsetData.error) {
+      throw new Error(`murex:offset write failed: ${offsetData.error}`);
     }
   } catch (error) {
     throw new Error(`Upstash request failed: ${error.message}`);
