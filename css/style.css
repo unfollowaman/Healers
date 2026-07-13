@@ -24,9 +24,9 @@
   --shadow-in-sm:     inset 2px 2px 5px #C5C2BA, inset -2px -2px 5px #FFFFFF;
   --sep-blue-bg:      rgba(100, 140, 230, 0.10);
   --sep-blue-border:  rgba(100, 140, 230, 0.28);
-  --waveform-bg:      #111111;
-  --waveform-bar:     #CC0000;
-  --waveform-idle:    #444444;
+  --waveform-bg:      var(--ink);
+  --waveform-bar:     var(--bg);
+  --waveform-idle:    var(--ink-faint);
   --radius-sm:        12px;
   --radius-md:        18px;
   --radius-lg:        28px;
@@ -172,11 +172,9 @@ button {
 
 .play-button {
   background: var(--accent); /* Keep play/pause button red */
-  border: none;
+  border: var(--border-w) solid var(--border-color);
   cursor: pointer;
   user-select: none;
-  box-shadow: var(--shadow-out-sm);
-  transition: box-shadow var(--transition-fast);
 }
 
 .refresh-button:hover,
@@ -995,7 +993,7 @@ button {
   height: 3px;
   -webkit-appearance: none;
   background: var(--surface);
-  box-shadow: var(--shadow-in-sm);
+  border: var(--border-w) solid var(--border-color);
   border-radius: 999px;
   outline: none;
   margin-bottom: 0px;
@@ -1018,16 +1016,12 @@ button {
   appearance: none;
   width: 16px;
   height: 16px;
+  border: var(--border-w) solid var(--border-color);
   border-radius: 50%;
   background: var(--surface-raised);
-  box-shadow: var(--shadow-out-sm);
   cursor: pointer;
-  transition: box-shadow var(--transition-fast);
 }
 
-.progress-track::-webkit-slider-thumb:active {
-  box-shadow: var(--shadow-in-sm);
-}
 
 .time-labels {
   display: none;
@@ -1087,27 +1081,21 @@ button {
   height: 40px;
   border-radius: var(--radius-sm);
   background: #111111; /* Changed to dark per user request */
-  border: none;
+  border: var(--border-w) solid var(--border-color);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--text-secondary);
-  box-shadow: var(--shadow-out-sm);
-  transition: box-shadow var(--transition-fast), color var(--transition-fast);
   position: relative;
 }
 
-.control-button:hover {
-  box-shadow: var(--shadow-out);
-}
 
-.control-button:active, .control-button.is-active {
-  box-shadow: var(--shadow-in-sm);
-}
 
-.control-button.is-active {
-  color: var(--accent);
+.control-button.is-active, .control-button[aria-pressed="true"], .control-button[aria-label^="Repeat "]:not([aria-label="Repeat off"]) {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
 }
 
 .repeat-one-badge {
@@ -1149,28 +1137,15 @@ button {
   border-radius: 50%;
   background: var(--accent);
   color: #FFFFFF;
-  border: none;
+  border: var(--border-w) solid var(--border-color);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 5px 5px 12px rgba(180, 0, 0, 0.45),
-              -3px -3px 8px rgba(255, 120, 120, 0.20),
-              inset 1px 1px 2px rgba(255, 180, 180, 0.25);
   transition: all var(--transition-fast);
 }
 
-.play-button:hover {
-  background: var(--accent-bright);
-  box-shadow: 6px 6px 16px rgba(200, 0, 0, 0.50),
-              -4px -4px 10px rgba(255, 140, 140, 0.25),
-              inset 1px 1px 2px rgba(255, 200, 200, 0.30);
-}
 
-.play-button:active {
-  box-shadow: inset 4px 4px 8px rgba(140, 0, 0, 0.50),
-              inset -2px -2px 6px rgba(255, 80, 80, 0.20);
-}
 
 .volume-container {
   display: none; /* Hidden on mobile idle */
