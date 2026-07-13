@@ -102,46 +102,50 @@ async function discoverSongs() {
   const { catalog: existingCatalog, offset } = await getCatalogFromStore();
 
   let currentOffset = offset;
-  let allNewAudioMessages = [];
-  let highestUpdateId = offset - 1;
+  let currentCatalog = existingCatalog;
 
-  try {
-    while (true) {
-      const updates = await telegramRequest(token, 'getUpdates', {
-        offset: currentOffset,
-        limit: UPDATE_PAGE_SIZE,
-        timeout: 0,
-        allowed_updates: JSON.stringify(['message', 'channel_post'])
-      });
+  while (true) {
+    const updates = await telegramRequest(token, 'getUpdates', {
+      offset: currentOffset,
+      limit: UPDATE_PAGE_SIZE,
+      timeout: 0,
+      allowed_updates: JSON.stringify(['message', 'channel_post'])
+    });
 
-      for (const update of updates) {
-        if (highestUpdateId < update.update_id) {
-          highestUpdateId = update.update_id;
-        }
-
-        const message = update.channel_post || update.message;
-        if (!isExpectedChannel(message?.chat, channelId)) continue;
-
-        const song = toSong(update);
-        if (song) allNewAudioMessages.push(song);
-      }
-
-      if (updates.length === UPDATE_PAGE_SIZE) {
-        currentOffset = highestUpdateId + 1;
-      } else {
-        break;
-      }
+    if (updates.length === 0) {
+      break;
     }
-  } catch (error) {
-    console.error('Telegram getUpdates pagination loop failed partway through:', error);
+
+    let batchAudioMessages = [];
+    let highestUpdateId = currentOffset - 1;
+
+    for (const update of updates) {
+      if (highestUpdateId < update.update_id) {
+        highestUpdateId = update.update_id;
+      }
+
+      const message = update.channel_post || update.message;
+      if (!isExpectedChannel(message?.chat, channelId)) continue;
+
+      const song = toSong(update);
+      if (song) batchAudioMessages.push(song);
+    }
+
+    const candidateNextOffset = highestUpdateId + 1;
+    const mergedCatalog = mergeSongs(currentCatalog, batchAudioMessages);
+
+    // Persist this batch before acknowledging it via the next getUpdates call
+    await saveCatalogToStore(mergedCatalog, candidateNextOffset);
+
+    currentCatalog = mergedCatalog;
+    currentOffset = candidateNextOffset;
+
+    if (updates.length < UPDATE_PAGE_SIZE) {
+      break;
+    }
   }
 
-  const mergedCatalog = mergeSongs(existingCatalog, allNewAudioMessages);
-  const newOffset = highestUpdateId + 1;
-
-  await saveCatalogToStore(mergedCatalog, newOffset);
-
-  return mergedCatalog;
+  return currentCatalog;
 }
 
 export default async function handler(req, res) {
