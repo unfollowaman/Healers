@@ -18,7 +18,9 @@ export async function getCatalogFromStore() {
 
     const catalogData = await catalogResponse.json();
     if (catalogData.error) {
-      throw new Error(`murex:catalog read failed: ${catalogData.error}`);
+      const err = new Error(`murex:catalog read failed: ${catalogData.error}`);
+      err.statusCode = 503;
+      throw err;
     }
 
     const offsetResponse = await fetch(url, {
@@ -36,7 +38,9 @@ export async function getCatalogFromStore() {
 
     const offsetData = await offsetResponse.json();
     if (offsetData.error) {
-      throw new Error(`murex:offset read failed: ${offsetData.error}`);
+      const err = new Error(`murex:offset read failed: ${offsetData.error}`);
+      err.statusCode = 503;
+      throw err;
     }
 
     const catalog = catalogData.result ? JSON.parse(catalogData.result) : [];
@@ -67,7 +71,9 @@ export async function saveCatalogToStore(catalog, offset) {
     }
     const catalogData = await catalogResponse.json();
     if (catalogData.error) {
-      throw new Error(`murex:catalog write failed: ${catalogData.error}`);
+      const err = new Error(`murex:catalog write failed: ${catalogData.error}`);
+      err.statusCode = 503;
+      throw err;
     }
 
     const offsetResponse = await fetch(url, {
@@ -84,7 +90,9 @@ export async function saveCatalogToStore(catalog, offset) {
     }
     const offsetData = await offsetResponse.json();
     if (offsetData.error) {
-      throw new Error(`murex:offset write failed: ${offsetData.error}`);
+      const err = new Error(`murex:offset write failed: ${offsetData.error}`);
+      err.statusCode = 503;
+      throw err;
     }
   } catch (error) {
     throw new Error(`Upstash request failed: ${error.message}`);
