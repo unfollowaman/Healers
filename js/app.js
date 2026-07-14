@@ -393,7 +393,8 @@ function renderDesktopHomePanels() {
                     <span>${index * 3 + 2} mins ago</span>
                     <button class="desktop-queue-menu" type="button" aria-label="More options">⋮</button>
                 </div>
-            `).join('')}
+            `;
+            }).join('')}
         `;
     }
 }
