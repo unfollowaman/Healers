@@ -48,6 +48,9 @@ export async function getCatalogFromStore() {
 
     return { catalog, offset };
   } catch (error) {
+    if (error.statusCode) {
+      throw error;
+    }
     throw new Error(`Upstash request failed: ${error.message}`);
   }
 }
@@ -95,6 +98,9 @@ export async function saveCatalogToStore(catalog, offset) {
       throw err;
     }
   } catch (error) {
+    if (error.statusCode) {
+      throw error;
+    }
     throw new Error(`Upstash request failed: ${error.message}`);
   }
 }
