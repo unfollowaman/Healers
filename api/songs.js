@@ -169,7 +169,7 @@ export default async function handler(req, res) {
     return res.status(200).json(songs.map(publicSong));
   } catch (error) {
     console.error('Error handling /api/songs request:', error);
-    if (error.message && error.message.includes('Upstash request failed')) {
+    if (error.statusCode === 503) {
       return res.status(503).json({
         error: 'Catalog store unavailable',
         detail: error.message
