@@ -132,6 +132,11 @@ button {
 .search-container {
   display: flex;
   align-items: center;
+  order: 1;
+}
+
+.refresh-button {
+  order: 2;
 }
 
 #search-input {
@@ -2433,11 +2438,11 @@ button {
   }
 
   .refresh-button {
-    order: 1;
+    order: unset;
   }
 
   .search-container {
-    order: 2;
+    order: unset;
     justify-content: flex-end;
   }
 
@@ -2448,25 +2453,26 @@ button {
     pointer-events: none;
     padding: 0;
     margin: 0;
-    border: 2px solid var(--ink);
-    border-radius: 999px;
-    background: rgba(247, 245, 241, 0.84);
+    border: var(--border-w) solid transparent;
+    border-radius: var(--radius-md);
+    background: var(--surface);
     color: var(--ink);
     font-size: 18px;
     font-weight: 500;
     box-shadow: none;
     transform-origin: right center;
-    transition: width var(--transition-mid), opacity var(--transition-mid), padding var(--transition-mid), margin var(--transition-mid);
+    transition: width var(--transition-mid), opacity var(--transition-mid), padding var(--transition-mid), margin var(--transition-mid), border-color var(--transition-mid);
   }
 
   .search-container:hover #search-input,
   .search-container:focus-within #search-input,
   #search-input.expanded {
-    width: clamp(320px, 38vw, 620px);
+    width: 200px;
     opacity: 1;
     pointer-events: auto;
-    padding: 0 32px;
+    padding: 0 20px;
     margin-right: 18px;
+    border-color: var(--border-color);
   }
 
   .search-icon-btn,
@@ -2474,9 +2480,9 @@ button {
     width: 58px;
     height: 58px;
     flex: 0 0 58px;
-    border: 2px solid var(--ink);
-    border-radius: 18px;
-    background: rgba(247, 245, 241, 0.84);
+    border: var(--border-w) solid var(--border-color);
+    border-radius: var(--radius-md);
+    background: var(--surface);
     color: var(--ink);
     box-shadow: none;
   }
