@@ -80,6 +80,17 @@ let unplayedIndices = [];
 let isSearchExpanded = false;
 
 function toggleSearch() {
+    if (window.innerWidth >= 900) {
+        // Desktop is hover-based / focus-within based styling.
+        // We just toggle focus to force it open or close for tap support.
+        if (document.activeElement === elements.searchInput) {
+            elements.searchInput.blur();
+        } else {
+            elements.searchInput.focus();
+        }
+        return;
+    }
+
     isSearchExpanded = !isSearchExpanded;
     if (isSearchExpanded) {
         elements.searchInput.classList.add('expanded');
@@ -1242,6 +1253,16 @@ function bindEvents() {
     }
 
     elements.searchInput.addEventListener('input', filterSongs);
+    elements.searchInput.addEventListener('transitionend', (e) => {
+        if (window.innerWidth >= 900 && e.propertyName === 'width') {
+            const width = parseFloat(getComputedStyle(elements.searchInput).width);
+            if (width < 10) {
+                elements.searchInput.value = '';
+                filterSongs();
+            }
+        }
+    });
+
     elements.searchToggle.addEventListener('click', toggleSearch);
     elements.refreshButton.addEventListener('click', () => loadSongs({
         refresh: true
