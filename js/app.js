@@ -1202,53 +1202,6 @@ function bindEvents() {
         });
     }
 
-    // Fullscreen Drag to dismiss logic
-    if (elements.mobileNowPlayingFullscreen) {
-        let startY = 0;
-        let currentY = 0;
-        let isDragging = false;
-
-        elements.mobileNowPlayingFullscreen.addEventListener('touchstart', (e) => {
-            // Only allow dragging from the top area or handle
-            if (e.target.closest('.progress-container') || e.target.closest('.player-controls')) return;
-
-            startY = e.touches[0].clientY;
-            isDragging = true;
-            elements.mobileNowPlayingFullscreen.style.transition = 'none'; // Disable transition for direct manipulation
-        }, { passive: true });
-
-        elements.mobileNowPlayingFullscreen.addEventListener('touchmove', (e) => {
-            if (!isDragging) return;
-            currentY = e.touches[0].clientY;
-            let deltaY = currentY - startY;
-            if (deltaY > 0) { // Only drag down
-                elements.mobileNowPlayingFullscreen.style.transform = `translateY(${deltaY}px)`;
-            }
-        }, { passive: true });
-
-        elements.mobileNowPlayingFullscreen.addEventListener('touchend', (e) => {
-            if (!isDragging) return;
-            isDragging = false;
-            let deltaY = currentY - startY;
-            elements.mobileNowPlayingFullscreen.style.transition = 'transform var(--transition-slow)';
-
-            if (deltaY > 120) {
-                // Close
-                elements.mobileNowPlayingFullscreen.classList.remove('is-open');
-                elements.mobileNowPlayingFullscreen.style.transform = ''; // Clear inline
-            } else {
-                // Snap back
-                elements.mobileNowPlayingFullscreen.style.transform = 'translateY(0)';
-                // Delay clearing inline style to not break class transform
-                setTimeout(() => {
-                    if (elements.mobileNowPlayingFullscreen.classList.contains('is-open')) {
-                        elements.mobileNowPlayingFullscreen.style.transform = '';
-                    }
-                }, 500);
-            }
-        });
-    }
-
     // Mini Player Events
     if (elements.mobileMiniPlayer) {
         elements.mobileMiniPlayer.addEventListener('click', (e) => {
