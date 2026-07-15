@@ -106,66 +106,79 @@
                                         <canvas id="waveform-canvas-desktop"></canvas>
                                     </div>
 
-                                    <!-- Row 1: Waveform (Mobile) -->
-                                    <canvas id="waveform-canvas-mobile"></canvas>
+                                    <section class="nowplaying-hero-card" aria-label="Now playing">
+                                        <!-- Row 1: Waveform (Mobile) -->
+                                        <canvas id="waveform-canvas-mobile"></canvas>
 
-                                    <!-- Row 2: Song Info -->
-                                    <div class="player-info">
-                                        <div class="album-art-placeholder" aria-hidden="true"></div>
-                                        <div class="track-meta">
-                                            <strong id="now-title">Select a song</strong>
-                                            <span id="now-artist">Ready to play</span>
+                                        <!-- Row 2: Song Info -->
+                                        <div class="player-info">
+                                            <div class="album-art-placeholder" aria-hidden="true"></div>
+                                            <div class="track-meta">
+                                                <strong id="now-title">Select a song</strong>
+                                                <span id="now-artist">Ready to play</span>
+                                            </div>
+                                            <div class="flex-spacer"></div>
+                                            <button class="nowplaying-more-button" type="button" aria-label="More options">
+                                                <img src="/assets/icons/more.png" alt="" width="20" height="20">
+                                            </button>
                                         </div>
-                                        <div class="flex-spacer"></div>
-                                    </div>
 
-                                    <!-- Row 3: Progress Bar -->
-                                    <div class="progress-container">
-                                        <input id="progress-bar" class="progress-track" type="range" min="0" max="100" value="0" step="0.1" aria-label="Playback progress">
-                                        <div class="time-labels">
-                                            <span id="current-time">0:00</span>
-                                            <span id="total-time">0:00</span>
+                                        <!-- Row 3: Progress Bar -->
+                                        <div class="progress-container">
+                                            <input id="progress-bar" class="progress-track" type="range" min="0" max="100" value="0" step="0.1" aria-label="Playback progress">
+                                            <div class="time-labels">
+                                                <span id="current-time">0:00</span>
+                                                <span id="total-time">0:00</span>
+                                            </div>
                                         </div>
-                                    </div>
+                                    </section>
 
-                                    <!-- Row 4: Controls -->
-                                    <div class="player-controls">
-                                        <button class="control-button shuffle-button" id="shuffle-button" type="button" aria-label="Shuffle" aria-pressed="false">
-                                            <img src="/assets/icons/shuffle.png" alt="Shuffle" width="20" height="20">
-                                        </button>
-                                        <button class="icon-button prev-button" id="prev-button" type="button" aria-label="Previous song">
-                                            <img src="/assets/icons/prev.png" alt="Previous" width="20" height="20">
-                                        </button>
-                                        <button class="play-button" id="play-button" type="button" aria-label="Play">
-                                            <img id="play-icon-img" src="/assets/icons/play.png" alt="Play" width="28" height="28">
-                                        </button>
-                                        <button class="icon-button next-button" id="next-button" type="button" aria-label="Next song">
-                                            <img src="/assets/icons/next.png" alt="Next" width="20" height="20">
-                                        </button>
-                                        <button class="control-button repeat-button" id="repeat-button" type="button" aria-label="Repeat off">
-                                            <img src="/assets/icons/repeat.png" alt="Repeat" width="20" height="20">
-                                            <span class="repeat-one-badge" style="display: none;">1</span>
-                                        </button>
-                                    </div>
+                                    <section class="playback-panel" aria-label="Playback controls">
+                                        <!-- Row 4: Controls -->
+                                        <div class="player-controls">
+                                            <button class="control-button shuffle-button" id="shuffle-button" type="button" aria-label="Shuffle" aria-pressed="false">
+                                                <img src="/assets/icons/shuffle.png" alt="Shuffle" width="20" height="20">
+                                            </button>
+                                            <button class="icon-button prev-button" id="prev-button" type="button" aria-label="Previous song">
+                                                <img src="/assets/icons/prev.png" alt="Previous" width="20" height="20">
+                                            </button>
+                                            <button class="play-button" id="play-button" type="button" aria-label="Play">
+                                                <img id="play-icon-img" src="/assets/icons/play.png" alt="Play" width="28" height="28">
+                                            </button>
+                                            <button class="icon-button next-button" id="next-button" type="button" aria-label="Next song">
+                                                <img src="/assets/icons/next.png" alt="Next" width="20" height="20">
+                                            </button>
+                                            <button class="control-button repeat-button" id="repeat-button" type="button" aria-label="Repeat off">
+                                                <img src="/assets/icons/repeat.png" alt="Repeat" width="20" height="20">
+                                                <span class="repeat-one-badge" style="display: none;">1</span>
+                                            </button>
+                                        </div>
 
-                                    <!-- Row 5: Volume Slider -->
-                                    <div class="volume-container">
-                                        <button class="icon-button volume-btn" id="mute-button" type="button" aria-label="Mute">
-                                            <img src="/assets/icons/mute.png" alt="Mute" width="20" height="20">
-                                        </button>
-                                        <input id="volume-slider" class="progress-track" type="range" min="0" max="100" value="85" aria-label="Volume">
-                                        <button class="icon-button volume-btn" id="full-volume-button" type="button" aria-label="Full Volume">
-                                            <img src="/assets/icons/high-volume.png" alt="Full Volume" width="20" height="20">
-                                        </button>
-                                    </div>
+                                        <!-- Row 5: Volume Slider -->
+                                        <div class="volume-container">
+                                            <button class="icon-button volume-btn" id="mute-button" type="button" aria-label="Mute">
+                                                <img src="/assets/icons/mute.png" alt="Mute" width="20" height="20">
+                                            </button>
+                                            <input id="volume-slider" class="progress-track" type="range" min="0" max="100" value="85" aria-label="Volume">
+                                            <button class="icon-button volume-btn" id="full-volume-button" type="button" aria-label="Full Volume">
+                                                <img src="/assets/icons/high-volume.png" alt="Full Volume" width="20" height="20">
+                                            </button>
+                                        </div>
+                                    </section>
 
                                     <!-- Mobile Queue Peek -->
-                                    <div class="mobile-queue-peek">
-                                        <div class="queue-peek-label">UP NEXT</div>
+                                    <section class="mobile-queue-peek" aria-label="Up next">
+                                        <div class="mobile-queue-header">
+                                            <div class="queue-peek-label">UP NEXT</div>
+                                            <button class="queue-more-button" type="button" aria-label="Queue options">
+                                                <img src="/assets/icons/more.png" alt="" width="20" height="20">
+                                            </button>
+                                        </div>
+                                        <div class="mobile-queue-divider"></div>
                                         <div id="mobile-queue-list">
                                             <!-- Next 2 songs will go here -->
                                         </div>
-                                    </div>
+                                    </section>
 
                                     <div class="mobile-safe-area-spacer"></div>
                                 </div>
