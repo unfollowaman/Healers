@@ -636,11 +636,16 @@ function renderQueue() {
                 const qIdx = state.queue.findIndex(s => s.file_id === song.file_id);
                 return `
                 <div class="mobile-queue-row" data-queueindex="${qIdx}">
-                    <div style="flex: 1; min-width: 0;">
+                    <div class="mobile-queue-art" aria-hidden="true">
+                        <span></span>
+                    </div>
+                    <div class="mobile-queue-copy">
                         <div class="mobile-queue-title">${escapeHtml(song.title)}</div>
                         <div class="mobile-queue-artist">${escapeHtml(song.performer || 'Unknown Artist')}</div>
                     </div>
-                    <div class="mobile-queue-duration">${formatDuration(song.duration)}</div>
+                    <div class="mobile-queue-reorder" aria-hidden="true">
+                        <span></span><span></span><span></span>
+                    </div>
                 </div>
                 `;
             }).join('');
