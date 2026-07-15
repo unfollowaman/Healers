@@ -2947,7 +2947,7 @@ body.is-playback-mode .desktop-queue-row.active .desktop-queue-index {
 
   #mobile-nowplaying-fullscreen .track-meta strong {
     color: var(--ink);
-    font-size: clamp(24px, 6vw, 32px);
+    font-size: clamp(16px, 6vw, 24px);
     line-height: 1.08;
     font-weight: 500;
     letter-spacing: -0.03em;
@@ -2958,7 +2958,7 @@ body.is-playback-mode .desktop-queue-row.active .desktop-queue-index {
 
   #mobile-nowplaying-fullscreen .track-meta span {
     color: var(--text-secondary);
-    font-size: clamp(16px, 4.1vw, 20px);
+    font-size: clamp(12px, 4.1vw, 16px);
     line-height: 1.15;
     white-space: nowrap;
     overflow: hidden;
@@ -3010,10 +3010,22 @@ body.is-playback-mode .desktop-queue-row.active .desktop-queue-index {
 
   #mobile-nowplaying-fullscreen .control-button,
   #mobile-nowplaying-fullscreen .icon-button {
-    width: 48px;
-    height: 48px;
+    width: 36px;
+    height: 36px;
     border-radius: 16px;
     box-shadow: none;
+  }
+
+  #mobile-nowplaying-fullscreen .control-button img,
+  #mobile-nowplaying-fullscreen .icon-button img,
+  #mobile-nowplaying-fullscreen .volume-btn img {
+    width: 16px;
+    height: 16px;
+  }
+
+  #mobile-nowplaying-fullscreen .play-button img {
+    width: 28px;
+    height: 28px;
   }
 
   #mobile-nowplaying-fullscreen .prev-button,
@@ -3022,8 +3034,8 @@ body.is-playback-mode .desktop-queue-row.active .desktop-queue-index {
   }
 
   #mobile-nowplaying-fullscreen .play-button {
-    width: 74px;
-    height: 74px;
+    width: 58px;
+    height: 58px;
     box-shadow: none;
   }
 
@@ -3037,9 +3049,9 @@ body.is-playback-mode .desktop-queue-row.active .desktop-queue-index {
   }
 
   #mobile-nowplaying-fullscreen .volume-btn {
-    width: 48px;
-    height: 48px;
-    flex: 0 0 48px;
+    width: 28px;
+    height: 28px;
+    flex: 0 0 28px;
     border-radius: 16px;
   }
 
