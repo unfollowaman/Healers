@@ -2309,9 +2309,10 @@ button {
   .mobile-artist-list,
   .mobile-queue-card {
     margin-top: 16px;
-    border-radius: 14px;
+    border-radius: var(--radius-md);
     background: var(--surface);
     border: var(--border-w) solid var(--border-color);
+    box-shadow: none;
     overflow: hidden;
   }
 
@@ -2321,7 +2322,7 @@ button {
     align-items: center;
     gap: 16px;
     border: 0;
-    border-bottom: var(--border-hair-w) solid var(--border-hair);
+    border-bottom: var(--border-w) solid var(--border-color);
     background: transparent;
     padding: 14px 18px;
     text-align: left;
@@ -2332,12 +2333,13 @@ button {
   .artist-avatar {
     width: 48px;
     height: 48px;
-    border-radius: 50%;
+    border-radius: var(--radius-sm);
     display: grid;
     place-items: center;
     flex: 0 0 48px;
-    background: linear-gradient(135deg, #173044, #2851a3);
-    color: #fff;
+    background: var(--bg);
+    color: var(--ink);
+    border: var(--border-w) solid var(--border-color);
     font-weight: 700;
   }
 
@@ -2353,7 +2355,7 @@ button {
   .queue-preview-copy strong { color: var(--ink); font-size: 16px; }
   .artist-row-copy span,
   .queue-preview-copy span { color: var(--ink-soft); font-size: 14px; }
-  .artist-chevron { color: var(--ink-soft); font-size: 30px; line-height: 1; }
+  .artist-chevron { color: var(--ink-faint); font-size: 30px; line-height: 1; }
 
   .mobile-queue-card {
     min-height: 82px;
@@ -2759,6 +2761,7 @@ button {
     border-radius: var(--radius-md);
     background: var(--surface);
     border: var(--border-w) solid var(--border-color);
+    box-shadow: none;
     overflow: hidden;
   }
 
@@ -2769,14 +2772,14 @@ button {
     gap: 16px;
     padding: 20px 22px;
     border: 0;
-    border-bottom: var(--border-hair-w) solid var(--border-hair);
+    border-bottom: var(--border-w) solid var(--border-color);
     background: transparent;
     text-align: left;
   }
   .mobile-artist-row:last-child { border-bottom: 0; }
-  .artist-avatar { width: 46px; height: 46px; flex-basis: 46px; }
+  .artist-avatar { width: 46px; height: 46px; flex-basis: 46px; border-radius: var(--radius-sm); border: var(--border-w) solid var(--border-color); background: var(--bg); color: var(--ink); display: grid; place-items: center; font-weight: 700; }
   .artist-row-copy { flex: 1; display: flex; flex-direction: column; gap: 4px; }
-  .artist-chevron { color: var(--ink-soft); font-size: 24px; }
+  .artist-chevron { color: var(--ink-faint); font-size: 24px; }
 
   .desktop-queue-table {
     margin-top: 14px;
