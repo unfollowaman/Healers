@@ -495,7 +495,7 @@ function renderSongs() {
         const plKeys = Object.keys(state.playlists).sort();
         elements.songList.innerHTML = `
       <div style="padding: 0 16px 16px 16px; display: flex; gap: 10px;">
-        <input id="new-playlist-input" type="text" placeholder="New Playlist Name" style="flex: 1; border: none; background: var(--surface); box-shadow: var(--shadow-in-sm); border-radius: var(--radius-md); padding: 10px 16px; color: var(--text-primary); font-size: 14px; outline: none;">
+        <input id="new-playlist-input" type="text" placeholder="New Playlist Name" style="flex: 1; border: none; background: var(--surface); box-shadow: var(--shadow-in-sm); border-radius: var(--radius-md); padding: 10px 16px; color: var(--ink); font-size: 14px; outline: none;">
         <button id="create-playlist-btn" class="quick-access-btn" style="flex-shrink: 0; padding: 10px 20px;">Create</button>
       </div>
       <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; padding: 0 16px 16px 16px;">
@@ -567,11 +567,11 @@ function renderSongs() {
 
         ${state.activeView === 'playlist-filtered' ? `
           <button class="icon-button remove-playlist-btn" data-fileid="${song.file_id}" type="button" aria-label="Remove from Playlist" style="width: 28px; height: 28px; position: absolute; right: 90px; display: none; background: var(--bg); box-shadow: var(--shadow-out-sm);">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color: var(--text-secondary)"><path d="M19 13H5v-2h14v2z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color: var(--ink-soft)"><path d="M19 13H5v-2h14v2z"/></svg>
           </button>
         ` : `
           <button class="icon-button add-playlist-btn" data-fileid="${song.file_id}" type="button" aria-label="Add to Playlist" style="width: 28px; height: 28px; position: absolute; right: 90px; display: none; background: var(--bg); box-shadow: var(--shadow-out-sm); z-index: 5;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color: var(--text-secondary)"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color: var(--ink-soft)"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
           </button>
         `}
 
