@@ -2435,13 +2435,35 @@ button {
 /* Desktop dashboard homepage redesign */
 @media (min-width: 900px) {
   .header {
-    padding: 22px 32px;
+    padding: 10px 32px;
     gap: 32px;
   }
 
   .header-controls {
     justify-content: flex-end;
     gap: 18px;
+  }
+
+  .eyebrow {
+    display: none;
+  }
+
+  .hero-copy {
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .refresh-button,
+  #search-toggle {
+    width: 20px;
+    height: 20px;
+  }
+
+  .refresh-button svg,
+  #search-toggle svg {
+    width: 14px;
+    height: 14px;
+    stroke-width: 2px;
   }
 
   .refresh-button {
@@ -2484,9 +2506,9 @@ button {
 
   .search-icon-btn,
   #refresh-button {
-    width: 58px;
-    height: 58px;
-    flex: 0 0 58px;
+    width: 20px;
+    height: 20px;
+    flex: 0 0 20px;
     border: var(--border-w) solid var(--border-color);
     border-radius: var(--radius-md);
     background: var(--surface);
@@ -2496,9 +2518,9 @@ button {
 
   .search-icon-btn svg,
   #refresh-button svg {
-    width: 28px;
-    height: 28px;
-    stroke-width: 1.6;
+    width: 14px;
+    height: 14px;
+    stroke-width: 2;
   }
 
   .dashboard-grid {
