@@ -1721,7 +1721,6 @@ button {
     width: 100%;
     align-items: start;
     background: var(--bg);
-    border: var(--border-w) solid var(--border-color);
   }
 
   .sidebar {
