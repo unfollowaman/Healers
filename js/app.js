@@ -485,6 +485,20 @@ function renderSongs() {
         </div>
       `).join('') + '</div>';
 
+        const allArtistsList = document.getElementById('all-artists-list');
+        if (allArtistsList) {
+            allArtistsList.innerHTML = artistKeys.map(artist => `
+                <button class="mobile-artist-row" type="button" data-artist="${escapeHtml(artist)}">
+                    <span class="artist-avatar">${escapeHtml(artist.charAt(0).toUpperCase())}</span>
+                    <span class="artist-row-copy">
+                        <strong>${escapeHtml(artist)}</strong>
+                        <span>${artistMap[artist]} track${artistMap[artist] !== 1 ? 's' : ''}</span>
+                    </span>
+                    <span class="artist-chevron" aria-hidden="true">›</span>
+                </button>
+            `).join('');
+        }
+
         hideStatus();
         elements.contentWrapper.hidden = false;
         return;
@@ -1190,15 +1204,37 @@ function bindEvents() {
         });
     });
 
+    function handleArtistClick(e) {
+        const row = e.target.closest('.mobile-artist-row');
+        if (!row) return;
+        state.selectedArtist = row.dataset.artist;
+        state.activeView = 'artist-filtered';
+
+        if (window.innerWidth < 900) {
+            document.querySelectorAll('.mobile-view').forEach(v => {
+                v.style.display = 'none';
+                v.classList.remove('active-view');
+            });
+            const targetView = document.getElementById('mobile-view-songs');
+            if (targetView) {
+                targetView.style.display = 'block';
+                targetView.classList.add('active-view');
+            }
+            elements.tabButtons.forEach(b => b.classList.remove('tab-active'));
+            const tabBtn = document.querySelector('.tab-btn[data-tab="songs"]');
+            if (tabBtn) tabBtn.classList.add('tab-active');
+        }
+
+        applyViewFilter();
+        renderSongs();
+    }
+
     if (elements.mobileArtistList) {
-        elements.mobileArtistList.addEventListener('click', (e) => {
-            const row = e.target.closest('.mobile-artist-row');
-            if (!row) return;
-            state.selectedArtist = row.dataset.artist;
-            state.activeView = 'artist-filtered';
-            applyViewFilter();
-            renderSongs();
-        });
+        elements.mobileArtistList.addEventListener('click', handleArtistClick);
+    }
+    const allArtistsList = document.getElementById('all-artists-list');
+    if (allArtistsList) {
+        allArtistsList.addEventListener('click', handleArtistClick);
     }
 
     if (elements.mobileQueueList) {

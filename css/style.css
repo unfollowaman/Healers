@@ -1697,7 +1697,7 @@ button {
     display: none;
   }
 
-  #mobile-view-artists .placeholder-text,
+  #mobile-view-artists .mobile-artists-preview,
   #mobile-view-library .placeholder-text,
   #mobile-view-more .more-list {
     display: none;
