@@ -168,12 +168,18 @@ button {
 
 .refresh-button,
 .icon-button {
-  background: #111111; /* Changed to dark per user request */
-  border: none;
+  background: var(--surface);
+  border: var(--border-w) solid var(--border-color);
   cursor: pointer;
   user-select: none;
-  box-shadow: var(--shadow-out-sm);
+  box-shadow: none;
   transition: box-shadow var(--transition-fast);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: inline-grid;
+  place-items: center;
+  color: var(--ink-soft);
 }
 
 .play-button {
@@ -198,8 +204,12 @@ button {
   box-shadow: none;
   border: var(--border-w) solid var(--border-color);
   background: var(--surface);
-  border-radius: var(--radius-sm);
+  border-radius: 50%;
   color: var(--ink-soft);
+  width: 40px;
+  height: 40px;
+  display: inline-grid;
+  place-items: center;
 }
 
 #search-toggle:hover,
@@ -2460,15 +2470,15 @@ button {
 
   .refresh-button,
   #search-toggle {
-    width: 20px;
-    height: 20px;
+    width: 40px;
+    height: 40px;
   }
 
   .refresh-button svg,
   #search-toggle svg {
-    width: 14px;
-    height: 14px;
-    stroke-width: 2px;
+    width: 20px;
+    height: 20px;
+    stroke-width: 1.6px;
   }
 
   .refresh-button {
@@ -2511,21 +2521,23 @@ button {
 
   .search-icon-btn,
   #refresh-button {
-    width: 20px;
-    height: 20px;
-    flex: 0 0 20px;
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
     border: var(--border-w) solid var(--border-color);
-    border-radius: var(--radius-md);
+    border-radius: 50%;
     background: var(--surface);
     color: var(--ink);
     box-shadow: none;
+    display: inline-grid;
+    place-items: center;
   }
 
   .search-icon-btn svg,
   #refresh-button svg {
-    width: 14px;
-    height: 14px;
-    stroke-width: 2;
+    width: 20px;
+    height: 20px;
+    stroke-width: 1.6px;
   }
 
   .dashboard-grid {
