@@ -1621,33 +1621,38 @@ button {
   display: flex;
   align-items: center;
   gap: 16px;
-  background: var(--surface-raised);
-  box-shadow: var(--shadow-out-sm);
-  border-radius: var(--radius-md);
+  background: var(--bg);
+  border: var(--border-w) solid var(--border-color);
+  border-radius: var(--radius-sm);
   padding: 14px 16px;
-  border: none;
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  color: var(--text-primary);
-  transition: box-shadow var(--transition-fast);
+  color: var(--ink);
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.more-item-btn:hover {
+  background: var(--surface);
 }
 
 .more-item-btn:active {
-  box-shadow: var(--shadow-in-sm);
+  background: var(--ink);
+  color: var(--bg);
 }
 
 .more-item-btn .tab-icon {
-  width: 24px;
-  height: 24px;
-  color: var(--text-secondary);
+  width: 20px;
+  height: 20px;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.more-item-btn .tab-icon img {
+.more-item-btn .tab-icon svg {
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  filter: drop-shadow(1px 0 0 #111111) drop-shadow(-1px 0 0 #111111) drop-shadow(0 1px 0 #111111) drop-shadow(0 -1px 0 #111111);
 }
 
 @media (max-width: 768px) {
@@ -1697,7 +1702,7 @@ button {
     display: none;
   }
 
-  #mobile-view-artists .placeholder-text,
+  #mobile-view-artists .mobile-artists-preview,
   #mobile-view-library .placeholder-text,
   #mobile-view-more .more-list {
     display: none;
@@ -1721,7 +1726,6 @@ button {
     width: 100%;
     align-items: start;
     background: var(--bg);
-    border: var(--border-w) solid var(--border-color);
   }
 
   .sidebar {
@@ -2310,10 +2314,10 @@ button {
   .mobile-artist-list,
   .mobile-queue-card {
     margin-top: 16px;
-    border-radius: 14px;
-    background: rgba(247, 245, 241, 0.78);
-    border: 1px solid rgba(197, 194, 186, 0.38);
-    box-shadow: var(--shadow-out-sm);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    border: var(--border-w) solid var(--border-color);
+    box-shadow: none;
     overflow: hidden;
   }
 
@@ -2323,7 +2327,7 @@ button {
     align-items: center;
     gap: 16px;
     border: 0;
-    border-bottom: 1px solid rgba(197, 194, 186, 0.34);
+    border-bottom: var(--border-w) solid var(--border-color);
     background: transparent;
     padding: 14px 18px;
     text-align: left;
@@ -2334,12 +2338,13 @@ button {
   .artist-avatar {
     width: 48px;
     height: 48px;
-    border-radius: 50%;
+    border-radius: var(--radius-sm);
     display: grid;
     place-items: center;
     flex: 0 0 48px;
-    background: linear-gradient(135deg, #173044, #2851a3);
-    color: #fff;
+    background: var(--bg);
+    color: var(--ink);
+    border: var(--border-w) solid var(--border-color);
     font-weight: 700;
   }
 
@@ -2352,10 +2357,10 @@ button {
   }
 
   .artist-row-copy strong,
-  .queue-preview-copy strong { color: var(--text-primary); font-size: 16px; }
+  .queue-preview-copy strong { color: var(--ink); font-size: 16px; }
   .artist-row-copy span,
-  .queue-preview-copy span { color: var(--text-secondary); font-size: 14px; }
-  .artist-chevron { color: var(--text-secondary); font-size: 30px; line-height: 1; }
+  .queue-preview-copy span { color: var(--ink-soft); font-size: 14px; }
+  .artist-chevron { color: var(--ink-faint); font-size: 30px; line-height: 1; }
 
   .mobile-queue-card {
     min-height: 82px;
@@ -2781,9 +2786,9 @@ button {
   .mobile-artist-list {
     margin-top: 14px;
     border-radius: var(--radius-md);
-    background: rgba(247, 245, 241, 0.72);
-    border: 1px solid rgba(197, 194, 186, 0.34);
-    box-shadow: var(--shadow-out-sm);
+    background: var(--surface);
+    border: var(--border-w) solid var(--border-color);
+    box-shadow: none;
     overflow: hidden;
   }
 
@@ -2794,22 +2799,21 @@ button {
     gap: 16px;
     padding: 20px 22px;
     border: 0;
-    border-bottom: 1px solid rgba(197, 194, 186, 0.34);
+    border-bottom: var(--border-w) solid var(--border-color);
     background: transparent;
     text-align: left;
   }
   .mobile-artist-row:last-child { border-bottom: 0; }
-  .artist-avatar { width: 46px; height: 46px; flex-basis: 46px; }
+  .artist-avatar { width: 46px; height: 46px; flex-basis: 46px; border-radius: var(--radius-sm); border: var(--border-w) solid var(--border-color); background: var(--bg); color: var(--ink); display: grid; place-items: center; font-weight: 700; }
   .artist-row-copy { flex: 1; display: flex; flex-direction: column; gap: 4px; }
-  .artist-chevron { color: var(--text-secondary); font-size: 24px; }
+  .artist-chevron { color: var(--ink-faint); font-size: 24px; }
 
   .desktop-queue-table {
     margin-top: 14px;
     padding: 16px 20px;
     border-radius: var(--radius-md);
-    background: rgba(247, 245, 241, 0.72);
-    border: 1px solid rgba(197, 194, 186, 0.34);
-    box-shadow: var(--shadow-out-sm);
+    background: var(--surface);
+    border: var(--border-w) solid var(--border-color);
   }
 
   .desktop-queue-head,
@@ -2822,26 +2826,26 @@ button {
 
   .desktop-queue-head {
     padding: 8px 10px 14px;
-    color: var(--text-secondary);
+    color: var(--ink-soft);
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    border-bottom: 1px solid rgba(197, 194, 186, 0.42);
+    border-bottom: var(--border-hair-w) solid var(--border-hair);
   }
 
   .desktop-queue-row {
     min-height: 62px;
     padding: 10px;
-    border-bottom: 1px solid rgba(197, 194, 186, 0.32);
-    color: var(--text-secondary);
+    border-bottom: var(--border-hair-w) solid var(--border-hair);
+    color: var(--ink-soft);
     font-size: 14px;
   }
   .desktop-queue-row:last-child { border-bottom: 0; }
-  .desktop-queue-song { display: flex; align-items: center; gap: 14px; color: var(--text-primary); min-width: 0; }
+  .desktop-queue-song { display: flex; align-items: center; gap: 14px; color: var(--ink); min-width: 0; }
   .desktop-queue-song strong { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .desktop-queue-art { width: 42px; height: 42px; flex: 0 0 42px; border-radius: 8px; }
-  .desktop-queue-menu { border: 0; background: transparent; color: var(--text-secondary); font-size: 24px; }
+  .desktop-queue-menu { border: 0; background: transparent; color: var(--ink-soft); font-size: 24px; }
 }
 
 /* PLAYBACK MODE (>= 900px) */

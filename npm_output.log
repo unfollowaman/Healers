@@ -12,8 +12,3 @@ Vercel CLI 56.3.1 (Node.js 22.22.1)
 > https://vercel.com/docs/cli/about-telemetry
 Error: No existing credentials found. Please run `vercel login` or pass "--token"
 Learn More: https://err.sh/vercel/no-credentials-found
-npm notice
-npm notice New minor version of npm available! 11.11.0 -> 11.18.0
-npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.18.0
-npm notice To update run: npm install -g npm@11.18.0
-npm notice
