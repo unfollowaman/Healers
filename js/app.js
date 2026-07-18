@@ -64,6 +64,8 @@ const elements = {
     waveformCanvasDesktop: document.querySelector('#waveform-canvas-desktop'),
     desktopNowTitle: document.querySelector('#desktop-now-title'),
     desktopNowArtist: document.querySelector('#desktop-now-artist'),
+    albumArtPlaceholder: document.querySelector('#album-art-placeholder'),
+    desktopArtPlaceholder: document.querySelector('#desktop-art-placeholder'),
     navItems: document.querySelectorAll('.nav-item'),
     tabButtons: document.querySelectorAll('.tab-btn'),
     playingQueue: document.querySelector('#playing-queue'),
@@ -306,9 +308,14 @@ function renderRecentlyAdded() {
         // Find the actual index of this song in filteredSongs so clicking works correctly
         const filteredIndex = state.filteredSongs.findIndex(s => s.file_id === song.file_id);
 
+        const coverHtml = song.coverFileId
+            ? `<img src="/api/cover?file_id=${song.coverFileId}" alt="" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block;" onerror="this.style.display='none'">`
+            : '';
+
         return `
       <div class="thumbnail-card" data-index="${filteredIndex > -1 ? filteredIndex : ''}">
-        <div class="thumbnail-art" style="opacity: ${filteredIndex > -1 ? 1 : 0.5}">
+        <div class="thumbnail-art" style="opacity: ${filteredIndex > -1 ? 1 : 0.5}; background: ${bg}">
+          ${coverHtml}
           <button class="icon-button fav-button" data-fileid="${song.file_id}" type="button" aria-label="Favorite" style="width: 20px; height: 20px; position: absolute; top: 4px; right: 4px; display: block; background: transparent; box-shadow: none; z-index: 2;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="${state.favorites.includes(song.file_id) ? 'var(--accent)' : 'none'}" stroke="${state.favorites.includes(song.file_id) ? 'var(--accent)' : 'var(--text-muted)'}" stroke-width="2"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
           </button>
@@ -394,10 +401,15 @@ function renderDesktopHomePanels() {
             </div>
             ${queueList.map((song, index) => {
                 const isActive = getCurrentSong()?.file_id === song.file_id ? 'active' : '';
+                const artContent = song.coverFileId
+                    ? `<img src="/api/cover?file_id=${song.coverFileId}" alt="" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block;" onerror="this.style.display='none'">`
+                    : '';
+                const bgStyle = `background: ${getArtworkGradient(song, index)};`;
+
                 return `
                 <div class="desktop-queue-row ${isActive}" data-fileid="${song.file_id}">
                     <span class="desktop-queue-index">${index + 1}</span>
-                    <span class="desktop-queue-song"><span class="desktop-queue-art" style="background: ${getArtworkGradient(song, index)}"></span><strong>${escapeHtml(song.title)}</strong></span>
+                    <span class="desktop-queue-song"><span class="desktop-queue-art" style="${bgStyle}">${artContent}</span><strong>${escapeHtml(song.title)}</strong></span>
                     <span>${escapeHtml(song.performer || 'Unknown Artist')}</span>
                     <span>${escapeHtml(song.album || `${song.title} - Single`)}</span>
                     <span>${formatDuration(song.duration)}</span>
@@ -439,8 +451,13 @@ function renderMobileHomePreviews() {
             'linear-gradient(135deg, #373B44, #4286f4)'
         ];
 
+        const artContent = song.coverFileId
+            ? `<img src="/api/cover?file_id=${song.coverFileId}" alt="" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block;" onerror="this.style.display='none'">`
+            : '';
+        const bgStyle = `background: ${gradients[globalIdx % gradients.length]};`;
+
         elements.mobileHomeQueueCard.innerHTML = `
-            <div class="queue-preview-art" style="background: ${gradients[globalIdx % gradients.length]}"></div>
+            <div class="queue-preview-art" style="${bgStyle}">${artContent}</div>
             <div class="queue-preview-copy">
                 <strong>${escapeHtml(song.title)}</strong>
                 <span>${escapeHtml(song.performer || 'Unknown Artist')}</span>
@@ -618,10 +635,13 @@ function renderQueue() {
 
         elements.playingQueue.innerHTML = queueList.map((song, idx) => {
             const isActive = currentSong?.file_id === song.file_id;
+            const artContent = song.coverFileId
+                ? `<img src="/api/cover?file_id=${song.coverFileId}" alt="" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block;" onerror="this.style.display='none'">`
+                : '';
 
             return `
         <div class="queue-row ${isActive ? 'active' : ''}" data-fileid="${song.file_id}">
-            <div class="queue-thumbnail placeholder-flat"></div>
+            <div class="queue-thumbnail placeholder-flat">${artContent}</div>
             <div class="queue-info">
             <div class="queue-title">${escapeHtml(song.title)}</div>
             <div class="queue-artist">${escapeHtml(song.performer || 'Unknown Artist')}</div>
@@ -659,10 +679,14 @@ function renderQueue() {
             elements.mobileQueueList.innerHTML = upcoming.map((song) => {
                 // Find index to be able to click and play
                 const qIdx = state.queue.findIndex(s => s.file_id === song.file_id);
+                const artContent = song.coverFileId
+                    ? `<img src="/api/cover?file_id=${song.coverFileId}" alt="" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block;" onerror="this.style.display='none'">`
+                    : '<span></span>';
+
                 return `
                 <div class="mobile-queue-row" data-queueindex="${qIdx}">
                     <div class="mobile-queue-art" aria-hidden="true">
-                        <span></span>
+                        ${artContent}
                     </div>
                     <div class="mobile-queue-copy">
                         <div class="mobile-queue-title">${escapeHtml(song.title)}</div>
@@ -834,6 +858,18 @@ function updateNowPlaying(song) {
         if (elements.miniTitle) elements.miniTitle.textContent = 'Select a song';
         if (elements.miniArtist) elements.miniArtist.textContent = 'Ready to play';
         elements.totalTime.textContent = '0:00';
+        if (elements.albumArtPlaceholder) elements.albumArtPlaceholder.innerHTML = '';
+        if (elements.desktopArtPlaceholder) {
+            const originalOverlay = `
+                                            <div class="desktop-art-text-overlay">
+                                                <div class="line1" id="desktop-now-title"></div>
+                                                <div class="line2" id="desktop-now-artist"></div>
+                                            </div>`;
+            elements.desktopArtPlaceholder.innerHTML = originalOverlay;
+            // re-bind references that were just wiped
+            elements.desktopNowTitle = document.querySelector('#desktop-now-title');
+            elements.desktopNowArtist = document.querySelector('#desktop-now-artist');
+        }
         return;
     }
 
@@ -844,6 +880,37 @@ function updateNowPlaying(song) {
     if (elements.miniTitle) elements.miniTitle.textContent = song.title;
     if (elements.miniArtist) elements.miniArtist.textContent = song.performer || 'Unknown Artist';
     elements.totalTime.textContent = formatDuration(song.duration);
+
+    if (elements.albumArtPlaceholder) {
+        elements.albumArtPlaceholder.innerHTML = song.coverFileId
+            ? `<img src="/api/cover?file_id=${song.coverFileId}" alt="" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block;" onerror="this.style.display='none'">`
+            : '';
+        elements.albumArtPlaceholder.style.background = '';
+    }
+
+    if (elements.desktopArtPlaceholder) {
+        if (song.coverFileId) {
+            elements.desktopArtPlaceholder.innerHTML = `
+                <img src="/api/cover?file_id=${song.coverFileId}" alt="" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block;" onerror="this.style.display='none'">
+                <div class="desktop-art-text-overlay">
+                    <div class="line1" id="desktop-now-title">${escapeHtml(song.title)}</div>
+                    <div class="line2" id="desktop-now-artist">${escapeHtml(song.performer || 'Unknown Artist')}</div>
+                </div>
+            `;
+            elements.desktopArtPlaceholder.style.background = '';
+        } else {
+            elements.desktopArtPlaceholder.innerHTML = `
+                <div class="desktop-art-text-overlay">
+                    <div class="line1" id="desktop-now-title">${escapeHtml(song.title)}</div>
+                    <div class="line2" id="desktop-now-artist">${escapeHtml(song.performer || 'Unknown Artist')}</div>
+                </div>
+            `;
+            elements.desktopArtPlaceholder.style.background = '';
+        }
+        // re-bind references
+        elements.desktopNowTitle = document.querySelector('#desktop-now-title');
+        elements.desktopNowArtist = document.querySelector('#desktop-now-artist');
+    }
 }
 
 function initShuffleQueue() {

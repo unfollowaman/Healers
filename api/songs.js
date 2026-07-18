@@ -38,7 +38,8 @@ function toSong(update) {
     filename: audio.file_name || '',
     message_id: message.message_id,
     date: message.date || 0,
-    file_unique_id: audio.file_unique_id || audio.file_id
+    file_unique_id: audio.file_unique_id || audio.file_id,
+    coverFileId: audio.thumbnail?.file_id || audio.thumb?.file_id || null
   };
 }
 
@@ -47,11 +48,12 @@ function publicSong(song) {
     file_id: song.file_id,
     title: song.title,
     performer: song.performer,
-    duration: song.duration
+    duration: song.duration,
+    coverFileId: song.coverFileId
   };
 }
 
-async function telegramRequest(token, method, params = {}) {
+export async function telegramRequest(token, method, params = {}) {
   const url = new URL(`${TELEGRAM_API_BASE}${token}/${method}`);
   for (const [key, value] of Object.entries(params)) {
     if (value !== undefined && value !== null && value !== '') {
