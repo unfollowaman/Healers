@@ -1,0 +1,38 @@
+4. Here are the 7 locations where song cover art is rendered in `js/app.js`:
+
+Line 312:
+```javascript
+            ? `<img src="/api/cover?file_id=${song.coverFileId}" alt="" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block;" onerror="this.style.display='none'">`
+```
+
+Line 405:
+```javascript
+                    ? `<img src="/api/cover?file_id=${song.coverFileId}" alt="" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block;" onerror="this.style.display='none'">`
+```
+
+Line 455:
+```javascript
+            ? `<img src="/api/cover?file_id=${song.coverFileId}" alt="" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block;" onerror="this.style.display='none'">`
+```
+
+Line 639:
+```javascript
+                ? `<img src="/api/cover?file_id=${song.coverFileId}" alt="" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block;" onerror="this.style.display='none'">`
+```
+
+Line 683:
+```javascript
+                    ? `<img src="/api/cover?file_id=${song.coverFileId}" alt="" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block;" onerror="this.style.display='none'">`
+```
+
+Line 886:
+```javascript
+            ? `<img src="/api/cover?file_id=${song.coverFileId}" alt="" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block;" onerror="this.style.display='none'">`
+```
+
+Line 894:
+```javascript
+                <img src="/api/cover?file_id=${song.coverFileId}" alt="" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block;" onerror="this.style.display='none'">
+```
+
+Flag: None of these locations differ from the pattern `conditional src on coverFileId truthiness, onerror hides the img`, except the last one (line 894) which lacks the ternary conditional `?` because it's rendered conditionally via an `if (song.coverFileId)` wrapper above it.
