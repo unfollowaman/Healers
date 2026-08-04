@@ -1189,6 +1189,10 @@ function bindEvents() {
             btn.addEventListener('click', () => {
                 const tab = btn.dataset.tab;
 
+                if (window.innerWidth < 900 && !btn.classList.contains('tab-active')) {
+                    history.pushState({ tab: tab }, '', `#${tab}`);
+                }
+
                 // Update active class on tab buttons
                 elements.tabButtons.forEach(b => b.classList.remove('tab-active'));
                 btn.classList.add('tab-active');
@@ -1293,6 +1297,7 @@ function bindEvents() {
             elements.tabButtons.forEach(b => b.classList.remove('tab-active'));
             const tabBtn = document.querySelector('.tab-btn[data-tab="songs"]');
             if (tabBtn) tabBtn.classList.add('tab-active');
+            history.pushState({ tab: 'songs', artist: state.selectedArtist }, '', '#songs');
         }
 
         applyViewFilter();
@@ -1328,6 +1333,7 @@ function bindEvents() {
                 togglePlayPause();
             } else if (elements.mobileNowPlayingFullscreen) {
                 elements.mobileNowPlayingFullscreen.classList.add('is-open');
+                history.pushState({ nowPlaying: true }, '', '#nowplaying');
             }
         });
     }
@@ -1590,6 +1596,51 @@ function bindEvents() {
             updateProgress();
         }
     });
+
+    // History API integration to prevent closing website on back button
+    window.addEventListener('popstate', (e) => {
+        if (elements.mobileNowPlayingFullscreen && elements.mobileNowPlayingFullscreen.classList.contains('is-open')) {
+            elements.mobileNowPlayingFullscreen.classList.remove('is-open');
+            return;
+        }
+
+        const popState = e.state;
+        if (popState && popState.tab && window.innerWidth < 900) {
+            const tab = popState.tab;
+
+            if (popState.artist) {
+                state.selectedArtist = popState.artist;
+                state.activeView = 'artist-filtered';
+            }
+
+            // Switch tabs using the exact logic from the original click handler
+            document.querySelectorAll('.mobile-view').forEach(v => {
+                v.style.display = 'none';
+                v.classList.remove('active-view');
+            });
+
+            const targetView = document.getElementById(`mobile-view-${tab}`);
+            if (targetView) {
+                targetView.style.display = 'block';
+                targetView.classList.add('active-view');
+            }
+
+            elements.tabButtons.forEach(b => b.classList.remove('tab-active'));
+            const tabBtn = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
+            if (tabBtn) tabBtn.classList.add('tab-active');
+
+            if (tab === 'home') switchNavView('home');
+            else if (tab === 'songs') switchNavView('all-songs');
+            else if (tab === 'artists') switchNavView('artists');
+            else if (tab === 'library') switchNavView('albums');
+            else if (tab === 'more') switchNavView('playlists');
+        }
+    });
+
+    if (window.innerWidth < 900) {
+        const initialHash = window.location.hash.replace('#', '') || 'home';
+        history.replaceState({ tab: initialHash === 'nowplaying' ? 'home' : initialHash }, '', window.location.hash || '#home');
+    }
 }
 
 
