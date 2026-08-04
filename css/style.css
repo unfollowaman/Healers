@@ -1139,6 +1139,11 @@ button {
 .prev-button, .next-button {
   width: 44px;
   height: 44px;
+  background: #111111;
+}
+
+.prev-button img, .next-button img, .volume-btn img {
+  filter: invert(1);
 }
 
 .play-button {
@@ -1187,6 +1192,7 @@ button {
   width: 32px;
   height: 32px;
   flex-shrink: 0;
+  background: #111111;
 }
 
 .volume-icon {
