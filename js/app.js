@@ -95,9 +95,11 @@ function toggleSearch() {
 
     isSearchExpanded = !isSearchExpanded;
     if (isSearchExpanded) {
+        elements.header.classList.add('search-active');
         elements.searchInput.classList.add('expanded');
         elements.searchInput.focus();
     } else {
+        elements.header.classList.remove('search-active');
         elements.searchInput.classList.remove('expanded');
         elements.searchInput.value = '';
         filterSongs();
@@ -795,6 +797,7 @@ function switchNavView(viewName) {
     if (elements.searchInput.value) {
         elements.searchInput.value = '';
         elements.searchInput.classList.remove('expanded');
+        elements.header.classList.remove('search-active');
         isSearchExpanded = false;
     }
 
