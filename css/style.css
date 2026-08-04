@@ -106,6 +106,16 @@ button {
 .header-text {
   display: flex;
   flex-direction: column;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 500px; /* Large enough for desktop */
+  opacity: 1;
+  transition: max-width var(--transition-mid), opacity var(--transition-mid);
+}
+
+.header.search-active .header-text {
+  max-width: 0;
+  opacity: 0;
 }
 
 .eyebrow {
@@ -2485,9 +2495,17 @@ button {
     order: unset;
   }
 
+  .header.search-active .header-controls {
+    width: 100%;
+  }
+
   .search-container {
     order: unset;
     justify-content: flex-end;
+  }
+
+  .header.search-active .search-container {
+    flex: 1;
   }
 
   #search-input {
@@ -2517,6 +2535,10 @@ button {
     padding: 0 20px;
     margin-right: 18px;
     border-color: var(--border-color);
+  }
+
+  .header.search-active #search-input.expanded {
+    width: 100%;
   }
 
   .search-icon-btn,
