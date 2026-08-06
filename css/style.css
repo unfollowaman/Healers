@@ -627,7 +627,8 @@ button {
   margin-top: 14px;
   padding: 8px 20px;
   display: grid;
-  grid-template-columns: 32px 1fr 1fr 60px;
+  grid-template-columns: 44px 1fr 1fr 60px;
+  gap: 12px;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.12em;
@@ -635,7 +636,6 @@ button {
   color: var(--text-muted);
 }
 
-.col-index { text-align: center; }
 .col-time { text-align: right; }
 
 .song-list {
@@ -645,12 +645,13 @@ button {
 
 .song-row {
   display: grid;
-  grid-template-columns: 32px 1fr 1fr 60px;
+  grid-template-columns: 44px 1fr 1fr 60px;
+  gap: 12px;
   align-items: center;
   padding: 12px 16px;
   margin: 0 16px 0 16px;
   background: transparent;
-  border-bottom: var(--border-hair-w) solid var(--border-hair);
+  border-bottom: 1px solid var(--ink-faint);
   cursor: pointer;
   transition: background var(--transition-fast);
   user-select: none;
@@ -658,14 +659,6 @@ button {
 
 .song-row:last-child {
   border-bottom: none;
-}
-
-.song-index {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-muted);
-  font-variant-numeric: tabular-nums;
-  text-align: center;
 }
 
 .song-row:hover {
@@ -679,7 +672,7 @@ button {
 .song-row.active {
   background: var(--surface);
   border-left: 3px solid var(--ink);
-  border-bottom: var(--border-hair-w) solid var(--border-hair);
+  border-bottom: 1px solid var(--ink-faint);
   padding-left: 13px; /* Compensate for border */
 }
 
@@ -1250,7 +1243,8 @@ button {
 
 @media (max-width: 480px) {
   .column-headers {
-    grid-template-columns: 24px 1fr 52px;
+    grid-template-columns: 44px 1fr 52px;
+    gap: 12px;
   }
 
   .col-artist {
@@ -1258,7 +1252,8 @@ button {
   }
 
   .song-row {
-    grid-template-columns: 24px 1fr 52px;
+    grid-template-columns: 44px 1fr 52px;
+    gap: 12px;
   }
 
   .song-artist-col {
@@ -1278,9 +1273,6 @@ button {
       left: 12px;
       width: 20px;
       height: 20px;
-  }
-  .song-row:hover .song-index {
-      opacity: 0;
   }
   .song-row:hover .song-play-button {
       display: inline-grid;
@@ -1302,9 +1294,6 @@ button {
     display: none;
   }
   .song-row:hover .song-duration {
-      opacity: 1;
-  }
-  .song-row:hover .song-index {
       opacity: 1;
   }
 }

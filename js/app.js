@@ -287,7 +287,16 @@ function updateStats() {
     elements.statDuration.textContent = `${hours}h ${minutes}m`;
     if (elements.statDurationMobile) elements.statDurationMobile.textContent = `${hours}h ${minutes}m`;
 
-    elements.allSongsCount.textContent = state.filteredSongs.length;
+    if (elements.allSongsCount) elements.allSongsCount.textContent = state.filteredSongs.length;
+
+    const allSongsCountText = document.getElementById('all-songs-count-text');
+    if (allSongsCountText) {
+        allSongsCountText.textContent = state.filteredSongs.length;
+    }
+    const allSongsDurationText = document.getElementById('all-songs-duration-text');
+    if (allSongsDurationText) {
+        allSongsDurationText.textContent = `${hours}h ${minutes}m`;
+    }
 }
 
 function renderRecentlyAdded() {
@@ -584,9 +593,26 @@ function renderSongs() {
         const buttonIcon = isActive && !elements.audio.paused ? '❚❚' : '▶';
         const isFav = state.favorites.includes(song.file_id);
 
+        const gradients = [
+            'linear-gradient(135deg, #1a1a2e, #16213e, #0f3460)',
+            'linear-gradient(135deg, #2d1b33, #11998e, #38ef7d)',
+            'linear-gradient(135deg, #373B44, #4286f4)',
+            'linear-gradient(135deg, #c94b4b, #4b134f)',
+            'linear-gradient(135deg, #0f2027, #203a43, #2c5364)',
+            'linear-gradient(135deg, #1d2671, #c33764)',
+            'linear-gradient(135deg, #434343, #000000)',
+            'linear-gradient(135deg, #005c97, #363795)'
+        ];
+        const bg = gradients[index % gradients.length];
+        const coverHtml = song.coverFileId
+            ? `<img src="/api/cover?file_id=${song.coverFileId}" alt="" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block;" onerror="this.style.display='none'">`
+            : '';
+
         return `
       <article class="song-row ${isActive ? 'active' : ''}" data-index="${index}" tabindex="0" role="button" aria-label="Play ${escapeHtml(song.title)} by ${escapeHtml(song.performer || 'Unknown Artist')}">
-        <div class="song-index">${index + 1}</div>
+        <div class="song-thumbnail" style="width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0; background: ${bg}">
+            ${coverHtml}
+        </div>
         <div class="song-details">
           <strong class="song-title">${escapeHtml(song.title)}</strong>
           <div class="song-artist-sub">${escapeHtml(song.performer || 'Unknown Artist')}</div>
