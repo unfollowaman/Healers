@@ -633,7 +633,8 @@ button {
   margin-top: 14px;
   padding: 8px 20px;
   display: grid;
-  grid-template-columns: 32px 1fr 1fr 60px;
+  grid-template-columns: 44px 1fr 1fr 60px;
+  gap: 12px;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.12em;
@@ -641,7 +642,6 @@ button {
   color: var(--text-muted);
 }
 
-.col-index { text-align: center; }
 .col-time { text-align: right; }
 
 .song-list {
@@ -651,12 +651,13 @@ button {
 
 .song-row {
   display: grid;
-  grid-template-columns: 32px 1fr 1fr 60px;
+  grid-template-columns: 44px 1fr 1fr 60px;
+  gap: 12px;
   align-items: center;
   padding: 12px 16px;
   margin: 0 16px 0 16px;
   background: transparent;
-  border-bottom: var(--border-hair-w) solid var(--border-hair);
+  border-bottom: 1px solid var(--ink-faint);
   cursor: pointer;
   transition: background var(--transition-fast);
   user-select: none;
@@ -664,20 +665,6 @@ button {
 
 .song-row:last-child {
   border-bottom: none;
-}
-
-.artist-song-row {
-  grid-template-columns: 44px 1fr 1fr 60px;
-  gap: 12px;
-  padding: 8px 16px;
-}
-
-.song-index {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-muted);
-  font-variant-numeric: tabular-nums;
-  text-align: center;
 }
 
 .song-row:hover {
@@ -691,7 +678,7 @@ button {
 .song-row.active {
   background: var(--surface);
   border-left: 3px solid var(--ink);
-  border-bottom: var(--border-hair-w) solid var(--border-hair);
+  border-bottom: 1px solid var(--ink-faint);
   padding-left: 13px; /* Compensate for border */
 }
 
@@ -1262,7 +1249,8 @@ button {
 
 @media (max-width: 480px) {
   .column-headers {
-    grid-template-columns: 24px 1fr 52px;
+    grid-template-columns: 44px 1fr 52px;
+    gap: 12px;
   }
 
   .col-artist {
@@ -1270,7 +1258,8 @@ button {
   }
 
   .song-row {
-    grid-template-columns: 24px 1fr 52px;
+    grid-template-columns: 44px 1fr 52px;
+    gap: 12px;
   }
 
   .artist-song-row {
@@ -1295,9 +1284,6 @@ button {
       width: 20px;
       height: 20px;
   }
-  .song-row:hover .song-index {
-      opacity: 0;
-  }
   .song-row:hover .song-play-button {
       display: inline-grid;
   }
@@ -1318,9 +1304,6 @@ button {
     display: none;
   }
   .song-row:hover .song-duration {
-      opacity: 1;
-  }
-  .song-row:hover .song-index {
       opacity: 1;
   }
 }
@@ -1651,6 +1634,52 @@ button {
   padding: 40px 20px;
 }
 
+/* Library Empty State */
+.library-empty-state-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+.library-empty-state {
+  border: 1.6px solid var(--ink);
+  border-radius: 28px;
+  background: var(--surface);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+}
+
+.empty-icon-holder {
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  border: 1.6px solid var(--ink);
+  color: var(--ink);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.empty-state-title {
+  font-weight: bold;
+  color: var(--ink);
+  margin-bottom: 8px;
+  font-size: 18px;
+}
+
+.empty-state-subtitle {
+  color: var(--ink-faint);
+  font-size: 14px;
+}
+
+
 .more-list {
   display: flex;
   flex-direction: column;
@@ -1683,18 +1712,20 @@ button {
   color: var(--bg);
 }
 
-.more-item-btn .tab-icon {
-  width: 20px;
-  height: 20px;
-  color: inherit;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.more-item-btn .more-item-icon-holder {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1.6px solid var(--ink);
+  display: inline-grid;
+  place-items: center;
+  color: var(--ink);
+  flex-shrink: 0;
 }
 
-.more-item-btn .tab-icon svg {
-  width: 100%;
-  height: 100%;
+.more-item-btn .more-item-icon-holder svg {
+  width: 20px;
+  height: 20px;
 }
 
 @media (max-width: 768px) {
@@ -1745,7 +1776,7 @@ button {
   }
 
   #mobile-view-artists .mobile-artists-preview,
-  #mobile-view-library .placeholder-text,
+  #mobile-view-library .library-empty-state-wrapper,
   #mobile-view-more .more-list {
     display: none;
   }
