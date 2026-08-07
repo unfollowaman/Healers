@@ -2322,10 +2322,18 @@ button {
     margin-top: 34px;
   }
 
+  .mobile-quick-access-card {
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    border: var(--border-w) solid var(--border-color);
+    padding: 16px;
+  }
+
   .mobile-quick-access h2 {
     margin: 0 0 16px;
     font-size: 18px;
     line-height: 1;
+    color: var(--accent);
   }
 
   .mobile-quick-grid {
