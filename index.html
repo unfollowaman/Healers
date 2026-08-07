@@ -317,45 +317,53 @@
                                 </section>
 
                                 <section class="recently-added-section" id="recently-added-section">
-                                    <div class="section-header-row">
-                                        <span class="section-title">Recently Added</span>
-                                        <button class="section-link" type="button" data-mobile-target="songs">View all <span aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right" style="color: var(--ink-faint); margin-bottom: -4px;"><path d="m9 18 6-6-6-6"/></svg></span></button>
-                                        <span class="section-icon icon-button desktop-recent-icon">
-                                            <img src="/assets/icons/recently-added.png" alt="Recently Added">
-                                        </span>
-                                    </div>
-                                    <div class="recently-added-strip" id="recently-added-strip">
-                                        <!-- Thumbnails inserted here by JS -->
+                                    <div class="home-section-card">
+                                        <div class="section-header-row">
+                                            <span class="section-title">Recently Added</span>
+                                            <button class="section-link" type="button" data-mobile-target="songs">View all <span aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right" style="color: var(--ink-faint); margin-bottom: -4px;"><path d="m9 18 6-6-6-6"/></svg></span></button>
+                                            <span class="section-icon icon-button desktop-recent-icon">
+                                                <img src="/assets/icons/recently-added.png" alt="Recently Added">
+                                            </span>
+                                        </div>
+                                        <div class="recently-added-strip" id="recently-added-strip">
+                                            <!-- Thumbnails inserted here by JS -->
+                                        </div>
                                     </div>
                                 </section>
 
                                 <section class="mobile-artists-preview" aria-labelledby="mobile-artists-heading">
-                                    <div class="section-header-row">
-                                        <span class="section-title" id="mobile-artists-heading">Artists</span>
-                                        <button class="section-link" type="button" data-mobile-target="artists">View all <span aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right" style="color: var(--ink-faint); margin-bottom: -4px;"><path d="m9 18 6-6-6-6"/></svg></span></button>
+                                    <div class="home-section-card">
+                                        <div class="section-header-row">
+                                            <span class="section-title" id="mobile-artists-heading">Artists</span>
+                                            <button class="section-link" type="button" data-mobile-target="artists">View all <span aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right" style="color: var(--ink-faint); margin-bottom: -4px;"><path d="m9 18 6-6-6-6"/></svg></span></button>
+                                        </div>
+                                        <div class="mobile-artist-list" id="mobile-artist-list"></div>
                                     </div>
-                                    <div class="mobile-artist-list" id="mobile-artist-list"></div>
                                 </section>
 
                                 <section class="mobile-queue-preview" aria-labelledby="mobile-queue-heading">
-                                    <div class="section-header-row">
-                                        <span class="section-title" id="mobile-queue-heading">Playing Queue</span>
+                                    <div class="home-section-card">
+                                        <div class="section-header-row">
+                                            <span class="section-title" id="mobile-queue-heading">Playing Queue</span>
+                                        </div>
+                                        <div class="mobile-queue-card" id="mobile-home-queue-card"></div>
                                     </div>
-                                    <div class="mobile-queue-card" id="mobile-home-queue-card"></div>
                                 </section>
 
                                 <section class="desktop-queue-section" id="desktop-queue-section" aria-labelledby="desktop-queue-heading">
-                                    <div class="section-header-row" style="justify-content: flex-end;">
-                                        <button class="section-link" id="desktop-clear-queue-btn" type="button">Clear Queue</button>
-                                    </div>
-                                    <div class="desktop-queue-table" id="desktop-queue-table"></div>
-                                    <div class="desktop-queue-summary-top" style="display: flex; justify-content: space-between; margin-top: 16px;">
-                                        <span class="queue-stats" style="color: var(--ink-soft); font-size: 14px;">
-                                            <span id="queue-total-songs">0</span> songs • <span id="queue-total-duration">0:00</span>
-                                        </span>
-                                        <button class="quick-access-btn" id="desktop-save-queue-btn" type="button" style="padding: 6px 12px; font-size: 14px;">
-                                            Save as Playlist
-                                        </button>
+                                    <div class="home-section-card">
+                                        <div class="section-header-row" style="justify-content: flex-end;">
+                                            <button class="section-link" id="desktop-clear-queue-btn" type="button">Clear Queue</button>
+                                        </div>
+                                        <div class="desktop-queue-table" id="desktop-queue-table"></div>
+                                        <div class="desktop-queue-summary-top" style="display: flex; justify-content: space-between; margin-top: 16px;">
+                                            <span class="queue-stats" style="color: var(--ink-soft); font-size: 14px;">
+                                                <span id="queue-total-songs">0</span> songs • <span id="queue-total-duration">0:00</span>
+                                            </span>
+                                            <button class="quick-access-btn" id="desktop-save-queue-btn" type="button" style="padding: 6px 12px; font-size: 14px;">
+                                                Save as Playlist
+                                            </button>
+                                        </div>
                                     </div>
                                 </section>
                             </div>
