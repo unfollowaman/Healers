@@ -6,6 +6,7 @@ const state = {
     isSeeking: false,
     activeView: 'home',
     preSearchView: 'home',
+    sortOrder: 'oldest',
     favorites: JSON.parse(localStorage.getItem('murex_favorites') || '[]'),
     recentlyPlayed: JSON.parse(localStorage.getItem('murex_recently_played') || '[]'),
     playCounts: JSON.parse(localStorage.getItem('murex_play_counts') || '{}'),
@@ -74,7 +75,10 @@ const elements = {
     playingQueue: document.querySelector('#playing-queue'),
     allSongsSection: document.querySelector('#all-songs-section'),
     recentlyAddedSection: document.querySelector('#recently-added-section'),
-    sectionTitle: document.querySelector('.all-songs-section .section-title')
+    sectionTitle: document.querySelector('.all-songs-section .section-title'),
+    sortButton: document.querySelector('#sort-button'),
+    sortDropdown: document.querySelector('#sort-dropdown'),
+    sortDropdownItems: document.querySelectorAll('.sort-dropdown-item')
 };
 
 let isShuffle = false;
@@ -823,6 +827,7 @@ function filterSongs() {
         elements.recentlyAddedSection.style.display = 'none';
         elements.allSongsSection.style.display = 'block';
         state.filteredSongs = state.songs.filter((song) => `${song.title} ${song.performer}`.toLowerCase().includes(query));
+        applySort();
     } else {
         // Return to active nav view
         applyViewFilter();
@@ -898,6 +903,25 @@ function applyViewFilter() {
     }
 
     state.filteredSongs = filtered;
+    applySort();
+}
+
+function applySort() {
+    // Pre-calculate original indices to make sorting O(N log N) instead of O(N^2 log N)
+    const indexMap = new Map();
+    state.songs.forEach((s, idx) => {
+        indexMap.set(s.file_id, idx);
+    });
+
+    if (state.sortOrder === 'alphabetical') {
+        state.filteredSongs.sort((a, b) => a.title.localeCompare(b.title));
+    } else if (state.sortOrder === 'newest') {
+        // Reverse original array order
+        state.filteredSongs.sort((a, b) => indexMap.get(b.file_id) - indexMap.get(a.file_id));
+    } else {
+        // 'oldest' (default) - original array order
+        state.filteredSongs.sort((a, b) => indexMap.get(a.file_id) - indexMap.get(b.file_id));
+    }
 }
 
 function switchNavView(viewName) {
@@ -1508,6 +1532,30 @@ function bindEvents() {
             }
         }
     });
+
+    if (elements.sortButton && elements.sortDropdown) {
+        elements.sortButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isVisible = elements.sortDropdown.style.display === 'flex';
+            elements.sortDropdown.style.display = isVisible ? 'none' : 'flex';
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!elements.sortDropdown.contains(e.target) && e.target !== elements.sortButton) {
+                elements.sortDropdown.style.display = 'none';
+            }
+        });
+
+        elements.sortDropdownItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.stopPropagation();
+                state.sortOrder = item.dataset.sort;
+                elements.sortDropdown.style.display = 'none';
+                applySort();
+                renderSongs();
+            });
+        });
+    }
 
     elements.searchToggle.addEventListener('click', toggleSearch);
     elements.refreshButton.addEventListener('click', () => loadSongs({
