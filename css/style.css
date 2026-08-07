@@ -1262,6 +1262,10 @@ button {
     gap: 12px;
   }
 
+  .artist-song-row {
+    grid-template-columns: 44px 1fr 52px;
+  }
+
   .song-artist-col {
     display: none;
   }
