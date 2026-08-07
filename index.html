@@ -365,9 +365,21 @@
                                 <section class="all-songs-section" id="all-songs-section">
                                     <div class="mobile-artist-list" style="margin-top: 0;">
                                         <div class="section-header-row" style="display: flex; justify-content: space-between; align-items: flex-end; width: 100%; padding: 16px 16px 0 16px;">
-                                            <div>
-                                                <div style="font-size: 11px; font-weight: 700; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px;">YOUR LIBRARY</div>
-                                                <div style="font-size: 24px; font-weight: 700; color: #CC0000; margin: 0;" class="section-title">All Songs</div>
+                                            <div style="display: flex; align-items: center; gap: 12px;">
+                                                <div>
+                                                    <div style="font-size: 11px; font-weight: 700; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px;">YOUR LIBRARY</div>
+                                                    <div style="font-size: 24px; font-weight: 700; color: #CC0000; margin: 0;" class="section-title">All Songs</div>
+                                                </div>
+                                                <div style="position: relative; margin-top: 18px;">
+                                                    <button class="icon-button" id="sort-button" type="button" aria-label="Sort songs" style="width: 32px; height: 32px; border: 1.5px solid var(--border-color); background: transparent; box-shadow: none;">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-down"><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></svg>
+                                                    </button>
+                                                    <div class="playlist-dropdown" id="sort-dropdown" style="display: none; flex-direction: column; top: calc(100% + 4px); left: 0; right: auto; min-width: 180px;">
+                                                        <div class="playlist-dropdown-item sort-dropdown-item" data-sort="oldest">Oldest to Newest</div>
+                                                        <div class="playlist-dropdown-item sort-dropdown-item" data-sort="newest">Newly Added on Top</div>
+                                                        <div class="playlist-dropdown-item sort-dropdown-item" data-sort="alphabetical">Alphabetical</div>
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div style="text-align: right;">
                                                 <div style="font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 2px;"><span id="all-songs-count-text">0</span> tracks</div>
