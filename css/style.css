@@ -1630,6 +1630,52 @@ button {
   padding: 40px 20px;
 }
 
+/* Library Empty State */
+.library-empty-state-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+.library-empty-state {
+  border: 1.6px solid var(--ink);
+  border-radius: 28px;
+  background: var(--surface);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+}
+
+.empty-icon-holder {
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  border: 1.6px solid var(--ink);
+  color: var(--ink);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.empty-state-title {
+  font-weight: bold;
+  color: var(--ink);
+  margin-bottom: 8px;
+  font-size: 18px;
+}
+
+.empty-state-subtitle {
+  color: var(--ink-faint);
+  font-size: 14px;
+}
+
+
 .more-list {
   display: flex;
   flex-direction: column;
@@ -1726,7 +1772,7 @@ button {
   }
 
   #mobile-view-artists .mobile-artists-preview,
-  #mobile-view-library .placeholder-text,
+  #mobile-view-library .library-empty-state-wrapper,
   #mobile-view-more .more-list {
     display: none;
   }
