@@ -1145,13 +1145,7 @@ button {
   display: flex;
 }
 
-.prev-button, .next-button {
-  width: 44px;
-  height: 44px;
-  background: var(--bg);
-}
-
-.prev-button img, .next-button img, .volume-btn img {
+.volume-btn img {
   filter: invert(1);
 }
 
@@ -3194,11 +3188,6 @@ body.is-playback-mode .desktop-queue-row.active .desktop-queue-index {
   #mobile-nowplaying-fullscreen .play-button img {
     width: 28px;
     height: 28px;
-  }
-
-  #mobile-nowplaying-fullscreen .prev-button,
-  #mobile-nowplaying-fullscreen .next-button {
-    border-radius: 50%;
   }
 
   #mobile-nowplaying-fullscreen .play-button {
