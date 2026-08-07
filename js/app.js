@@ -627,8 +627,6 @@ function renderSongs() {
 
     let listHtml = state.filteredSongs.map((song, index) => {
         const isActive = currentSong?.file_id === song.file_id;
-        const buttonIcon = isActive && !elements.audio.paused ? '❚❚' : '▶';
-        const isFav = state.favorites.includes(song.file_id);
         const isArtistFiltered = state.activeView === 'artist-filtered';
 
         const indexOrThumbnail = isArtistFiltered
@@ -648,9 +646,22 @@ function renderSongs() {
             'linear-gradient(135deg, #005c97, #363795)'
         ];
         const bg = gradients[index % gradients.length];
-        const coverHtml = song.coverFileId
-            ? `<img src="/api/cover?file_id=${song.coverFileId}" alt="" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block;" onerror="this.style.display='none'">`
-            : '';
+
+        let coverHtml = '';
+        if (isActive) {
+            const isPaused = elements.audio.paused;
+            coverHtml = `
+                <div class="equalizer ${isPaused ? 'paused' : ''}">
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                </div>
+            `;
+        } else {
+            coverHtml = song.coverFileId
+                ? `<img src="/api/cover?file_id=${song.coverFileId}" alt="" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block;" onerror="this.style.display='none'">`
+                : '';
+        }
 
         return `
       <article class="song-row ${isActive ? 'active' : ''}" data-index="${index}" tabindex="0" role="button" aria-label="Play ${escapeHtml(song.title)} by ${escapeHtml(song.performer || 'Unknown Artist')}">
@@ -663,25 +674,6 @@ function renderSongs() {
         </div>
         <div class="song-artist-col">${escapeHtml(song.performer || 'Unknown Artist')}</div>
         <div class="song-duration">${formatDuration(song.duration)}</div>
-
-        <button class="icon-button fav-button" data-fileid="${song.file_id}" type="button" aria-label="Favorite" style="width: 32px; height: 32px; position: absolute; right: 56px; display: none; background: transparent; box-shadow: none;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="${isFav ? 'var(--accent)' : 'none'}" stroke="${isFav ? 'var(--accent)' : 'var(--text-muted)'}" stroke-width="2"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-        </button>
-
-        ${state.activeView === 'playlist-filtered' ? `
-          <button class="icon-button remove-playlist-btn" data-fileid="${song.file_id}" type="button" aria-label="Remove from Playlist" style="width: 28px; height: 28px; position: absolute; right: 90px; display: none; background: var(--bg); box-shadow: var(--shadow-out-sm);">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color: var(--ink-soft)"><path d="M19 13H5v-2h14v2z"/></svg>
-          </button>
-        ` : `
-          <button class="icon-button add-playlist-btn" data-fileid="${song.file_id}" type="button" aria-label="Add to Playlist" style="width: 28px; height: 28px; position: absolute; right: 90px; display: none; background: var(--bg); box-shadow: var(--shadow-out-sm); z-index: 5;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color: var(--ink-soft)"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-          </button>
-        `}
-
-
-        <button class="song-play-button" type="button" aria-label="Play ${escapeHtml(song.title)}" tabindex="-1">
-          ${buttonIcon === '▶' ? '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-play"><polygon points="6 3 20 12 6 21 6 3"/></svg>' : '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pause"><rect x="14" y="4" width="4" height="16" rx="1"/><rect x="6" y="4" width="4" height="16" rx="1"/></svg>'}
-        </button>
       </article>
     `;
     }).join('');

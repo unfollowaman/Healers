@@ -751,36 +751,43 @@ button {
   border-radius: 999px;
 }
 
-.song-play-button {
-  width: 20px;
-  height: 20px;
-  color: var(--ink);
-  background: transparent;
-  border: none;
-  display: none;
-  place-items: center;
-  position: absolute;
-  right: 16px;
+.song-row.active .song-title {
+  color: var(--accent);
+}
+
+.equalizer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 3px;
+  width: 100%;
+  height: 100%;
+  padding: 12px 10px;
+  box-sizing: border-box;
+}
+
+.equalizer .eq-bar {
+  width: 4px;
+  background-color: var(--accent);
+  border-radius: 2px;
+  animation: equalize 1s infinite alternate;
+}
+
+.equalizer .eq-bar:nth-child(1) { animation-delay: -0.4s; height: 30%; }
+.equalizer .eq-bar:nth-child(2) { animation-delay: -0.2s; height: 100%; }
+.equalizer .eq-bar:nth-child(3) { animation-delay: -0.6s; height: 60%; }
+
+.equalizer.paused .eq-bar {
+  animation-play-state: paused;
+}
+
+@keyframes equalize {
+  0% { height: 10%; }
+  100% { height: 100%; }
 }
 
 .song-row:hover {
   position: relative;
-}
-
-.song-row:hover .song-play-button {
-  display: inline-grid;
-}
-
-.song-row:hover .song-duration {
-  opacity: 0; /* Hide duration when play button shows up */
-}
-
-.song-play-button:active {
-  color: var(--ink-soft);
-}
-
-.song-row.active .song-play-button {
-  display: none; /* Hide play button on active row to show playing state simply */
 }
 
 .sidebar-player {
@@ -1273,20 +1280,6 @@ button {
   .song-artist-sub {
     display: block; /* Show artist under title on mobile */
   }
-
-  .song-row:hover .song-duration {
-      opacity: 1;
-  }
-
-  .song-play-button {
-      right: auto;
-      left: 12px;
-      width: 20px;
-      height: 20px;
-  }
-  .song-row:hover .song-play-button {
-      display: inline-grid;
-  }
 }
 
 @media (hover: none) {
@@ -1299,13 +1292,6 @@ button {
 
   background: var(--surface);
 }
-
-  .song-row:hover .song-play-button {
-    display: none;
-  }
-  .song-row:hover .song-duration {
-      opacity: 1;
-  }
 }
 
 /* SECTION - MOBILE TAB BAR */
@@ -2095,38 +2081,8 @@ button {
   }
 }
 
-/* Display fav button on hover */
-.song-row:hover .fav-button {
-  display: flex !important;
-}
-.song-row.active .fav-button {
-  display: flex !important;
-}
-
-/* For mobile, keep it simpler */
-@media (max-width: 480px) {
-  .song-row .fav-button {
-    right: 40px !important;
-  }
-}
-
-.song-row:hover .add-playlist-btn,
-.song-row:hover .remove-playlist-btn {
-  display: flex !important;
-}
-.song-row.active .add-playlist-btn,
-.song-row.active .remove-playlist-btn {
-  display: flex !important;
-}
 .playlist-card:hover .delete-playlist-btn {
   display: flex !important;
-}
-
-@media (max-width: 480px) {
-  .song-row .add-playlist-btn,
-  .song-row .remove-playlist-btn {
-    right: 70px !important;
-  }
 }
 
 .playlist-dropdown {
