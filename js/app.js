@@ -339,7 +339,8 @@ function getArtistSummaries(limit = 4) {
     state.songs.forEach(song => {
         const names = (song.performer || 'Unknown Artist').split(',').map(name => name.trim()).filter(Boolean);
         (names.length ? names : ['Unknown Artist']).forEach(name => {
-            artistMap[name] = (artistMap[name] || 0) + 1;
+            const titleCased = toTitleCase(name);
+            artistMap[titleCased] = (artistMap[titleCased] || 0) + 1;
         });
     });
 
@@ -488,34 +489,70 @@ function renderSongs() {
         state.songs.forEach(s => {
             const perfs = (s.performer || 'Unknown Artist').split(',').map(p => p.trim());
             perfs.forEach(p => {
-                if (!artistMap[p]) artistMap[p] = 0;
-                artistMap[p]++;
+                const titleCased = toTitleCase(p);
+                if (!artistMap[titleCased]) artistMap[titleCased] = 0;
+                artistMap[titleCased]++;
             });
         });
         const artistKeys = Object.keys(artistMap).sort();
 
-        // We will render them as cards, reusing the song-row styles somewhat or creating a simple grid.
-        // The prompt says: "grid of artist cards... same neumorphic card style as a song row"
-        elements.songList.innerHTML = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; padding: 16px;">' +
-            artistKeys.map(artist => `
-        <div class="song-row artist-card" style="margin: 0; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 4px;" data-artist="${escapeHtml(artist)}">
-          <strong class="song-title">${escapeHtml(artist)}</strong>
-          <span class="song-artist-sub" style="display:block">${artistMap[artist]} song${artistMap[artist] !== 1 ? 's' : ''}</span>
-        </div>
-      `).join('') + '</div>';
+        const groupedArtists = {};
+        artistKeys.forEach(artist => {
+            const letter = artist.charAt(0).toUpperCase();
+            if (!groupedArtists[letter]) groupedArtists[letter] = [];
+            groupedArtists[letter].push(artist);
+        });
+
+        let html = `
+            <div style="padding: 16px 16px 24px 16px;">
+                <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.18em; color: var(--ink-faint); margin-bottom: 4px; text-transform: uppercase;">YOUR LIBRARY</div>
+                <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                    <h1 style="color: #CC0000; font-size: 28px; font-weight: 700; margin: 0;">Artists</h1>
+                    <span style="color: var(--ink); font-size: 14px; font-weight: 500;">${artistKeys.length} total</span>
+                </div>
+            </div>
+        `;
+
+        Object.keys(groupedArtists).sort().forEach(letter => {
+            html += `<div style="padding: 16px 16px 8px; font-size: 13px; font-weight: 700; color: var(--ink-faint);">${escapeHtml(letter)}</div>`;
+            html += '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; padding: 0 16px 16px 16px;">';
+            html += groupedArtists[letter].map(artist => `
+                <div class="song-row artist-card" style="margin: 0; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 4px;" data-artist="${escapeHtml(artist)}">
+                    <strong class="song-title">${escapeHtml(artist)}</strong>
+                    <span class="song-artist-sub" style="display:block">${artistMap[artist]} song${artistMap[artist] !== 1 ? 's' : ''}</span>
+                </div>
+            `).join('');
+            html += '</div>';
+        });
+
+        elements.songList.innerHTML = html;
 
         const allArtistsList = document.getElementById('all-artists-list');
         if (allArtistsList) {
-            allArtistsList.innerHTML = artistKeys.map(artist => `
-                <button class="mobile-artist-row" type="button" data-artist="${escapeHtml(artist)}">
-                    <span class="artist-avatar">${escapeHtml(artist.charAt(0).toUpperCase())}</span>
-                    <span class="artist-row-copy">
-                        <strong>${escapeHtml(artist)}</strong>
-                        <span>${artistMap[artist]} track${artistMap[artist] !== 1 ? 's' : ''}</span>
-                    </span>
-                    <span class="artist-chevron" aria-hidden="true">›</span>
-                </button>
-            `).join('');
+            let mobileHtml = `
+                <div style="padding: 16px 16px 24px 16px;">
+                    <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.18em; color: var(--ink-faint); margin-bottom: 4px; text-transform: uppercase;">YOUR LIBRARY</div>
+                    <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                        <h1 style="color: #CC0000; font-size: 28px; font-weight: 700; margin: 0;">Artists</h1>
+                        <span style="color: var(--ink); font-size: 14px; font-weight: 500;">${artistKeys.length} total</span>
+                    </div>
+                </div>
+            `;
+
+            Object.keys(groupedArtists).sort().forEach(letter => {
+                mobileHtml += `<div style="padding: 24px 18px 8px; font-size: 13px; font-weight: 700; color: var(--ink-faint);">${escapeHtml(letter)}</div>`;
+                mobileHtml += groupedArtists[letter].map(artist => `
+                    <button class="mobile-artist-row" type="button" data-artist="${escapeHtml(artist)}">
+                        <span class="artist-avatar">${escapeHtml(artist.charAt(0).toUpperCase())}</span>
+                        <span class="artist-row-copy">
+                            <strong>${escapeHtml(artist)}</strong>
+                            <span>${artistMap[artist]} track${artistMap[artist] !== 1 ? 's' : ''}</span>
+                        </span>
+                        <span class="artist-chevron" aria-hidden="true">›</span>
+                    </button>
+                `).join('');
+            });
+            allArtistsList.innerHTML = mobileHtml;
         }
 
         hideStatus();
@@ -718,6 +755,14 @@ function escapeHtml(value) {
         .replaceAll('>', '&gt;')
         .replaceAll('"', '&quot;')
         .replaceAll("'", '&#039;');
+}
+
+function toTitleCase(str) {
+    if (!str) return '';
+    return str.split(' ').map(word => {
+        if (!word) return '';
+        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    }).join(' ');
 }
 
 function filterSongs() {
