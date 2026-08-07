@@ -2320,7 +2320,8 @@ button {
     margin-top: 34px;
   }
 
-  .mobile-quick-access-card {
+  .mobile-quick-access-card,
+  .home-section-card {
     background: var(--surface);
     border-radius: var(--radius-md);
     border: var(--border-w) solid var(--border-color);
@@ -2363,7 +2364,8 @@ button {
 
   .recently-added-section .section-header-row,
   .mobile-artists-preview .section-header-row,
-  .mobile-queue-preview .section-header-row {
+  .mobile-queue-preview .section-header-row,
+  .home-section-card .section-header-row {
     padding: 0;
   }
 
@@ -2398,6 +2400,15 @@ button {
     border: var(--border-w) solid var(--border-color);
     box-shadow: none;
     overflow: hidden;
+  }
+
+  .home-section-card .mobile-artist-list,
+  .home-section-card .mobile-queue-card {
+    margin: 16px -16px -16px;
+    border-radius: 0;
+    background: transparent;
+    border: none;
+    border-top: var(--border-w) solid var(--border-color);
   }
 
   .mobile-artist-row {
@@ -2783,14 +2794,13 @@ button {
 
 
 
-  .quick-access-card {
+  .quick-access-card,
+  .home-section-card {
     padding: 20px;
-
-
-  background: var(--surface);
-  border-radius: var(--radius-md);
-  border: var(--border-w) solid var(--border-color);
-}
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    border: var(--border-w) solid var(--border-color);
+  }
 
   .quick-access-grid {
     grid-template-columns: repeat(4, 1fr);
@@ -2846,7 +2856,8 @@ button {
 
   .recently-added-section .section-header-row,
   .mobile-artists-preview .section-header-row,
-  .desktop-queue-section .section-header-row { padding: 0; }
+  .desktop-queue-section .section-header-row,
+  .home-section-card .section-header-row { padding: 0; }
 
   .section-link {
     border: 0;
@@ -2885,6 +2896,14 @@ button {
     overflow: hidden;
   }
 
+  .home-section-card .mobile-artist-list {
+    margin: 16px -20px -20px;
+    border-radius: 0;
+    background: transparent;
+    border: none;
+    border-top: var(--border-w) solid var(--border-color);
+  }
+
   .mobile-artist-row {
     display: flex;
     width: 100%;
@@ -2907,6 +2926,15 @@ button {
     border-radius: var(--radius-md);
     background: var(--surface);
     border: var(--border-w) solid var(--border-color);
+  }
+
+  .home-section-card .desktop-queue-table {
+    margin: 16px -20px -20px;
+    padding: 16px 20px;
+    border-radius: 0;
+    background: transparent;
+    border: none;
+    border-top: var(--border-w) solid var(--border-color);
   }
 
   .desktop-queue-head,
