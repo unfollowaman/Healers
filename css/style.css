@@ -2084,7 +2084,8 @@ button {
   top: 100%;
   right: 0;
   background: var(--surface-raised);
-  box-shadow: var(--shadow-out);
+  box-shadow: 6px 6px 14px #000000;
+  border: var(--border-w) solid var(--border-color);
   border-radius: var(--radius-md);
   padding: 8px;
   z-index: 100;
@@ -2092,6 +2093,7 @@ button {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  animation: dropdownSlideDown 0.2s ease-out forwards;
 }
 .playlist-dropdown-item {
   padding: 8px 12px;
