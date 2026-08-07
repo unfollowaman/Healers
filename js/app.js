@@ -37,6 +37,9 @@ const elements = {
     miniTitle: document.querySelector('#mini-title'),
     miniArtist: document.querySelector('#mini-artist'),
     miniPlayButton: document.querySelector('#mini-play-button'),
+    miniPrevButton: document.querySelector('#mini-prev-button'),
+    miniNextButton: document.querySelector('#mini-next-button'),
+    miniProgressBar: document.querySelector('#mini-progress-bar'),
     recentlyAddedStrip: document.querySelector('#recently-added-strip'),
     allSongsCount: document.querySelector('#all-songs-count'),
     btnRecentlyAdded: document.querySelector('#btn-recently-added'),
@@ -1271,6 +1274,9 @@ function updateProgress() {
     updateRangeStyle(elements.progressBar);
     elements.currentTime.textContent = formatDuration(current);
     elements.totalTime.textContent = formatDuration(duration);
+    if (elements.miniProgressBar) {
+        elements.miniProgressBar.style.width = String(percent) + '%';
+    }
 }
 
 function seekToProgress() {
@@ -1438,11 +1444,35 @@ function bindEvents() {
             if (e.target.closest('#mini-play-button')) {
                 e.stopPropagation();
                 togglePlayPause();
+            } else if (e.target.closest('#mini-prev-button')) {
+                e.stopPropagation();
+                playRelative(-1);
+            } else if (e.target.closest('#mini-next-button')) {
+                e.stopPropagation();
+                playRelative(1);
             } else if (elements.mobileNowPlayingFullscreen) {
                 elements.mobileNowPlayingFullscreen.classList.add('is-open');
                 history.pushState({ nowPlaying: true }, '', '#nowplaying');
             }
         });
+
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        elements.mobileMiniPlayer.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        elements.mobileMiniPlayer.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            if (touchEndX - touchStartX > 50) { // Swipe right
+                elements.audio.pause();
+                state.currentIndex = -1;
+                updateNowPlaying(null);
+                updatePlayButton();
+                setPlayerPlayingState(false);
+            }
+        }, { passive: true });
     }
 
     if (elements.playingQueue) {
