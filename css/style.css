@@ -1624,6 +1624,10 @@ button {
   #mini-play-button:active {
     background: var(--ink-soft);
   }
+
+  .mini-control-btn:active {
+    color: var(--ink-soft) !important;
+  }
 }
 
 /* SECTION - MOBILE CONTENT VIEWS */
