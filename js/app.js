@@ -579,14 +579,21 @@ function renderSongs() {
         }
     }
 
-    elements.songList.innerHTML = state.filteredSongs.map((song, index) => {
+    let listHtml = state.filteredSongs.map((song, index) => {
         const isActive = currentSong?.file_id === song.file_id;
         const buttonIcon = isActive && !elements.audio.paused ? '❚❚' : '▶';
         const isFav = state.favorites.includes(song.file_id);
+        const isArtistFiltered = state.activeView === 'artist-filtered';
+
+        const indexOrThumbnail = isArtistFiltered
+            ? `<div style="width: 44px; height: 44px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); background: var(--surface);">
+                ${song.coverFileId ? `<img src="/api/cover?file_id=${song.coverFileId}" alt="" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'">` : ''}
+               </div>`
+            : `<div class="song-index">${index + 1}</div>`;
 
         return `
-      <article class="song-row ${isActive ? 'active' : ''}" data-index="${index}" tabindex="0" role="button" aria-label="Play ${escapeHtml(song.title)} by ${escapeHtml(song.performer || 'Unknown Artist')}">
-        <div class="song-index">${index + 1}</div>
+      <article class="song-row ${isArtistFiltered ? 'artist-song-row' : ''} ${isActive ? 'active' : ''}" data-index="${index}" tabindex="0" role="button" aria-label="Play ${escapeHtml(song.title)} by ${escapeHtml(song.performer || 'Unknown Artist')}">
+        ${indexOrThumbnail}
         <div class="song-details">
           <strong class="song-title">${escapeHtml(song.title)}</strong>
           <div class="song-artist-sub">${escapeHtml(song.performer || 'Unknown Artist')}</div>
@@ -615,6 +622,22 @@ function renderSongs() {
       </article>
     `;
     }).join('');
+
+    if (state.activeView === 'artist-filtered' && state.selectedArtist) {
+        let heroHtml = `
+        <div style="border: 1.6px solid var(--ink); border-radius: 28px; background: var(--surface); padding: 24px; text-align: center; margin-bottom: 24px; margin-left: 16px; margin-right: 16px;">
+            <div style="width: 64px; height: 64px; border-radius: 18px; background: var(--bg); color: var(--ink); display: inline-grid; place-items: center; font-size: 24px; font-weight: bold; border: 1.6px solid var(--border-color); margin-bottom: 12px;">${escapeHtml(state.selectedArtist.charAt(0).toUpperCase())}</div>
+            <h2 style="color: #CC0000; font-weight: bold; margin: 0 0 4px 0;">${escapeHtml(state.selectedArtist)}</h2>
+            <div style="color: var(--ink-faint); font-size: 14px; margin-bottom: 16px;">${state.filteredSongs.length} tracks</div>
+            <button class="artist-play-all-btn" style="border: 1.6px solid var(--ink); border-radius: 999px; background: transparent; color: var(--ink); padding: 8px 16px; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; cursor: pointer;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-play"><polygon points="6 3 20 12 6 21 6 3"/></svg> Play All
+            </button>
+        </div>
+        `;
+        elements.songList.innerHTML = heroHtml + listHtml;
+    } else {
+        elements.songList.innerHTML = listHtml;
+    }
 
     if (!state.filteredSongs.length && state.songs.length === 0) {
         setStatus('No songs found. Upload audio to your Telegram channel then tap Refresh.');
@@ -783,6 +806,19 @@ function applyViewFilter() {
     }
 
     elements.sectionTitle.textContent = title;
+
+    const allSongsSection = document.querySelector('#all-songs-section');
+    if (allSongsSection) {
+        const headerRow = allSongsSection.querySelector('.section-header-row');
+        const columnHeaders = allSongsSection.querySelector('.column-headers');
+        if (view === 'artist-filtered') {
+            if (headerRow) headerRow.style.display = 'none';
+            if (columnHeaders) columnHeaders.style.display = 'none';
+        } else {
+            if (headerRow) headerRow.style.display = '';
+            if (columnHeaders) columnHeaders.style.display = '';
+        }
+    }
 
     if (window.innerWidth >= 900) {
         elements.recentlyAddedSection.style.display = showRecent ? 'block' : 'none';
@@ -1399,6 +1435,11 @@ function bindEvents() {
                 applyViewFilter();
                 renderSongs();
             }
+            return;
+        }
+
+        if (event.target.closest('.artist-play-all-btn')) {
+            playSongFromFilteredIndex(0);
             return;
         }
 

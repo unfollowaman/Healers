@@ -666,6 +666,12 @@ button {
   border-bottom: none;
 }
 
+.artist-song-row {
+  grid-template-columns: 44px 1fr 1fr 60px;
+  gap: 12px;
+  padding: 8px 16px;
+}
+
 .song-index {
   font-size: 12px;
   font-weight: 600;
@@ -1265,6 +1271,10 @@ button {
 
   .song-row {
     grid-template-columns: 24px 1fr 52px;
+  }
+
+  .artist-song-row {
+    grid-template-columns: 44px 1fr 52px;
   }
 
   .song-artist-col {
