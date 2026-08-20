@@ -23,17 +23,29 @@ const elements = {
 const bgVideos = ['bg1.mp4', 'bg2.mp4', 'bg3.mp4'];
 let currentBgIndex = Math.floor(Math.random() * bgVideos.length);
 
-function initBackgroundVideo() {
+function setBackgroundVideoSource(videoName) {
     if (!elements.bgVideo) return;
-    elements.bgVideo.src = `/backgrounds/${bgVideos[currentBgIndex]}`;
-    elements.bgVideo.play().catch(() => {});
+    elements.bgVideo.muted = true;
+    const videoUrl = `/backgrounds/${videoName}`;
+    if (elements.bgVideo.src !== window.location.origin + videoUrl && elements.bgVideo.getAttribute('src') !== videoUrl) {
+        elements.bgVideo.src = videoUrl;
+        elements.bgVideo.load();
+    }
+    const playPromise = elements.bgVideo.play();
+    if (playPromise !== undefined) {
+        playPromise.catch((err) => {
+            console.warn('Background video play error:', err);
+        });
+    }
+}
+
+function initBackgroundVideo() {
+    setBackgroundVideoSource(bgVideos[currentBgIndex]);
 }
 
 function cycleBackgroundVideo() {
-    if (!elements.bgVideo) return;
     currentBgIndex = (currentBgIndex + 1) % bgVideos.length;
-    elements.bgVideo.src = `/backgrounds/${bgVideos[currentBgIndex]}`;
-    elements.bgVideo.play().catch(() => {});
+    setBackgroundVideoSource(bgVideos[currentBgIndex]);
 }
 
 function formatDuration(seconds) {
