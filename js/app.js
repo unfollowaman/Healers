@@ -1253,15 +1253,15 @@ function updatePlayButton() {
     // Note: we now have an img inside elements.playButton
     // We can either replace its src, or replace the innerHTML.
     elements.playButton.innerHTML = isPlaying ?
-        '<img id="play-icon-img" src="/assets/icons/pause.png" alt="Pause" width="28" height="28">' :
-        '<img id="play-icon-img" src="/assets/icons/play.png" alt="Play" width="28" height="28">';
+        '<img id="play-icon-img" src="/assets/icons_legacy/pause.png" alt="Pause" width="28" height="28">' :
+        '<img id="play-icon-img" src="/assets/icons_legacy/play.png" alt="Play" width="28" height="28">';
 
     elements.playButton.setAttribute('aria-label', isPlaying ? 'Pause' : 'Play');
 
     if (elements.miniPlayButton) {
         elements.miniPlayButton.innerHTML = isPlaying ?
-            '<img src="/assets/icons/pause.png" alt="Pause" width="16" height="16">' :
-            '<img src="/assets/icons/play.png" alt="Play" width="16" height="16">';
+            '<img src="/assets/icons_legacy/pause.png" alt="Pause" width="16" height="16">' :
+            '<img src="/assets/icons_legacy/play.png" alt="Play" width="16" height="16">';
         elements.miniPlayButton.setAttribute('aria-label', isPlaying ? 'Pause' : 'Play');
     }
 
