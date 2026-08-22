@@ -93,6 +93,21 @@ html, body {
     align-items: center;
     justify-content: center;
     border: 1px solid rgba(255, 255, 255, 0.1);
+    animation: spin 12s linear infinite;
+    animation-play-state: paused;
+}
+
+.album-art-placeholder.playing {
+    animation-play-state: running;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .album-art-placeholder img {
