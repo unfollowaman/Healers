@@ -65,7 +65,17 @@ function updateRangeStyle(slider) {
     slider.style.background = `linear-gradient(to right, rgba(255, 255, 255, 0.9) ${percent}%, rgba(255, 255, 255, 0.2) ${percent}%)`;
 }
 
+function resetAlbumArtRotation() {
+    if (!elements.albumArtPlaceholder) return;
+    elements.albumArtPlaceholder.style.animation = 'none';
+    // Force reflow to restart CSS animation from 0deg
+    void elements.albumArtPlaceholder.offsetWidth;
+    elements.albumArtPlaceholder.style.animation = '';
+}
+
 function updateNowPlaying(song) {
+    resetAlbumArtRotation();
+
     if (!song) {
         elements.nowTitle.textContent = 'No Song Loaded';
         elements.nowArtist.textContent = 'Ready to play';
@@ -141,6 +151,14 @@ function updatePlayButton() {
         elements.playIconImg.alt = isPlaying ? 'Pause' : 'Play';
     }
     elements.playButton.setAttribute('aria-label', isPlaying ? 'Pause' : 'Play');
+
+    if (elements.albumArtPlaceholder) {
+        if (isPlaying) {
+            elements.albumArtPlaceholder.classList.add('playing');
+        } else {
+            elements.albumArtPlaceholder.classList.remove('playing');
+        }
+    }
 }
 
 function updateProgress() {
