@@ -181,7 +181,282 @@ html, body {
     pointer-events: none;
 }
 
-/* Player Centering Container */
+/* All Songs Overlay Page */
+.songs-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 15;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 80px 20px 140px 20px;
+    opacity: 1;
+    pointer-events: auto;
+    transition: opacity 0.3s ease;
+}
+
+.songs-overlay.hidden {
+    display: none;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.songs-container {
+    width: 100%;
+    max-width: 680px;
+    height: 100%;
+    max-height: calc(100vh - 200px);
+    background: var(--pill-bg);
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+    border: 1px solid var(--pill-border);
+    border-radius: 24px;
+    padding: 20px 24px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.songs-header {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    padding-bottom: 14px;
+}
+
+.songs-header-top {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 20px;
+    padding: 6px 14px;
+    color: var(--ink);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.back-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.back-btn:active {
+    transform: scale(0.95);
+}
+
+.songs-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.3px;
+}
+
+.songs-filter-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.sort-label {
+    font-size: 13px;
+    color: var(--ink-muted);
+}
+
+.sort-select {
+    background: rgba(0, 0, 0, 0.3);
+    color: var(--ink);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.sort-select:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.sort-select option {
+    background: #1e1e1e;
+    color: #ffffff;
+}
+
+/* Song List Container */
+.songs-list-container {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+/* Custom Scrollbar for Song List */
+.songs-list-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.songs-list-container::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+}
+
+.songs-list-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+
+.songs-list-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.35);
+}
+
+.songs-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Song Item Row */
+.song-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+    user-select: none;
+}
+
+.song-item:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.18);
+}
+
+.song-item:active {
+    transform: scale(0.99);
+}
+
+/* Highlighted Active Playing Track Row */
+.song-item.active {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.song-item.active .song-name {
+    font-weight: 600;
+    color: var(--ink);
+}
+
+/* Rounded Square Cover Thumbnail */
+.song-thumb-wrapper {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+}
+
+.song-thumb-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.song-thumb-fallback {
+    color: var(--ink-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Animated Equalizer Visualizer Bars */
+.equalizer-visualizer {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 3px;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.45);
+    padding: 10px 8px;
+    border-radius: 10px;
+}
+
+.equalizer-bar {
+    width: 3px;
+    background: var(--ink);
+    border-radius: 2px;
+    animation: bounce 0.8s ease-in-out infinite alternate;
+}
+
+.equalizer-bar:nth-child(1) { height: 40%; animation-delay: 0s; }
+.equalizer-bar:nth-child(2) { height: 85%; animation-delay: 0.2s; }
+.equalizer-bar:nth-child(3) { height: 60%; animation-delay: 0.4s; }
+.equalizer-bar:nth-child(4) { height: 90%; animation-delay: 0.1s; }
+
+@keyframes bounce {
+    0% {
+        height: 20%;
+    }
+    100% {
+        height: 100%;
+    }
+}
+
+/* Song Name & Duration Layout */
+.song-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+}
+
+.song-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.song-duration {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--ink-faint);
+    margin-left: auto;
+    padding-left: 12px;
+    flex-shrink: 0;
+}
+
+/* Player Centering Container & Overlay Fixed Bottom Adjustments */
 .player-container {
     position: fixed;
     top: 0;
@@ -191,8 +466,16 @@ html, body {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 10;
+    z-index: 20;
     padding: 20px;
+    transition: transform 0.3s ease, top 0.3s ease, align-items 0.3s ease;
+}
+
+.player-container.fixed-bottom {
+    top: auto;
+    bottom: 20px;
+    height: auto;
+    align-items: flex-end;
 }
 
 /* Wrapper for pill, attached tab, and dropdown */

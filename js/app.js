@@ -11,7 +11,9 @@ const state = {
     repeatMode: 'off', // 'off' | 'all' | 'one'
     isQueueOpen: false,
     isMuted: false,
-    volume: 1
+    volume: 1,
+    isSongsOverlayOpen: false,
+    sortOrder: 'newest' // 'newest' | 'oldest' | 'alphabetical'
 };
 
 const elements = {
@@ -43,7 +45,13 @@ const elements = {
     queueList: document.querySelector('#queue-list'),
     muteButton: document.querySelector('#mute-button'),
     volumeIcon: document.querySelector('#volume-icon'),
-    volumeBar: document.querySelector('#volume-bar')
+    volumeBar: document.querySelector('#volume-bar'),
+
+    songsOverlay: document.querySelector('#songs-overlay'),
+    songsBackButton: document.querySelector('#songs-back-button'),
+    sortSelect: document.querySelector('#sort-select'),
+    songsList: document.querySelector('#songs-list'),
+    playerContainer: document.querySelector('#player-container')
 };
 
 // Video background setup
@@ -211,6 +219,104 @@ function selectNavOption(optionKey) {
         });
     }
     closeNavMenu();
+
+    if (optionKey === 'all-songs') {
+        openSongsOverlay();
+    }
+}
+
+function openSongsOverlay() {
+    state.isSongsOverlayOpen = true;
+    if (elements.songsOverlay) elements.songsOverlay.classList.remove('hidden');
+    if (elements.playerContainer) elements.playerContainer.classList.add('fixed-bottom');
+    renderSongsList();
+}
+
+function closeSongsOverlay() {
+    state.isSongsOverlayOpen = false;
+    if (elements.songsOverlay) elements.songsOverlay.classList.add('hidden');
+    if (elements.playerContainer) elements.playerContainer.classList.remove('fixed-bottom');
+}
+
+function getSortedSongIndices() {
+    // Array of objects with song reference and original index in state.songs
+    const items = state.songs.map((song, originalIndex) => ({ song, originalIndex }));
+
+    if (state.sortOrder === 'newest') {
+        // Since backend API returns oldest first (index 0), newest to oldest is reversed original order
+        return items.reverse();
+    } else if (state.sortOrder === 'oldest') {
+        // Original order (oldest first)
+        return items;
+    } else if (state.sortOrder === 'alphabetical') {
+        return items.sort((a, b) => {
+            const titleA = (a.song.title || 'Untitled').toLowerCase();
+            const titleB = (b.song.title || 'Untitled').toLowerCase();
+            return titleA.localeCompare(titleB);
+        });
+    }
+    return items;
+}
+
+function renderSongsList() {
+    if (!elements.songsList) return;
+    elements.songsList.innerHTML = '';
+
+    const sortedItems = getSortedSongIndices();
+    const isPlaying = elements.audio && !elements.audio.paused && !elements.audio.ended;
+
+    sortedItems.forEach(({ song, originalIndex }) => {
+        const li = document.createElement('li');
+        const isActive = originalIndex === state.currentIndex;
+        li.className = `song-item ${isActive ? 'active' : ''}`;
+
+        // Build thumbnail / visualizer element
+        let thumbHtml = '';
+        if (isActive && isPlaying) {
+            thumbHtml = `
+                <div class="equalizer-visualizer">
+                    <span class="equalizer-bar"></span>
+                    <span class="equalizer-bar"></span>
+                    <span class="equalizer-bar"></span>
+                    <span class="equalizer-bar"></span>
+                </div>
+            `;
+        } else if (song.coverFileId) {
+            thumbHtml = `
+                <img src="/api/cover?file_id=${encodeURIComponent(song.coverFileId)}" alt="" onerror="this.parentElement.innerHTML='<div class=\\'song-thumb-fallback\\'><svg width=\\'20\\' height=\\'20\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'2\\' stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\'><path d=\\'M9 18V5l12-2v13\\'></path><circle cx=\\'6\\' cy=\\'18\\' r=\\'3\\'></circle><circle cx=\\'18\\' cy=\\'16\\' r=\\'3\\'></circle></svg></div>'">
+            `;
+        } else {
+            thumbHtml = `
+                <div class="song-thumb-fallback">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 18V5l12-2v13"></path>
+                        <circle cx="6" cy="18" r="3"></circle>
+                        <circle cx="18" cy="16" r="3"></circle>
+                    </svg>
+                </div>
+            `;
+        }
+
+        li.innerHTML = `
+            <div class="song-thumb-wrapper">
+                ${thumbHtml}
+            </div>
+            <div class="song-info">
+                <span class="song-name">${song.title || 'Untitled'}</span>
+                <span class="song-duration">${formatDuration(song.duration)}</span>
+            </div>
+        `;
+
+        li.addEventListener('click', () => {
+            if (state.isShuffle) {
+                state.shuffleCurrentPos = state.shuffledIndices.indexOf(originalIndex);
+            }
+            startSong(originalIndex);
+            closeSongsOverlay();
+        });
+
+        elements.songsList.appendChild(li);
+    });
 }
 
 function toggleMoreSection() {
@@ -381,6 +487,10 @@ function updatePlayButton() {
             elements.albumArtPlaceholder.classList.remove('playing');
         }
     }
+
+    if (state.isSongsOverlayOpen) {
+        renderSongsList();
+    }
 }
 
 function updateProgress() {
@@ -427,6 +537,10 @@ async function loadSongs() {
             elements.nowTitle.textContent = 'No songs found';
             elements.nowArtist.textContent = 'Library empty';
         }
+
+        if (state.isSongsOverlayOpen) {
+            renderSongsList();
+        }
     } catch (error) {
         elements.nowTitle.textContent = 'Error loading songs';
         elements.nowArtist.textContent = error.message || 'Check channel source';
@@ -438,6 +552,19 @@ function bindEvents() {
         elements.hamburgerButton.addEventListener('click', (e) => {
             e.stopPropagation();
             toggleNavMenu();
+        });
+    }
+
+    if (elements.songsBackButton) {
+        elements.songsBackButton.addEventListener('click', () => {
+            closeSongsOverlay();
+        });
+    }
+
+    if (elements.sortSelect) {
+        elements.sortSelect.addEventListener('change', (e) => {
+            state.sortOrder = e.target.value;
+            renderSongsList();
         });
     }
 
