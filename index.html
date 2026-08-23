@@ -72,8 +72,38 @@
     </video>
     <div class="bg-overlay"></div>
 
+    <!-- All Songs Overlay Page -->
+    <div class="songs-overlay hidden" id="songs-overlay">
+        <div class="songs-container">
+            <header class="songs-header">
+                <div class="songs-header-top">
+                    <button class="back-btn" id="songs-back-button" type="button" aria-label="Back to player">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="19" y1="12" x2="5" y2="12"></line>
+                            <polyline points="12 19 5 12 12 5"></polyline>
+                        </svg>
+                        <span>Back</span>
+                    </button>
+                    <h1 class="songs-title">All Songs</h1>
+                </div>
+                <div class="songs-filter-row">
+                    <label for="sort-select" class="sort-label">Sort by:</label>
+                    <select id="sort-select" class="sort-select">
+                        <option value="newest">Added: Newest to Oldest</option>
+                        <option value="oldest">Added: Oldest to Newest</option>
+                        <option value="alphabetical">Alphabetical (A - Z)</option>
+                    </select>
+                </div>
+            </header>
+
+            <div class="songs-list-container">
+                <ul class="songs-list" id="songs-list"></ul>
+            </div>
+        </div>
+    </div>
+
     <!-- Centered Pill Player -->
-    <div class="player-container">
+    <div class="player-container" id="player-container">
         <div class="player-wrapper">
             <div class="player-pill" id="player-pill">
                 <audio id="audio-player" preload="metadata"></audio>
