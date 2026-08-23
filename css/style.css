@@ -24,6 +24,141 @@ html, body {
     color: var(--ink);
 }
 
+/* Top Navigation Menu */
+.top-nav-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.hamburger-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: var(--pill-bg);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--pill-border);
+    border-radius: 50%;
+    color: var(--ink);
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    transition: background 0.2s ease, transform 0.15s ease, border-color 0.2s ease;
+    outline: none;
+}
+
+.hamburger-btn:hover {
+    background: rgba(45, 45, 45, 0.7);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.hamburger-btn:active {
+    transform: scale(0.94);
+}
+
+.hamburger-btn.open {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.hamburger-icon {
+    transition: transform 0.3s ease;
+    color: var(--ink);
+}
+
+.hamburger-btn.open .line-top {
+    transform: translateY(6px) rotate(45deg);
+    transform-origin: center;
+}
+
+.hamburger-btn.open .line-middle {
+    opacity: 0;
+}
+
+.hamburger-btn.open .line-bottom {
+    transform: translateY(-6px) rotate(-45deg);
+    transform-origin: center;
+}
+
+/* Vertical Nav Dropdown */
+.nav-dropdown {
+    margin-top: 10px;
+    width: 200px;
+    background: var(--pill-bg);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--pill-border);
+    border-radius: 16px;
+    padding: 8px;
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4);
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.nav-dropdown.hidden {
+    display: none;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.nav-menu-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.nav-menu-item {
+    width: 100%;
+}
+
+.nav-menu-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: transparent;
+    border: none;
+    border-radius: 10px;
+    color: var(--ink-muted);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.2s ease, color 0.2s ease;
+    outline: none;
+}
+
+.nav-menu-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--ink);
+}
+
+.nav-menu-btn:focus-visible {
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--ink);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4);
+}
+
+.nav-menu-item.active .nav-menu-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--ink);
+    font-weight: 600;
+}
+
+.nav-menu-btn svg {
+    flex-shrink: 0;
+    color: currentColor;
+}
+
 /* Background Video */
 .bg-video {
     position: fixed;
