@@ -180,7 +180,30 @@ function cycleRepeatMode() {
     }
 }
 
+let progressAnimationFrame = null;
+
+function startProgressLoop() {
+    cancelProgressLoop();
+    function step() {
+        updateProgress();
+        if (elements.audio && !elements.audio.paused && !elements.audio.ended) {
+            progressAnimationFrame = requestAnimationFrame(step);
+        } else {
+            progressAnimationFrame = null;
+        }
+    }
+    progressAnimationFrame = requestAnimationFrame(step);
+}
+
+function cancelProgressLoop() {
+    if (progressAnimationFrame) {
+        cancelAnimationFrame(progressAnimationFrame);
+        progressAnimationFrame = null;
+    }
+}
+
 function handleTrackEnded() {
+    cancelProgressLoop();
     if (state.repeatMode === 'one') {
         if (elements.audio) {
             elements.audio.currentTime = 0;
@@ -612,8 +635,14 @@ function bindEvents() {
         });
     }
 
-    elements.audio.addEventListener('play', updatePlayButton);
-    elements.audio.addEventListener('pause', updatePlayButton);
+    elements.audio.addEventListener('play', () => {
+        updatePlayButton();
+        startProgressLoop();
+    });
+    elements.audio.addEventListener('pause', () => {
+        updatePlayButton();
+        cancelProgressLoop();
+    });
     elements.audio.addEventListener('ended', handleTrackEnded);
     elements.audio.addEventListener('timeupdate', updateProgress);
     elements.audio.addEventListener('loadedmetadata', updateProgress);
