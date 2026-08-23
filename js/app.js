@@ -3,6 +3,8 @@ const state = {
     currentIndex: -1,
     isSeeking: false,
     isMoreOpen: false,
+    isNavMenuOpen: false,
+    activeNavOption: 'all-songs',
     isShuffle: false,
     shuffledIndices: [],
     shuffleCurrentPos: -1,
@@ -13,6 +15,10 @@ const state = {
 };
 
 const elements = {
+    topNavContainer: document.querySelector('.top-nav-container'),
+    hamburgerButton: document.querySelector('#hamburger-button'),
+    navDropdown: document.querySelector('#nav-dropdown'),
+    navMenuItems: document.querySelectorAll('.nav-menu-item'),
     bgVideo: document.querySelector('#bg-video'),
     audio: document.querySelector('#audio-player'),
     albumArtPlaceholder: document.querySelector('#album-art-placeholder'),
@@ -175,6 +181,36 @@ function handleTrackEnded() {
         return;
     }
     playNext();
+}
+
+function toggleNavMenu() {
+    state.isNavMenuOpen = !state.isNavMenuOpen;
+    if (elements.navDropdown && elements.hamburgerButton) {
+        elements.navDropdown.classList.toggle('hidden', !state.isNavMenuOpen);
+        elements.hamburgerButton.classList.toggle('open', state.isNavMenuOpen);
+        elements.hamburgerButton.setAttribute('aria-expanded', String(state.isNavMenuOpen));
+    }
+}
+
+function closeNavMenu() {
+    if (!state.isNavMenuOpen) return;
+    state.isNavMenuOpen = false;
+    if (elements.navDropdown && elements.hamburgerButton) {
+        elements.navDropdown.classList.add('hidden');
+        elements.hamburgerButton.classList.remove('open');
+        elements.hamburgerButton.setAttribute('aria-expanded', 'false');
+    }
+}
+
+function selectNavOption(optionKey) {
+    state.activeNavOption = optionKey;
+    if (elements.navMenuItems) {
+        elements.navMenuItems.forEach((item) => {
+            const isSelected = item.getAttribute('data-option') === optionKey;
+            item.classList.toggle('active', isSelected);
+        });
+    }
+    closeNavMenu();
 }
 
 function toggleMoreSection() {
@@ -398,6 +434,32 @@ async function loadSongs() {
 }
 
 function bindEvents() {
+    if (elements.hamburgerButton) {
+        elements.hamburgerButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleNavMenu();
+        });
+    }
+
+    if (elements.navMenuItems) {
+        elements.navMenuItems.forEach((item) => {
+            const btn = item.querySelector('.nav-menu-btn');
+            if (btn) {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const option = item.getAttribute('data-option');
+                    selectNavOption(option);
+                });
+            }
+        });
+    }
+
+    document.addEventListener('click', (e) => {
+        if (state.isNavMenuOpen && elements.topNavContainer && !elements.topNavContainer.contains(e.target)) {
+            closeNavMenu();
+        }
+    });
+
     elements.playButton.addEventListener('click', togglePlayPause);
     elements.prevButton.addEventListener('click', playPrev);
     elements.nextButton.addEventListener('click', playNext);
