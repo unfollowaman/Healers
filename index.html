@@ -102,6 +102,232 @@
         </div>
     </div>
 
+    <!-- Playlist Overlay Page -->
+    <div class="playlist-overlay hidden" id="playlist-overlay">
+        <div class="playlist-container">
+            <!-- Playlists Hub (List View) -->
+            <div class="playlists-hub-view" id="playlists-hub-view">
+                <header class="playlists-hub-header">
+                    <div class="songs-header-top">
+                        <button class="back-btn" id="playlists-back-btn" type="button" aria-label="Back to player">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="19" y1="12" x2="5" y2="12"></line>
+                                <polyline points="12 19 5 12 12 5"></polyline>
+                            </svg>
+                            <span>Back</span>
+                        </button>
+                        <h1 class="songs-title">Playlists</h1>
+                    </div>
+                    <button class="action-btn primary-action-btn" id="create-playlist-btn" type="button">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        <span>New Playlist</span>
+                    </button>
+                </header>
+                <div class="playlists-grid" id="playlists-grid"></div>
+            </div>
+
+            <!-- Playlist Detail View -->
+            <div class="playlist-detail-view hidden" id="playlist-detail-view">
+                <div class="playlist-detail-top-nav">
+                    <button class="back-btn" id="pl-detail-back-btn" type="button" aria-label="Back to Playlists">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="19" y1="12" x2="5" y2="12"></line>
+                            <polyline points="12 19 5 12 12 5"></polyline>
+                        </svg>
+                        <span>Playlists</span>
+                    </button>
+                </div>
+
+                <!-- 1. PLAYLIST HEADER -->
+                <header class="pl-header">
+                    <div class="pl-cover-wrapper" id="pl-cover-wrapper">
+                        <div class="pl-cover-grid" id="pl-cover-grid"></div>
+                    </div>
+
+                    <div class="pl-header-details">
+                        <div class="pl-title-container">
+                            <h1 class="pl-title" id="pl-title">My Playlist</h1>
+                            <input type="text" id="pl-title-input" class="pl-title-input hidden" value="" aria-label="Playlist title">
+                        </div>
+
+                        <div class="pl-owner-line">
+                            <span class="pl-owner" id="pl-owner">Created by You</span>
+                        </div>
+
+                        <div class="pl-description-container">
+                            <p class="pl-description" id="pl-description">A curated selection of songs.</p>
+                            <textarea id="pl-description-input" class="pl-description-input hidden" rows="2" aria-label="Playlist description"></textarea>
+                        </div>
+
+                        <div class="pl-metadata" id="pl-metadata">
+                            <span id="pl-track-count">0 tracks</span>
+                            <span class="meta-dot">•</span>
+                            <span id="pl-total-duration">0 min</span>
+                            <span class="meta-dot">•</span>
+                            <span class="pl-badge">Public</span>
+                            <span class="meta-dot">•</span>
+                            <span id="pl-last-updated">Updated today</span>
+                        </div>
+
+                        <!-- Action Controls Row -->
+                        <div class="pl-actions-bar">
+                            <!-- Primary Actions -->
+                            <div class="pl-primary-actions">
+                                <button class="pl-btn pl-btn-play" id="pl-play-btn" type="button" title="Play playlist">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                    </svg>
+                                    <span>Play</span>
+                                </button>
+                                <button class="pl-btn pl-btn-secondary" id="pl-shuffle-btn" type="button" title="Shuffle playlist">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="16 3 21 3 21 8"></polyline>
+                                        <line x1="4" y1="20" x2="21" y2="3"></line>
+                                        <polyline points="21 16 21 21 16 21"></polyline>
+                                        <line x1="15" y1="15" x2="21" y2="21"></line>
+                                        <line x1="4" y1="4" x2="9" y2="9"></line>
+                                    </svg>
+                                    <span>Shuffle</span>
+                                </button>
+                                <button class="pl-btn pl-btn-secondary" id="pl-offline-btn" type="button" title="Toggle Download/Offline mode">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="7 10 12 15 17 10"></polyline>
+                                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                                    </svg>
+                                    <span id="pl-offline-label">Offline</span>
+                                </button>
+                            </div>
+
+                            <!-- Secondary Actions -->
+                            <div class="pl-secondary-actions">
+                                <button class="pl-btn-icon" id="pl-add-songs-btn" type="button" title="Add songs to playlist">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    </svg>
+                                    <span>Add Songs</span>
+                                </button>
+                                <button class="pl-btn-icon" id="pl-edit-btn" type="button" title="Edit details">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                    </svg>
+                                    <span id="pl-edit-label">Edit</span>
+                                </button>
+                                <button class="pl-btn-icon" id="pl-share-btn" type="button" title="Share playlist">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="18" cy="5" r="3"></circle>
+                                        <circle cx="6" cy="12" r="3"></circle>
+                                        <circle cx="18" cy="19" r="3"></circle>
+                                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                                    </svg>
+                                    <span>Share</span>
+                                </button>
+                                <button class="pl-btn-icon danger" id="pl-delete-btn" type="button" title="Delete playlist">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- 3. SORT / FILTER BAR -->
+                <div class="pl-toolbar">
+                    <div class="pl-search-wrapper">
+                        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" id="pl-search-input" class="pl-search-input" placeholder="Search in playlist..." aria-label="Search within playlist">
+                    </div>
+
+                    <div class="pl-sort-wrapper">
+                        <label for="pl-sort-select" class="sort-label">Sort by:</label>
+                        <select id="pl-sort-select" class="sort-select">
+                            <option value="custom">Custom Order</option>
+                            <option value="title">Title (A - Z)</option>
+                            <option value="artist">Artist (A - Z)</option>
+                            <option value="newest">Date Added (Newest)</option>
+                            <option value="duration">Duration</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 2. TRACK LIST TABLE -->
+                <div class="pl-track-table-container">
+                    <div class="pl-table-header">
+                        <div class="col-num">#</div>
+                        <div class="col-title">Title / Artist</div>
+                        <div class="col-album">Album</div>
+                        <div class="col-date">Date Added</div>
+                        <div class="col-time">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                        </div>
+                        <div class="col-actions"></div>
+                    </div>
+
+                    <ul class="pl-track-list" id="pl-track-list"></ul>
+
+                    <!-- Empty State -->
+                    <div class="pl-empty-state hidden" id="pl-empty-state">
+                        <div class="empty-icon-wrapper">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="8" y1="6" x2="21" y2="6"></line>
+                                <line x1="8" y1="12" x2="21" y2="12"></line>
+                                <line x1="8" y1="18" x2="21" y2="18"></line>
+                                <polyline points="3 6 4 7 6 5"></polyline>
+                                <polyline points="3 12 4 13 6 11"></polyline>
+                                <polyline points="3 18 4 19 6 17"></polyline>
+                            </svg>
+                        </div>
+                        <h3 class="empty-title">This playlist is empty</h3>
+                        <p class="empty-subtitle">Add songs from your library to get started.</p>
+                        <button class="action-btn primary-action-btn" id="pl-empty-add-btn" type="button">
+                            <span>Add Songs</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 4. RECOMMENDATIONS / FOOTER SECTION -->
+                <section class="pl-recommendations hidden" id="pl-recommendations">
+                    <div class="recs-header">
+                        <h3 class="recs-title">Suggested Songs</h3>
+                        <span class="recs-subtitle">Based on what's in your library</span>
+                    </div>
+                    <ul class="recs-list" id="recs-list"></ul>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Songs Picker Modal -->
+    <div class="modal-overlay hidden" id="add-songs-modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2>Add Songs to Playlist</h2>
+                <button class="modal-close-btn" id="close-modal-btn" type="button" aria-label="Close modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="modal-search-input" class="modal-search-input" placeholder="Search catalog..." aria-label="Search catalog songs">
+                <ul class="modal-song-list" id="modal-song-list"></ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
     <!-- Centered Pill Player -->
     <div class="player-container" id="player-container">
         <div class="player-wrapper">
