@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { normalizeChannelId } from './songs.js';
+import { normalizeChannelId } from '../api/songs.js';
 
 test('normalizeChannelId', (t) => {
   assert.strictEqual(normalizeChannelId(''), '');

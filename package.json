@@ -7,13 +7,9 @@
   "scripts": {
     "dev": "npx vercel dev",
     "start": "npx vercel dev",
-    "test": "node --test"
+    "test": "node --test tests/songs.test.js"
   },
   "engines": {
     "node": ">=18"
-  },
-  "devDependencies": {
-    "@playwright/test": "^1.62.1",
-    "playwright": "^1.62.1"
   }
 }
