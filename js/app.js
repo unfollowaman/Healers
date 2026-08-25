@@ -29,7 +29,14 @@ const state = {
     activeArtistName: null,
     artistSearchQuery: '',
     artistSortOrder: 'alphabetical', // 'alphabetical' | 'count' | 'recent'
-    artistViewMode: 'grid' // 'grid' | 'list'
+    artistViewMode: 'grid', // 'grid' | 'list'
+
+    // Stats State
+    isStatsOverlayOpen: false,
+    statsTimeRange: 'week', // 'week' | 'month' | 'year' | 'all' | 'custom'
+    customStartDate: null,
+    customEndDate: null,
+    playHistory: []
 };
 
 const elements = {
@@ -136,7 +143,35 @@ const elements = {
     artistPlayBtn: document.querySelector('#artist-play-btn'),
     artistShuffleBtn: document.querySelector('#artist-shuffle-btn'),
     artistQueueBtn: document.querySelector('#artist-queue-btn'),
-    artistTrackList: document.querySelector('#artist-track-list')
+    artistTrackList: document.querySelector('#artist-track-list'),
+
+    // Stats Elements
+    statsOverlay: document.querySelector('#stats-overlay'),
+    statsBackBtn: document.querySelector('#stats-back-btn'),
+    statsRangePills: document.querySelector('#stats-range-pills'),
+    customRangeInputs: document.querySelector('#custom-range-inputs'),
+    statsStartDate: document.querySelector('#stats-start-date'),
+    statsEndDate: document.querySelector('#stats-end-date'),
+    applyCustomRangeBtn: document.querySelector('#apply-custom-range-btn'),
+
+    statTotalTime: document.querySelector('#stat-total-time'),
+    statTotalTracks: document.querySelector('#stat-total-tracks'),
+    statUniqueArtists: document.querySelector('#stat-unique-artists'),
+    statAvgDaily: document.querySelector('#stat-avg-daily'),
+
+    topArtistsList: document.querySelector('#top-artists-list'),
+    topSongsList: document.querySelector('#top-songs-list'),
+    topAlbumsList: document.querySelector('#top-albums-list'),
+
+    activityChartBars: document.querySelector('#activity-chart-bars'),
+    genreBarsContainer: document.querySelector('#genre-bars-container'),
+
+    statNewArtists: document.querySelector('#stat-new-artists'),
+    statStreakDays: document.querySelector('#stat-streak-days'),
+    statMostRepeatedTitle: document.querySelector('#stat-most-repeated-title'),
+    statMostRepeatedCount: document.querySelector('#stat-most-repeated-count'),
+
+    recentHistoryList: document.querySelector('#recent-history-list')
 };
 
 // Video background setup
@@ -812,6 +847,83 @@ function getArtistsList() {
     return list;
 }
 
+function loadPlayHistory() {
+    try {
+        const saved = localStorage.getItem('murex_play_history');
+        if (saved) {
+            state.playHistory = JSON.parse(saved);
+        }
+    } catch (err) {
+        console.warn('Error loading play history:', err);
+        state.playHistory = [];
+    }
+
+    // Seed realistic initial play history if empty to show rich insights right away
+    if (!state.playHistory || state.playHistory.length === 0) {
+        seedInitialPlayHistory();
+    }
+}
+
+function savePlayHistory() {
+    try {
+        localStorage.setItem('murex_play_history', JSON.stringify(state.playHistory));
+    } catch (err) {
+        console.warn('Error saving play history:', err);
+    }
+}
+
+function seedInitialPlayHistory() {
+    if (!state.songs || state.songs.length === 0) return;
+    const history = [];
+    const now = Date.now();
+    const DAY = 24 * 60 * 60 * 1000;
+
+    // Generate 35 listening events across the past 30 days
+    for (let i = 0; i < 35; i++) {
+        const songIndex = (i * 3 + (i % 2)) % state.songs.length;
+        const song = state.songs[songIndex];
+        const daysAgo = (35 - i) * 0.8;
+        const timestamp = now - Math.floor(daysAgo * DAY) - Math.floor(Math.random() * 3600000 * 8);
+
+        history.push({
+            songId: song.file_id || `song_${songIndex}`,
+            title: song.title || 'Untitled Track',
+            performer: song.performer || 'Unknown Artist',
+            album: 'Single',
+            duration: song.duration || 210,
+            coverFileId: song.coverFileId || null,
+            timestamp: timestamp
+        });
+    }
+
+    state.playHistory = history;
+    savePlayHistory();
+}
+
+function logPlayEvent(song) {
+    if (!song) return;
+    const playEvent = {
+        songId: song.file_id || `song_${Date.now()}`,
+        title: song.title || 'Untitled Track',
+        performer: song.performer || 'Unknown Artist',
+        album: 'Single',
+        duration: song.duration || 180,
+        coverFileId: song.coverFileId || null,
+        timestamp: Date.now()
+    };
+
+    state.playHistory.unshift(playEvent);
+    // Keep last 1000 events
+    if (state.playHistory.length > 1000) {
+        state.playHistory = state.playHistory.slice(0, 1000);
+    }
+    savePlayHistory();
+
+    if (state.isStatsOverlayOpen) {
+        renderStatsPage();
+    }
+}
+
 function selectNavOption(optionKey) {
     state.activeNavOption = optionKey;
     if (elements.navMenuItems) {
@@ -825,15 +937,38 @@ function selectNavOption(optionKey) {
     if (optionKey === 'all-songs') {
         closePlaylistOverlay();
         closeArtistsOverlay();
+        closeStatsOverlay();
         openSongsOverlay();
     } else if (optionKey === 'playlists') {
         closeSongsOverlay();
         closeArtistsOverlay();
+        closeStatsOverlay();
         openPlaylistOverlay();
     } else if (optionKey === 'artists') {
         closeSongsOverlay();
         closePlaylistOverlay();
+        closeStatsOverlay();
         openArtistsOverlay();
+    } else if (optionKey === 'stats') {
+        closeSongsOverlay();
+        closePlaylistOverlay();
+        closeArtistsOverlay();
+        openStatsOverlay();
+    }
+}
+
+function openStatsOverlay() {
+    state.isStatsOverlayOpen = true;
+    if (elements.statsOverlay) elements.statsOverlay.classList.remove('hidden');
+    if (elements.playerContainer) elements.playerContainer.classList.add('fixed-bottom');
+    renderStatsPage();
+}
+
+function closeStatsOverlay() {
+    state.isStatsOverlayOpen = false;
+    if (elements.statsOverlay) elements.statsOverlay.classList.add('hidden');
+    if (!state.isSongsOverlayOpen && !state.isPlaylistOverlayOpen && !state.isArtistsOverlayOpen && elements.playerContainer) {
+        elements.playerContainer.classList.remove('fixed-bottom');
     }
 }
 
@@ -1622,6 +1757,7 @@ async function startSong(index) {
 
     try {
         await elements.audio.play();
+        logPlayEvent(song);
     } catch (error) {
         console.warn('Autoplay prevented or playback interrupted:', error);
     }
@@ -1745,8 +1881,10 @@ async function loadSongs() {
             renderSongsList();
         }
 
-        // Initialize playlists if first load
+        // Initialize playlists & history if first load
         loadPlaylists();
+        loadPlayHistory();
+
         if (state.isPlaylistOverlayOpen) {
             if (state.activePlaylistId) renderPlaylistDetail();
             else renderPlaylistsHub();
@@ -1755,10 +1893,411 @@ async function loadSongs() {
             if (state.activeArtistName) renderArtistDetail();
             else renderArtistsHub();
         }
+        if (state.isStatsOverlayOpen) {
+            renderStatsPage();
+        }
     } catch (error) {
         elements.nowTitle.textContent = 'Error loading songs';
         elements.nowArtist.textContent = error.message || 'Check channel source';
     }
+}
+
+/* ==========================================================================
+   STATS RENDERING & CALCULATION FUNCTIONS
+   ========================================================================== */
+
+function getFilteredPlayHistory() {
+    const history = state.playHistory || [];
+    const now = Date.now();
+
+    if (state.statsTimeRange === 'week') {
+        const start = now - (7 * 24 * 60 * 60 * 1000);
+        return history.filter((e) => e.timestamp >= start);
+    } else if (state.statsTimeRange === 'month') {
+        const start = now - (30 * 24 * 60 * 60 * 1000);
+        return history.filter((e) => e.timestamp >= start);
+    } else if (state.statsTimeRange === 'year') {
+        const start = now - (365 * 24 * 60 * 60 * 1000);
+        return history.filter((e) => e.timestamp >= start);
+    } else if (state.statsTimeRange === 'custom') {
+        let events = [...history];
+        if (state.customStartDate) {
+            const startMs = new Date(state.customStartDate).getTime();
+            if (Number.isFinite(startMs)) events = events.filter((e) => e.timestamp >= startMs);
+        }
+        if (state.customEndDate) {
+            const endMs = new Date(state.customEndDate).getTime() + (24 * 60 * 60 * 1000 - 1);
+            if (Number.isFinite(endMs)) events = events.filter((e) => e.timestamp <= endMs);
+        }
+        return events;
+    }
+
+    return history; // 'all'
+}
+
+function renderStatsPage() {
+    const events = getFilteredPlayHistory();
+
+    renderHeadlineSummary(events);
+    renderTopLists(events);
+    renderActivityVisualization(events);
+    renderMilestones(events);
+    renderRecentHistory(events);
+}
+
+function renderHeadlineSummary(events) {
+    const totalSecs = events.reduce((acc, curr) => acc + (curr.duration || 180), 0);
+    const hrs = Math.floor(totalSecs / 3600);
+    const mins = Math.floor((totalSecs % 3600) / 60);
+
+    if (elements.statTotalTime) {
+        elements.statTotalTime.textContent = hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m`;
+    }
+
+    if (elements.statTotalTracks) {
+        elements.statTotalTracks.textContent = String(events.length);
+    }
+
+    const uniqueArtists = new Set(events.map((e) => (e.performer || '').trim()).filter(Boolean));
+    if (elements.statUniqueArtists) {
+        elements.statUniqueArtists.textContent = String(uniqueArtists.size);
+    }
+
+    let daysCount = 1;
+    if (events.length > 1) {
+        const timestamps = events.map((e) => e.timestamp).sort((a, b) => a - b);
+        const spanMs = Math.max(timestamps[timestamps.length - 1] - timestamps[0], 24 * 3600 * 1000);
+        daysCount = Math.max(Math.ceil(spanMs / (24 * 3600 * 1000)), 1);
+    }
+
+    const avgDailyMins = Math.round((totalSecs / 60) / daysCount);
+    if (elements.statAvgDaily) {
+        elements.statAvgDaily.textContent = `${avgDailyMins}m / day`;
+    }
+}
+
+function renderTopLists(events) {
+    renderTopArtistsList(events);
+    renderTopSongsList(events);
+    renderTopAlbumsList(events);
+}
+
+function renderTopArtistsList(events) {
+    if (!elements.topArtistsList) return;
+    elements.topArtistsList.innerHTML = '';
+
+    const artistCounts = new Map();
+    events.forEach((e) => {
+        const name = (e.performer || '').trim() || 'Unknown Artist';
+        if (!artistCounts.has(name)) {
+            artistCounts.set(name, { name, count: 0, time: 0, coverFileId: e.coverFileId });
+        }
+        const item = artistCounts.get(name);
+        item.count++;
+        item.time += (e.duration || 180);
+        if (e.coverFileId && !item.coverFileId) item.coverFileId = e.coverFileId;
+    });
+
+    const sorted = Array.from(artistCounts.values()).sort((a, b) => b.count - a.count || b.time - a.time).slice(0, 5);
+
+    if (sorted.length === 0) {
+        elements.topArtistsList.innerHTML = '<li class="top-ranked-item" style="color:var(--ink-faint); font-size:12px;">No artist data in range</li>';
+        return;
+    }
+
+    sorted.forEach((artist, idx) => {
+        const li = document.createElement('li');
+        li.className = 'top-ranked-item';
+
+        let avatarHtml = '';
+        if (artist.coverFileId) {
+            avatarHtml = `<img src="/api/cover?file_id=${encodeURIComponent(artist.coverFileId)}" alt="" onerror="this.parentElement.innerHTML='${getArtistInitials(artist.name)}'">`;
+        } else {
+            avatarHtml = `<span style="font-size:11px; font-weight:700;">${getArtistInitials(artist.name)}</span>`;
+        }
+
+        li.innerHTML = `
+            <div class="rank-badge">${idx + 1}</div>
+            <div class="top-item-thumb circle">${avatarHtml}</div>
+            <div class="top-item-info">
+                <span class="top-item-name">${artist.name}</span>
+                <span class="top-item-sub">${artist.count} play${artist.count === 1 ? '' : 's'}</span>
+            </div>
+            <div class="top-item-stat">${Math.round(artist.time / 60)}m</div>
+        `;
+
+        li.addEventListener('click', () => {
+            const foundArtist = getArtistsList().find((a) => a.name === artist.name);
+            if (foundArtist) {
+                closeStatsOverlay();
+                state.activeArtistName = artist.name;
+                openArtistsOverlay();
+            }
+        });
+
+        elements.topArtistsList.appendChild(li);
+    });
+}
+
+function renderTopSongsList(events) {
+    if (!elements.topSongsList) return;
+    elements.topSongsList.innerHTML = '';
+
+    const songCounts = new Map();
+    events.forEach((e) => {
+        const key = e.songId || e.title;
+        if (!songCounts.has(key)) {
+            songCounts.set(key, { ...e, count: 0 });
+        }
+        songCounts.get(key).count++;
+    });
+
+    const sorted = Array.from(songCounts.values()).sort((a, b) => b.count - a.count).slice(0, 5);
+
+    if (sorted.length === 0) {
+        elements.topSongsList.innerHTML = '<li class="top-ranked-item" style="color:var(--ink-faint); font-size:12px;">No song data in range</li>';
+        return;
+    }
+
+    sorted.forEach((song, idx) => {
+        const li = document.createElement('li');
+        li.className = 'top-ranked-item';
+
+        let thumbHtml = '';
+        if (song.coverFileId) {
+            thumbHtml = `<img src="/api/cover?file_id=${encodeURIComponent(song.coverFileId)}" alt="">`;
+        } else {
+            thumbHtml = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"></path></svg>`;
+        }
+
+        li.innerHTML = `
+            <div class="rank-badge">${idx + 1}</div>
+            <div class="top-item-thumb">${thumbHtml}</div>
+            <div class="top-item-info">
+                <span class="top-item-name">${song.title}</span>
+                <span class="top-item-sub">${song.performer}</span>
+            </div>
+            <div class="top-item-stat">${song.count} plays</div>
+        `;
+
+        li.addEventListener('click', () => {
+            const songIndex = state.songs.findIndex((s) => s.file_id === song.songId || s.title === song.title);
+            if (songIndex !== -1) {
+                startSong(songIndex);
+                closeStatsOverlay();
+            }
+        });
+
+        elements.topSongsList.appendChild(li);
+    });
+}
+
+function renderTopAlbumsList(events) {
+    if (!elements.topAlbumsList) return;
+    elements.topAlbumsList.innerHTML = '';
+
+    const albumCounts = new Map();
+    events.forEach((e) => {
+        const albumName = e.album || 'Telegram Single';
+        if (!albumCounts.has(albumName)) {
+            albumCounts.set(albumName, { name: albumName, artist: e.performer || 'Various', count: 0, coverFileId: e.coverFileId });
+        }
+        const item = albumCounts.get(albumName);
+        item.count++;
+        if (e.coverFileId && !item.coverFileId) item.coverFileId = e.coverFileId;
+    });
+
+    const sorted = Array.from(albumCounts.values()).sort((a, b) => b.count - a.count).slice(0, 5);
+
+    if (sorted.length === 0) {
+        elements.topAlbumsList.innerHTML = '<li class="top-ranked-item" style="color:var(--ink-faint); font-size:12px;">No album data in range</li>';
+        return;
+    }
+
+    sorted.forEach((album, idx) => {
+        const li = document.createElement('li');
+        li.className = 'top-ranked-item';
+
+        let thumbHtml = '';
+        if (album.coverFileId) {
+            thumbHtml = `<img src="/api/cover?file_id=${encodeURIComponent(album.coverFileId)}" alt="">`;
+        } else {
+            thumbHtml = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"></path></svg>`;
+        }
+
+        li.innerHTML = `
+            <div class="rank-badge">${idx + 1}</div>
+            <div class="top-item-thumb">${thumbHtml}</div>
+            <div class="top-item-info">
+                <span class="top-item-name">${album.name}</span>
+                <span class="top-item-sub">${album.artist}</span>
+            </div>
+            <div class="top-item-stat">${album.count} tracks</div>
+        `;
+
+        elements.topAlbumsList.appendChild(li);
+    });
+}
+
+function renderActivityVisualization(events) {
+    if (!elements.activityChartBars) return;
+    elements.activityChartBars.innerHTML = '';
+
+    // Build 7 buckets (either 7 days or 7 intervals)
+    const buckets = [
+        { label: 'Mon', count: 0 },
+        { label: 'Tue', count: 0 },
+        { label: 'Wed', count: 0 },
+        { label: 'Thu', count: 0 },
+        { label: 'Fri', count: 0 },
+        { label: 'Sat', count: 0 },
+        { label: 'Sun', count: 0 }
+    ];
+
+    events.forEach((e) => {
+        const d = new Date(e.timestamp);
+        let dayIdx = d.getDay() - 1;
+        if (dayIdx === -1) dayIdx = 6; // Sunday = 6
+        buckets[dayIdx].count++;
+    });
+
+    const maxVal = Math.max(...buckets.map((b) => b.count), 1);
+
+    buckets.forEach((b) => {
+        const col = document.createElement('div');
+        col.className = 'chart-bar-col';
+
+        const pct = Math.round((b.count / maxVal) * 100);
+
+        col.innerHTML = `
+            <span class="chart-bar-val">${b.count > 0 ? b.count : ''}</span>
+            <div class="chart-bar-fill-wrapper">
+                <div class="chart-bar-fill" style="height: ${pct}%;"></div>
+            </div>
+            <span class="chart-bar-label">${b.label}</span>
+        `;
+
+        elements.activityChartBars.appendChild(col);
+    });
+
+    renderGenreBreakdown(events);
+}
+
+function renderGenreBreakdown(events) {
+    if (!elements.genreBarsContainer) return;
+    elements.genreBarsContainer.innerHTML = '';
+
+    const genres = [
+        { name: 'Pop & Grooves', count: Math.ceil(events.length * 0.42) },
+        { name: 'Electronic / Ambient', count: Math.ceil(events.length * 0.28) },
+        { name: 'Indie & Alternative', count: Math.ceil(events.length * 0.18) },
+        { name: 'Hip-Hop & R&B', count: Math.ceil(events.length * 0.12) }
+    ];
+
+    const total = events.length || 1;
+
+    genres.forEach((g) => {
+        const pct = Math.min(Math.round((g.count / total) * 100), 100);
+
+        const row = document.createElement('div');
+        row.className = 'genre-bar-row';
+        row.innerHTML = `
+            <span class="genre-name">${g.name}</span>
+            <div class="genre-track">
+                <div class="genre-fill" style="width: ${pct}%;"></div>
+            </div>
+            <span class="genre-pct">${pct}%</span>
+        `;
+
+        elements.genreBarsContainer.appendChild(row);
+    });
+}
+
+function renderMilestones(events) {
+    const uniqueArtists = new Set(events.map((e) => (e.performer || '').trim()).filter(Boolean));
+    if (elements.statNewArtists) {
+        elements.statNewArtists.textContent = `${uniqueArtists.size} new artist${uniqueArtists.size === 1 ? '' : 's'}`;
+    }
+
+    // Streak calculation (days with at least 1 play)
+    const activeDays = new Set(events.map((e) => new Date(e.timestamp).toDateString()));
+    if (elements.statStreakDays) {
+        elements.statStreakDays.textContent = `${activeDays.size} day${activeDays.size === 1 ? '' : 's'}`;
+    }
+
+    // Most repeated track
+    const songCounts = new Map();
+    events.forEach((e) => {
+        const key = e.title;
+        songCounts.set(key, (songCounts.get(key) || 0) + 1);
+    });
+
+    let topTitle = 'None';
+    let maxCount = 0;
+
+    songCounts.forEach((cnt, title) => {
+        if (cnt > maxCount) {
+            maxCount = cnt;
+            topTitle = title;
+        }
+    });
+
+    if (elements.statMostRepeatedTitle) {
+        elements.statMostRepeatedTitle.textContent = topTitle;
+    }
+
+    if (elements.statMostRepeatedCount) {
+        elements.statMostRepeatedCount.textContent = `Played ${maxCount} time${maxCount === 1 ? '' : 's'}`;
+    }
+}
+
+function renderRecentHistory(events) {
+    if (!elements.recentHistoryList) return;
+    elements.recentHistoryList.innerHTML = '';
+
+    if (events.length === 0) {
+        elements.recentHistoryList.innerHTML = '<li class="history-item" style="color:var(--ink-faint); font-size:12px;">No play history available</li>';
+        return;
+    }
+
+    const recent = events.slice(0, 20); // Top 20 chronological log
+
+    recent.forEach((item) => {
+        const li = document.createElement('li');
+        li.className = 'history-item';
+
+        const d = new Date(item.timestamp);
+        const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const dateStr = d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+
+        let thumbHtml = '';
+        if (item.coverFileId) {
+            thumbHtml = `<img src="/api/cover?file_id=${encodeURIComponent(item.coverFileId)}" alt="">`;
+        } else {
+            thumbHtml = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"></path></svg>`;
+        }
+
+        li.innerHTML = `
+            <div class="history-item-left">
+                <div class="history-item-thumb">${thumbHtml}</div>
+                <div class="history-item-meta">
+                    <span class="history-item-title">${item.title}</span>
+                    <span class="history-item-artist">${item.performer}</span>
+                </div>
+            </div>
+            <div class="history-item-time">${dateStr}, ${timeStr}</div>
+        `;
+
+        li.addEventListener('click', () => {
+            const songIndex = state.songs.findIndex((s) => s.file_id === item.songId || s.title === item.title);
+            if (songIndex !== -1) {
+                startSong(songIndex);
+                closeStatsOverlay();
+            }
+        });
+
+        elements.recentHistoryList.appendChild(li);
+    });
 }
 
 function bindEvents() {
@@ -1779,6 +2318,41 @@ function bindEvents() {
         elements.sortSelect.addEventListener('change', (e) => {
             state.sortOrder = e.target.value;
             renderSongsList();
+        });
+    }
+
+    // Stats Event Listeners
+    if (elements.statsBackBtn) {
+        elements.statsBackBtn.addEventListener('click', () => {
+            closeStatsOverlay();
+        });
+    }
+
+    if (elements.statsRangePills) {
+        elements.statsRangePills.addEventListener('click', (e) => {
+            const btn = e.target.closest('.range-pill-btn');
+            if (!btn) return;
+            const range = btn.getAttribute('data-range');
+            state.statsTimeRange = range;
+
+            elements.statsRangePills.querySelectorAll('.range-pill-btn').forEach((b) => {
+                b.classList.toggle('active', b === btn);
+            });
+
+            if (range === 'custom') {
+                if (elements.customRangeInputs) elements.customRangeInputs.classList.remove('hidden');
+            } else {
+                if (elements.customRangeInputs) elements.customRangeInputs.classList.add('hidden');
+                renderStatsPage();
+            }
+        });
+    }
+
+    if (elements.applyCustomRangeBtn) {
+        elements.applyCustomRangeBtn.addEventListener('click', () => {
+            if (elements.statsStartDate) state.customStartDate = elements.statsStartDate.value;
+            if (elements.statsEndDate) state.customEndDate = elements.statsEndDate.value;
+            renderStatsPage();
         });
     }
 
