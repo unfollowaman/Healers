@@ -1,5 +1,5 @@
 import https from 'node:https';
-import { requireEnv } from './utils.js';
+import { requireEnv } from './_lib/utils.js';
 import { telegramRequest } from './songs.js';
 
 const TELEGRAM_FILE_BASE = 'https://api.telegram.org/file/bot';

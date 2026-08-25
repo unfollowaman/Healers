@@ -1,4 +1,4 @@
-import { requireEnv } from './utils.js';
+import { requireEnv } from './_lib/utils.js';
 import { getCatalogFromStore, saveCatalogToStore } from './_lib/catalogStore.js';
 
 const TELEGRAM_API_BASE = 'https://api.telegram.org/bot';

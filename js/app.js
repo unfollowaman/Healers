@@ -44,7 +44,6 @@ const elements = {
     hamburgerButton: document.querySelector('#hamburger-button'),
     navDropdown: document.querySelector('#nav-dropdown'),
     navMenuItems: document.querySelectorAll('.nav-menu-item'),
-    bgVideo: document.querySelector('#bg-video'),
     audio: document.querySelector('#audio-player'),
     albumArtPlaceholder: document.querySelector('#album-art-placeholder'),
     nowTitle: document.querySelector('#now-title'),
@@ -54,7 +53,7 @@ const elements = {
     totalTime: document.querySelector('#total-time'),
     prevButton: document.querySelector('#prev-button'),
     playButton: document.querySelector('#play-button'),
-    playIconImg: document.querySelector('#play-icon-img'),
+    playIconSvg: document.querySelector('#play-icon-svg'),
     nextButton: document.querySelector('#next-button'),
 
     moreTab: document.querySelector('#more-tab'),
@@ -173,35 +172,6 @@ const elements = {
 
     recentHistoryList: document.querySelector('#recent-history-list')
 };
-
-// Video background setup
-const bgVideos = ['bg1.mp4', 'bg2.mp4', 'bg3.mp4'];
-let currentBgIndex = Math.floor(Math.random() * bgVideos.length);
-
-function setBackgroundVideoSource(videoName) {
-    if (!elements.bgVideo) return;
-    elements.bgVideo.muted = true;
-    const videoUrl = `/backgrounds/${videoName}`;
-    if (elements.bgVideo.src !== window.location.origin + videoUrl && elements.bgVideo.getAttribute('src') !== videoUrl) {
-        elements.bgVideo.src = videoUrl;
-        elements.bgVideo.load();
-    }
-    const playPromise = elements.bgVideo.play();
-    if (playPromise !== undefined) {
-        playPromise.catch((err) => {
-            console.warn('Background video play error:', err);
-        });
-    }
-}
-
-function initBackgroundVideo() {
-    setBackgroundVideoSource(bgVideos[currentBgIndex]);
-}
-
-function cycleBackgroundVideo() {
-    currentBgIndex = (currentBgIndex + 1) % bgVideos.length;
-    setBackgroundVideoSource(bgVideos[currentBgIndex]);
-}
 
 function formatDuration(seconds) {
     if (!Number.isFinite(seconds) || seconds <= 0) return '0:00';
@@ -1786,8 +1756,6 @@ function togglePlayPause() {
 function playNext() {
     if (!state.songs.length) return;
 
-    cycleBackgroundVideo();
-
     if (state.isShuffle && state.shuffledIndices.length) {
         state.shuffleCurrentPos = (state.shuffleCurrentPos + 1) % state.shuffledIndices.length;
         const nextIndex = state.shuffledIndices[state.shuffleCurrentPos];
@@ -1813,9 +1781,12 @@ function playPrev() {
 
 function updatePlayButton() {
     const isPlaying = !elements.audio.paused && !elements.audio.ended;
-    if (elements.playIconImg) {
-        elements.playIconImg.src = isPlaying ? '/assets/icons_legacy/pause.png' : '/assets/icons_legacy/play.png';
-        elements.playIconImg.alt = isPlaying ? 'Pause' : 'Play';
+    if (elements.playIconSvg) {
+        if (isPlaying) {
+            elements.playIconSvg.innerHTML = '<rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect>';
+        } else {
+            elements.playIconSvg.innerHTML = '<polygon points="5 3 19 12 5 21 5 3"></polygon>';
+        }
     }
     elements.playButton.setAttribute('aria-label', isPlaying ? 'Pause' : 'Play');
 
@@ -2611,7 +2582,6 @@ function bindEvents() {
 }
 
 function init() {
-    initBackgroundVideo();
     updateRangeStyle(elements.progressBar);
     updateVolumeStyle();
     bindEvents();
