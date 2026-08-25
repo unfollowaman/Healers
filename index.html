@@ -469,6 +469,186 @@
         </div>
     </div>
 
+    <!-- Stats Overlay Page -->
+    <div class="stats-overlay hidden" id="stats-overlay">
+        <div class="stats-container">
+            <!-- 1. PAGE HEADER -->
+            <header class="stats-header">
+                <div class="songs-header-top">
+                    <button class="back-btn" id="stats-back-btn" type="button" aria-label="Back to player">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="19" y1="12" x2="5" y2="12"></line>
+                            <polyline points="12 19 5 12 12 5"></polyline>
+                        </svg>
+                        <span>Back</span>
+                    </button>
+                    <h1 class="songs-title">Listening Stats</h1>
+                </div>
+
+                <div class="stats-time-range-wrapper">
+                    <div class="range-pills" id="stats-range-pills">
+                        <button class="range-pill-btn active" data-range="week" type="button">This week</button>
+                        <button class="range-pill-btn" data-range="month" type="button">This month</button>
+                        <button class="range-pill-btn" data-range="year" type="button">This year</button>
+                        <button class="range-pill-btn" data-range="all" type="button">All time</button>
+                        <button class="range-pill-btn" data-range="custom" type="button">Custom</button>
+                    </div>
+
+                    <div class="custom-range-inputs hidden" id="custom-range-inputs">
+                        <div class="date-input-group">
+                            <label for="stats-start-date">From:</label>
+                            <input type="date" id="stats-start-date" class="stats-date-input">
+                        </div>
+                        <div class="date-input-group">
+                            <label for="stats-end-date">To:</label>
+                            <input type="date" id="stats-end-date" class="stats-date-input">
+                        </div>
+                        <button class="action-btn primary-action-btn" id="apply-custom-range-btn" type="button" style="padding: 4px 12px; font-size: 12px;">Apply</button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 2. HEADLINE SUMMARY ROW -->
+            <section class="stats-summary-grid">
+                <div class="summary-card">
+                    <div class="summary-icon-wrapper">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </div>
+                    <div class="summary-data">
+                        <span class="summary-value" id="stat-total-time">0h 0m</span>
+                        <span class="summary-label">Total Listening Time</span>
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-icon-wrapper">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                    </div>
+                    <div class="summary-data">
+                        <span class="summary-value" id="stat-total-tracks">0</span>
+                        <span class="summary-label">Tracks Played</span>
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-icon-wrapper">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                    <div class="summary-data">
+                        <span class="summary-value" id="stat-unique-artists">0</span>
+                        <span class="summary-label">Unique Artists</span>
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-icon-wrapper">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="20" x2="18" y2="10"></line>
+                            <line x1="12" y1="20" x2="12" y2="4"></line>
+                            <line x1="6" y1="20" x2="6" y2="14"></line>
+                        </svg>
+                    </div>
+                    <div class="summary-data">
+                        <span class="summary-value" id="stat-avg-daily">0m / day</span>
+                        <span class="summary-label">Avg Daily Listening</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. TOP LISTS -->
+            <section class="stats-top-lists-section">
+                <div class="stats-section-header">
+                    <h2 class="stats-section-title">Top Music</h2>
+                </div>
+
+                <div class="top-lists-grid">
+                    <!-- Top Artists -->
+                    <div class="top-list-card">
+                        <h3 class="top-list-card-title">Top Artists</h3>
+                        <ol class="top-ranked-list" id="top-artists-list"></ol>
+                    </div>
+
+                    <!-- Top Songs -->
+                    <div class="top-list-card">
+                        <h3 class="top-list-card-title">Top Songs</h3>
+                        <ol class="top-ranked-list" id="top-songs-list"></ol>
+                    </div>
+
+                    <!-- Top Albums -->
+                    <div class="top-list-card">
+                        <h3 class="top-list-card-title">Top Albums</h3>
+                        <ol class="top-ranked-list" id="top-albums-list"></ol>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. LISTENING ACTIVITY VISUALIZATION -->
+            <section class="stats-visualization-section">
+                <div class="stats-section-header">
+                    <h2 class="stats-section-title">Listening Activity</h2>
+                    <span class="stats-section-subtitle">Plays & duration over time</span>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-bars-container" id="activity-chart-bars"></div>
+                </div>
+
+                <!-- Genre Breakdown -->
+                <div class="genre-breakdown-card" style="margin-top: 14px;">
+                    <h3 class="top-list-card-title" style="margin-bottom: 10px;">Genre & Mood Distribution</h3>
+                    <div class="genre-bars-container" id="genre-bars-container"></div>
+                </div>
+            </section>
+
+            <!-- 5. MILESTONES / FUN FACTS -->
+            <section class="stats-milestones-section">
+                <div class="stats-section-header">
+                    <h2 class="stats-section-title">Milestones & Highlights</h2>
+                </div>
+
+                <div class="milestones-grid">
+                    <div class="milestone-card">
+                        <div class="milestone-badge">✨ New Discoveries</div>
+                        <div class="milestone-value" id="stat-new-artists">0 new artists</div>
+                        <p class="milestone-desc">Discovered during this selected range</p>
+                    </div>
+
+                    <div class="milestone-card">
+                        <div class="milestone-badge">🔥 Listening Streak</div>
+                        <div class="milestone-value" id="stat-streak-days">0 days</div>
+                        <p class="milestone-desc">Longest streak of consecutive listening days</p>
+                    </div>
+
+                    <div class="milestone-card">
+                        <div class="milestone-badge">🔁 Most Repeated Track</div>
+                        <div class="milestone-value" id="stat-most-repeated-title">None</div>
+                        <p class="milestone-desc" id="stat-most-repeated-count">Played 0 times</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 6. RECENT HISTORY -->
+            <section class="stats-history-section">
+                <div class="stats-section-header">
+                    <h2 class="stats-section-title">Recent Play Log</h2>
+                    <span class="stats-section-subtitle">Chronological listening history</span>
+                </div>
+
+                <div class="history-table-card">
+                    <ul class="history-list" id="recent-history-list"></ul>
+                </div>
+            </section>
+        </div>
+    </div>
+
     <!-- Add Songs Picker Modal -->
     <div class="modal-overlay hidden" id="add-songs-modal">
         <div class="modal-card">
