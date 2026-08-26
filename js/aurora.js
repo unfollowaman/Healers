@@ -5,71 +5,74 @@
 
 const AURORA_CONFIG = {
     // Master controls
-    baseHeightPercent: 0.62, // Base height position (~62% from top)
-    speedMultiplier: 0.0003, // Slow, organic movement
+    baseHeightPercent: 0.65, // Base height position (~65% from top)
+    speedMultiplier: 0.00025, // Slow, atmospheric movement
 
     // Layer definitions (rendered back-to-front)
     layers: [
         {
-            // Layer 1: Outer Deep Blue Atmospheric Waves
-            speed: 0.7,
-            baseOffset: -0.05,
+            // Layer 1: Deep Outer Atmospheric Glow
+            speed: 0.6,
+            baseOffset: -0.06,
+            blur: 50,
             waves: [
-                { wavelength: 0.0012, amplitude: 110, speed: 1.0, phase: 0.0 },
-                { wavelength: 0.0022, amplitude: 65, speed: -0.6, phase: 2.1 },
-                { wavelength: 0.0006, amplitude: 45, speed: 0.4, phase: 1.2 }
+                { wavelength: 0.0012, amplitude: 90, speed: 1.0, phase: 0.0 },
+                { wavelength: 0.0022, amplitude: 50, speed: -0.6, phase: 2.1 },
+                { wavelength: 0.0006, amplitude: 35, speed: 0.4, phase: 1.2 }
             ],
             stops: [
                 { offset: 0.0, color: 'rgba(0, 0, 0, 0)' },
-                { offset: 0.2, color: 'rgba(5, 30, 90, 0.45)' },
-                { offset: 0.55, color: 'rgba(25, 90, 180, 0.6)' },
-                { offset: 0.85, color: 'rgba(70, 160, 240, 0.8)' },
-                { offset: 1.0, color: 'rgba(200, 235, 255, 0.95)' }
+                { offset: 0.3, color: 'rgba(8, 32, 80, 0.35)' },
+                { offset: 0.65, color: 'rgba(25, 85, 160, 0.5)' },
+                { offset: 0.9, color: 'rgba(80, 160, 225, 0.65)' },
+                { offset: 1.0, color: 'rgba(180, 225, 255, 0.8)' }
             ],
             composite: 'source-over'
         },
         {
-            // Layer 2: Mid Icy Blue Flowing Waves
-            speed: 0.95,
+            // Layer 2: Mid Icy Blue Flowing Mist
+            speed: 0.85,
             baseOffset: -0.02,
+            blur: 40,
             waves: [
-                { wavelength: 0.0015, amplitude: 90, speed: -0.85, phase: 1.4 },
-                { wavelength: 0.0028, amplitude: 50, speed: 1.1, phase: 0.5 },
-                { wavelength: 0.0008, amplitude: 40, speed: -0.3, phase: 3.5 }
+                { wavelength: 0.0015, amplitude: 75, speed: -0.85, phase: 1.4 },
+                { wavelength: 0.0028, amplitude: 40, speed: 1.1, phase: 0.5 },
+                { wavelength: 0.0008, amplitude: 30, speed: -0.3, phase: 3.5 }
             ],
             stops: [
                 { offset: 0.0, color: 'rgba(0, 0, 0, 0)' },
-                { offset: 0.25, color: 'rgba(30, 110, 210, 0.5)' },
-                { offset: 0.6, color: 'rgba(100, 190, 255, 0.75)' },
-                { offset: 0.88, color: 'rgba(220, 245, 255, 0.9)' },
-                { offset: 1.0, color: 'rgba(255, 255, 255, 1.0)' }
+                { offset: 0.35, color: 'rgba(30, 95, 180, 0.35)' },
+                { offset: 0.7, color: 'rgba(90, 175, 235, 0.55)' },
+                { offset: 0.92, color: 'rgba(200, 235, 255, 0.75)' },
+                { offset: 1.0, color: 'rgba(240, 250, 255, 0.85)' }
             ],
             composite: 'screen'
         },
         {
-            // Layer 3: Dynamic Luminous White Core Waves
-            speed: 1.2,
-            baseOffset: 0.02,
+            // Layer 3: Soft Luminous Inner Light Stream
+            speed: 1.1,
+            baseOffset: 0.03,
+            blur: 35,
             waves: [
-                { wavelength: 0.0018, amplitude: 75, speed: 0.75, phase: 3.2 },
-                { wavelength: 0.0009, amplitude: 55, speed: -0.9, phase: 1.1 },
-                { wavelength: 0.0025, amplitude: 35, speed: 0.5, phase: 4.8 }
+                { wavelength: 0.0018, amplitude: 60, speed: 0.75, phase: 3.2 },
+                { wavelength: 0.0009, amplitude: 40, speed: -0.9, phase: 1.1 },
+                { wavelength: 0.0025, amplitude: 25, speed: 0.5, phase: 4.8 }
             ],
             stops: [
                 { offset: 0.0, color: 'rgba(0, 0, 0, 0)' },
-                { offset: 0.3, color: 'rgba(140, 215, 255, 0.6)' },
-                { offset: 0.7, color: 'rgba(230, 245, 255, 0.88)' },
-                { offset: 1.0, color: 'rgba(255, 255, 255, 1.0)' }
+                { offset: 0.4, color: 'rgba(110, 190, 245, 0.45)' },
+                { offset: 0.78, color: 'rgba(210, 240, 255, 0.75)' },
+                { offset: 1.0, color: 'rgba(255, 255, 255, 0.9)' }
             ],
             composite: 'screen'
         }
     ],
 
-    // Drifting luminous core glows at bottom
+    // Drifting luminous core glows near bottom
     coreGlows: [
-        { xRatio: 0.2, speed: 0.4, radiusRatio: 0.4, color: 'rgba(200, 235, 255, 0.35)' },
-        { xRatio: 0.55, speed: -0.3, radiusRatio: 0.45, color: 'rgba(255, 255, 255, 0.45)' },
-        { xRatio: 0.85, speed: 0.5, radiusRatio: 0.38, color: 'rgba(150, 210, 255, 0.35)' }
+        { xRatio: 0.25, speed: 0.35, radiusRatio: 0.45, color: 'rgba(180, 225, 255, 0.25)', blur: 60 },
+        { xRatio: 0.55, speed: -0.25, radiusRatio: 0.5, color: 'rgba(235, 245, 255, 0.35)', blur: 70 },
+        { xRatio: 0.82, speed: 0.4, radiusRatio: 0.4, color: 'rgba(140, 205, 255, 0.25)', blur: 60 }
     ]
 };
 
@@ -109,7 +112,6 @@ class AuroraAnimation {
     }
 
     resize() {
-        // Limit DPR to 1 for high performance on retina displays
         const dpr = 1;
         this.width = window.innerWidth;
         this.height = window.innerHeight;
@@ -146,15 +148,18 @@ class AuroraAnimation {
 
         this.ctx.clearRect(0, 0, width, height);
 
-        // Black background in upper space
+        // Solid black background in upper space
+        this.ctx.filter = 'none';
+        this.ctx.globalCompositeOperation = 'source-over';
         this.ctx.fillStyle = '#000000';
         this.ctx.fillRect(0, 0, width, height);
 
-        // Draw dynamic curved wave layers
+        // Draw dynamic curved wave layers with heavy atmospheric blur
         AURORA_CONFIG.layers.forEach((layer) => {
             this.ctx.globalCompositeOperation = layer.composite || 'source-over';
+            this.ctx.filter = `blur(${layer.blur || 40}px)`;
 
-            const margin = 100;
+            const margin = 150;
             const step = Math.max(12, Math.floor((width + margin * 2) / 80));
             const points = [];
 
@@ -183,7 +188,7 @@ class AuroraAnimation {
             this.ctx.lineTo(-margin, height + margin);
             this.ctx.closePath();
 
-            // Vertical linear gradient: black (top of wave) -> deep blue -> light blue -> white (bottom)
+            // Vertical linear gradient with smooth alpha fading
             const gradient = this.ctx.createLinearGradient(0, minY, 0, height);
             layer.stops.forEach((stop) => {
                 gradient.addColorStop(stop.offset, stop.color);
@@ -193,10 +198,11 @@ class AuroraAnimation {
             this.ctx.fill();
         });
 
-        // Drifting core glows near bottom
-        this.ctx.globalCompositeOperation = 'screen';
-
+        // Drifting core glows near bottom with blur
         AURORA_CONFIG.coreGlows.forEach((glow, idx) => {
+            this.ctx.globalCompositeOperation = 'screen';
+            this.ctx.filter = `blur(${glow.blur || 50}px)`;
+
             const shift = Math.sin((timestamp * AURORA_CONFIG.speedMultiplier * glow.speed) + idx * 2) * (width * 0.2);
             const gx = (width * glow.xRatio) + shift;
             const gy = height * 0.95;
@@ -212,6 +218,8 @@ class AuroraAnimation {
             this.ctx.fill();
         });
 
+        // Reset canvas context state
+        this.ctx.filter = 'none';
         this.ctx.globalCompositeOperation = 'source-over';
     }
 
