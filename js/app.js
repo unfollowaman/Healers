@@ -1,3 +1,5 @@
+const AURORA_HTML = `<div style="position:absolute;left:0;right:0;bottom:0;height:57%;background:radial-gradient(ellipse 160% 100% at 50% 100%, #ff1f4b 0%, #ed254e 20%, rgba(160,10,38,0.72) 50%, transparent 88%);opacity:1;pointer-events:none;"></div><div class="fire-flame" style="position:absolute;left:-3%;bottom:0;width:22%;height:64%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #c41f42 0%, #c41f42dd 18%, #c41f4288 44%, #c41f4233 68%, transparent 88%);filter:blur(8px);opacity:0.92;transform-origin:bottom center;animation:fire4 3.2s ease-in-out infinite;animation-delay:0s;pointer-events:none;will-change:transform;"></div><div class="fire-flame" style="position:absolute;left:5%;bottom:0;width:26%;height:80%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ed254e 0%, #ed254edd 18%, #ed254e88 44%, #ed254e33 68%, transparent 88%);filter:blur(10px);opacity:0.92;transform-origin:bottom center;animation:fire1 2.7s ease-in-out infinite;animation-delay:0.5s;pointer-events:none;will-change:transform;"></div><div class="fire-flame" style="position:absolute;left:18%;bottom:0;width:30%;height:90%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ff2952 0%, #ff2952dd 18%, #ff295288 44%, #ff295233 68%, transparent 88%);filter:blur(11px);opacity:0.92;transform-origin:bottom center;animation:fire3 3.4s ease-in-out infinite;animation-delay:0.9s;pointer-events:none;will-change:transform;"></div><div class="fire-flame" style="position:absolute;left:36%;bottom:0;width:32%;height:96%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ff1f4b 0%, #ff1f4bdd 18%, #ff1f4b88 44%, #ff1f4b33 68%, transparent 88%);filter:blur(12px);opacity:0.92;transform-origin:bottom center;animation:fire2 2.5s ease-in-out infinite;animation-delay:1.2s;pointer-events:none;will-change:transform;"></div><div class="fire-flame" style="position:absolute;left:55%;bottom:0;width:28%;height:86%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #f2527a 0%, #f2527add 18%, #f2527a88 44%, #f2527a33 68%, transparent 88%);filter:blur(10px);opacity:0.92;transform-origin:bottom center;animation:fire5 3.7s ease-in-out infinite;animation-delay:0.7s;pointer-events:none;will-change:transform;"></div><div class="fire-flame" style="position:absolute;left:69%;bottom:0;width:24%;height:74%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ed254e 0%, #ed254edd 18%, #ed254e88 44%, #ed254e33 68%, transparent 88%);filter:blur(9px);opacity:0.92;transform-origin:bottom center;animation:fire6 2.9s ease-in-out infinite;animation-delay:1.5s;pointer-events:none;will-change:transform;"></div><div class="fire-flame" style="position:absolute;left:80%;bottom:0;width:22%;height:66%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #c41f42 0%, #c41f42dd 18%, #c41f4288 44%, #c41f4233 68%, transparent 88%);filter:blur(8px);opacity:0.92;transform-origin:bottom center;animation:fire7 3.3s ease-in-out infinite;animation-delay:0.3s;pointer-events:none;will-change:transform;"></div>`;
+
 const state = {
     songs: [],
     currentIndex: -1,
@@ -421,6 +423,9 @@ function renderArtistsGrid(artists) {
     artists.forEach((artist) => {
         const card = document.createElement('div');
         card.className = 'artist-grid-card';
+        card.innerHTML = `${AURORA_HTML}<div class="card-content-wrapper"></div>`;
+
+        const contentWrapper = card.querySelector('.card-content-wrapper');
 
         const avatarWrapper = document.createElement('div');
         avatarWrapper.className = 'artist-card-avatar-wrapper';
@@ -443,8 +448,8 @@ function renderArtistsGrid(artists) {
             <span class="artist-card-count">${artist.songs.length} song${artist.songs.length === 1 ? '' : 's'}</span>
         `;
 
-        card.appendChild(avatarWrapper);
-        card.appendChild(infoDiv);
+        contentWrapper.appendChild(avatarWrapper);
+        contentWrapper.appendChild(infoDiv);
 
         card.addEventListener('click', () => {
             state.activeArtistName = artist.name;
@@ -1097,6 +1102,9 @@ function renderPlaylistsHub() {
     state.playlists.forEach((pl) => {
         const card = document.createElement('div');
         card.className = 'playlist-card';
+        card.innerHTML = `${AURORA_HTML}<div class="card-content-wrapper"></div>`;
+
+        const contentWrapper = card.querySelector('.card-content-wrapper');
 
         const coverDiv = document.createElement('div');
         coverDiv.className = 'card-cover';
@@ -1113,8 +1121,8 @@ function renderPlaylistsHub() {
             <span class="card-count">${(pl.songs || []).length} tracks</span>
         `;
 
-        card.appendChild(coverDiv);
-        card.appendChild(infoDiv);
+        contentWrapper.appendChild(coverDiv);
+        contentWrapper.appendChild(infoDiv);
 
         card.addEventListener('click', () => {
             state.activePlaylistId = pl.id;
