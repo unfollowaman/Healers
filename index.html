@@ -509,54 +509,94 @@
             <!-- 2. HEADLINE SUMMARY ROW -->
             <section class="stats-summary-grid">
                 <div class="summary-card">
-                    <div class="summary-icon-wrapper">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <polyline points="12 6 12 12 16 14"></polyline>
-                        </svg>
-                    </div>
-                    <div class="summary-data">
-                        <span class="summary-value" id="stat-total-time">0h 0m</span>
-                        <span class="summary-label">Total Listening Time</span>
-                    </div>
-                </div>
-
-                <div class="summary-card">
-                    <div class="summary-icon-wrapper">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                        </svg>
-                    </div>
-                    <div class="summary-data">
-                        <span class="summary-value" id="stat-total-tracks">0</span>
-                        <span class="summary-label">Tracks Played</span>
+                    <div style="position:absolute;left:0;right:0;bottom:0;height:57%;background:radial-gradient(ellipse 160% 100% at 50% 100%, #ff1f4b 0%, #ed254e 20%, rgba(160,10,38,0.72) 50%, transparent 88%);opacity:1;pointer-events:none;"></div>
+                    <div class="fire-flame" style="position:absolute;left:-3%;bottom:0;width:22%;height:64%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #c41f42 0%, #c41f42dd 18%, #c41f4288 44%, #c41f4233 68%, transparent 88%);filter:blur(8px);opacity:0.92;transform-origin:bottom center;animation:fire4 3.2s ease-in-out infinite;animation-delay:0s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:5%;bottom:0;width:26%;height:80%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ed254e 0%, #ed254edd 18%, #ed254e88 44%, #ed254e33 68%, transparent 88%);filter:blur(10px);opacity:0.92;transform-origin:bottom center;animation:fire1 2.7s ease-in-out infinite;animation-delay:0.5s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:18%;bottom:0;width:30%;height:90%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ff2952 0%, #ff2952dd 18%, #ff295288 44%, #ff295233 68%, transparent 88%);filter:blur(11px);opacity:0.92;transform-origin:bottom center;animation:fire3 3.4s ease-in-out infinite;animation-delay:0.9s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:36%;bottom:0;width:32%;height:96%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ff1f4b 0%, #ff1f4bdd 18%, #ff1f4b88 44%, #ff1f4b33 68%, transparent 88%);filter:blur(12px);opacity:0.92;transform-origin:bottom center;animation:fire2 2.5s ease-in-out infinite;animation-delay:1.2s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:55%;bottom:0;width:28%;height:86%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #f2527a 0%, #f2527add 18%, #f2527a88 44%, #f2527a33 68%, transparent 88%);filter:blur(10px);opacity:0.92;transform-origin:bottom center;animation:fire5 3.7s ease-in-out infinite;animation-delay:0.7s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:69%;bottom:0;width:24%;height:74%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ed254e 0%, #ed254edd 18%, #ed254e88 44%, #ed254e33 68%, transparent 88%);filter:blur(9px);opacity:0.92;transform-origin:bottom center;animation:fire6 2.9s ease-in-out infinite;animation-delay:1.5s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:80%;bottom:0;width:22%;height:66%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #c41f42 0%, #c41f42dd 18%, #c41f4288 44%, #c41f4233 68%, transparent 88%);filter:blur(8px);opacity:0.92;transform-origin:bottom center;animation:fire7 3.3s ease-in-out infinite;animation-delay:0.3s;pointer-events:none;will-change:transform;"></div>
+                    <div class="card-content-wrapper">
+                        <div class="summary-icon-wrapper">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                        </div>
+                        <div class="summary-data">
+                            <span class="summary-value" id="stat-total-time">0h 0m</span>
+                            <span class="summary-label">Total Listening Time</span>
+                        </div>
                     </div>
                 </div>
 
                 <div class="summary-card">
-                    <div class="summary-icon-wrapper">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                        </svg>
-                    </div>
-                    <div class="summary-data">
-                        <span class="summary-value" id="stat-unique-artists">0</span>
-                        <span class="summary-label">Unique Artists</span>
+                    <div style="position:absolute;left:0;right:0;bottom:0;height:57%;background:radial-gradient(ellipse 160% 100% at 50% 100%, #ff1f4b 0%, #ed254e 20%, rgba(160,10,38,0.72) 50%, transparent 88%);opacity:1;pointer-events:none;"></div>
+                    <div class="fire-flame" style="position:absolute;left:-3%;bottom:0;width:22%;height:64%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #c41f42 0%, #c41f42dd 18%, #c41f4288 44%, #c41f4233 68%, transparent 88%);filter:blur(8px);opacity:0.92;transform-origin:bottom center;animation:fire4 3.2s ease-in-out infinite;animation-delay:0s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:5%;bottom:0;width:26%;height:80%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ed254e 0%, #ed254edd 18%, #ed254e88 44%, #ed254e33 68%, transparent 88%);filter:blur(10px);opacity:0.92;transform-origin:bottom center;animation:fire1 2.7s ease-in-out infinite;animation-delay:0.5s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:18%;bottom:0;width:30%;height:90%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ff2952 0%, #ff2952dd 18%, #ff295288 44%, #ff295233 68%, transparent 88%);filter:blur(11px);opacity:0.92;transform-origin:bottom center;animation:fire3 3.4s ease-in-out infinite;animation-delay:0.9s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:36%;bottom:0;width:32%;height:96%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ff1f4b 0%, #ff1f4bdd 18%, #ff1f4b88 44%, #ff1f4b33 68%, transparent 88%);filter:blur(12px);opacity:0.92;transform-origin:bottom center;animation:fire2 2.5s ease-in-out infinite;animation-delay:1.2s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:55%;bottom:0;width:28%;height:86%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #f2527a 0%, #f2527add 18%, #f2527a88 44%, #f2527a33 68%, transparent 88%);filter:blur(10px);opacity:0.92;transform-origin:bottom center;animation:fire5 3.7s ease-in-out infinite;animation-delay:0.7s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:69%;bottom:0;width:24%;height:74%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ed254e 0%, #ed254edd 18%, #ed254e88 44%, #ed254e33 68%, transparent 88%);filter:blur(9px);opacity:0.92;transform-origin:bottom center;animation:fire6 2.9s ease-in-out infinite;animation-delay:1.5s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:80%;bottom:0;width:22%;height:66%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #c41f42 0%, #c41f42dd 18%, #c41f4288 44%, #c41f4233 68%, transparent 88%);filter:blur(8px);opacity:0.92;transform-origin:bottom center;animation:fire7 3.3s ease-in-out infinite;animation-delay:0.3s;pointer-events:none;will-change:transform;"></div>
+                    <div class="card-content-wrapper">
+                        <div class="summary-icon-wrapper">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                            </svg>
+                        </div>
+                        <div class="summary-data">
+                            <span class="summary-value" id="stat-total-tracks">0</span>
+                            <span class="summary-label">Tracks Played</span>
+                        </div>
                     </div>
                 </div>
 
                 <div class="summary-card">
-                    <div class="summary-icon-wrapper">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="18" y1="20" x2="18" y2="10"></line>
-                            <line x1="12" y1="20" x2="12" y2="4"></line>
-                            <line x1="6" y1="20" x2="6" y2="14"></line>
-                        </svg>
+                    <div style="position:absolute;left:0;right:0;bottom:0;height:57%;background:radial-gradient(ellipse 160% 100% at 50% 100%, #ff1f4b 0%, #ed254e 20%, rgba(160,10,38,0.72) 50%, transparent 88%);opacity:1;pointer-events:none;"></div>
+                    <div class="fire-flame" style="position:absolute;left:-3%;bottom:0;width:22%;height:64%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #c41f42 0%, #c41f42dd 18%, #c41f4288 44%, #c41f4233 68%, transparent 88%);filter:blur(8px);opacity:0.92;transform-origin:bottom center;animation:fire4 3.2s ease-in-out infinite;animation-delay:0s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:5%;bottom:0;width:26%;height:80%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ed254e 0%, #ed254edd 18%, #ed254e88 44%, #ed254e33 68%, transparent 88%);filter:blur(10px);opacity:0.92;transform-origin:bottom center;animation:fire1 2.7s ease-in-out infinite;animation-delay:0.5s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:18%;bottom:0;width:30%;height:90%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ff2952 0%, #ff2952dd 18%, #ff295288 44%, #ff295233 68%, transparent 88%);filter:blur(11px);opacity:0.92;transform-origin:bottom center;animation:fire3 3.4s ease-in-out infinite;animation-delay:0.9s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:36%;bottom:0;width:32%;height:96%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ff1f4b 0%, #ff1f4bdd 18%, #ff1f4b88 44%, #ff1f4b33 68%, transparent 88%);filter:blur(12px);opacity:0.92;transform-origin:bottom center;animation:fire2 2.5s ease-in-out infinite;animation-delay:1.2s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:55%;bottom:0;width:28%;height:86%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #f2527a 0%, #f2527add 18%, #f2527a88 44%, #f2527a33 68%, transparent 88%);filter:blur(10px);opacity:0.92;transform-origin:bottom center;animation:fire5 3.7s ease-in-out infinite;animation-delay:0.7s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:69%;bottom:0;width:24%;height:74%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ed254e 0%, #ed254edd 18%, #ed254e88 44%, #ed254e33 68%, transparent 88%);filter:blur(9px);opacity:0.92;transform-origin:bottom center;animation:fire6 2.9s ease-in-out infinite;animation-delay:1.5s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:80%;bottom:0;width:22%;height:66%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #c41f42 0%, #c41f42dd 18%, #c41f4288 44%, #c41f4233 68%, transparent 88%);filter:blur(8px);opacity:0.92;transform-origin:bottom center;animation:fire7 3.3s ease-in-out infinite;animation-delay:0.3s;pointer-events:none;will-change:transform;"></div>
+                    <div class="card-content-wrapper">
+                        <div class="summary-icon-wrapper">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </div>
+                        <div class="summary-data">
+                            <span class="summary-value" id="stat-unique-artists">0</span>
+                            <span class="summary-label">Unique Artists</span>
+                        </div>
                     </div>
-                    <div class="summary-data">
-                        <span class="summary-value" id="stat-avg-daily">0m / day</span>
-                        <span class="summary-label">Avg Daily Listening</span>
+                </div>
+
+                <div class="summary-card">
+                    <div style="position:absolute;left:0;right:0;bottom:0;height:57%;background:radial-gradient(ellipse 160% 100% at 50% 100%, #ff1f4b 0%, #ed254e 20%, rgba(160,10,38,0.72) 50%, transparent 88%);opacity:1;pointer-events:none;"></div>
+                    <div class="fire-flame" style="position:absolute;left:-3%;bottom:0;width:22%;height:64%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #c41f42 0%, #c41f42dd 18%, #c41f4288 44%, #c41f4233 68%, transparent 88%);filter:blur(8px);opacity:0.92;transform-origin:bottom center;animation:fire4 3.2s ease-in-out infinite;animation-delay:0s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:5%;bottom:0;width:26%;height:80%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ed254e 0%, #ed254edd 18%, #ed254e88 44%, #ed254e33 68%, transparent 88%);filter:blur(10px);opacity:0.92;transform-origin:bottom center;animation:fire1 2.7s ease-in-out infinite;animation-delay:0.5s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:18%;bottom:0;width:30%;height:90%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ff2952 0%, #ff2952dd 18%, #ff295288 44%, #ff295233 68%, transparent 88%);filter:blur(11px);opacity:0.92;transform-origin:bottom center;animation:fire3 3.4s ease-in-out infinite;animation-delay:0.9s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:36%;bottom:0;width:32%;height:96%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ff1f4b 0%, #ff1f4bdd 18%, #ff1f4b88 44%, #ff1f4b33 68%, transparent 88%);filter:blur(12px);opacity:0.92;transform-origin:bottom center;animation:fire2 2.5s ease-in-out infinite;animation-delay:1.2s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:55%;bottom:0;width:28%;height:86%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #f2527a 0%, #f2527add 18%, #f2527a88 44%, #f2527a33 68%, transparent 88%);filter:blur(10px);opacity:0.92;transform-origin:bottom center;animation:fire5 3.7s ease-in-out infinite;animation-delay:0.7s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:69%;bottom:0;width:24%;height:74%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ed254e 0%, #ed254edd 18%, #ed254e88 44%, #ed254e33 68%, transparent 88%);filter:blur(9px);opacity:0.92;transform-origin:bottom center;animation:fire6 2.9s ease-in-out infinite;animation-delay:1.5s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:80%;bottom:0;width:22%;height:66%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #c41f42 0%, #c41f42dd 18%, #c41f4288 44%, #c41f4233 68%, transparent 88%);filter:blur(8px);opacity:0.92;transform-origin:bottom center;animation:fire7 3.3s ease-in-out infinite;animation-delay:0.3s;pointer-events:none;will-change:transform;"></div>
+                    <div class="card-content-wrapper">
+                        <div class="summary-icon-wrapper">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="20" x2="18" y2="10"></line>
+                                <line x1="12" y1="20" x2="12" y2="4"></line>
+                                <line x1="6" y1="20" x2="6" y2="14"></line>
+                            </svg>
+                        </div>
+                        <div class="summary-data">
+                            <span class="summary-value" id="stat-avg-daily">0m / day</span>
+                            <span class="summary-label">Avg Daily Listening</span>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -570,20 +610,50 @@
                 <div class="top-lists-grid">
                     <!-- Top Artists -->
                     <div class="top-list-card">
-                        <h3 class="top-list-card-title">Top Artists</h3>
-                        <ol class="top-ranked-list" id="top-artists-list"></ol>
+                        <div style="position:absolute;left:0;right:0;bottom:0;height:57%;background:radial-gradient(ellipse 160% 100% at 50% 100%, #ff1f4b 0%, #ed254e 20%, rgba(160,10,38,0.72) 50%, transparent 88%);opacity:1;pointer-events:none;"></div>
+                        <div class="fire-flame" style="position:absolute;left:-3%;bottom:0;width:22%;height:64%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #c41f42 0%, #c41f42dd 18%, #c41f4288 44%, #c41f4233 68%, transparent 88%);filter:blur(8px);opacity:0.92;transform-origin:bottom center;animation:fire4 3.2s ease-in-out infinite;animation-delay:0s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:5%;bottom:0;width:26%;height:80%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ed254e 0%, #ed254edd 18%, #ed254e88 44%, #ed254e33 68%, transparent 88%);filter:blur(10px);opacity:0.92;transform-origin:bottom center;animation:fire1 2.7s ease-in-out infinite;animation-delay:0.5s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:18%;bottom:0;width:30%;height:90%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ff2952 0%, #ff2952dd 18%, #ff295288 44%, #ff295233 68%, transparent 88%);filter:blur(11px);opacity:0.92;transform-origin:bottom center;animation:fire3 3.4s ease-in-out infinite;animation-delay:0.9s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:36%;bottom:0;width:32%;height:96%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ff1f4b 0%, #ff1f4bdd 18%, #ff1f4b88 44%, #ff1f4b33 68%, transparent 88%);filter:blur(12px);opacity:0.92;transform-origin:bottom center;animation:fire2 2.5s ease-in-out infinite;animation-delay:1.2s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:55%;bottom:0;width:28%;height:86%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #f2527a 0%, #f2527add 18%, #f2527a88 44%, #f2527a33 68%, transparent 88%);filter:blur(10px);opacity:0.92;transform-origin:bottom center;animation:fire5 3.7s ease-in-out infinite;animation-delay:0.7s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:69%;bottom:0;width:24%;height:74%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ed254e 0%, #ed254edd 18%, #ed254e88 44%, #ed254e33 68%, transparent 88%);filter:blur(9px);opacity:0.92;transform-origin:bottom center;animation:fire6 2.9s ease-in-out infinite;animation-delay:1.5s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:80%;bottom:0;width:22%;height:66%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #c41f42 0%, #c41f42dd 18%, #c41f4288 44%, #c41f4233 68%, transparent 88%);filter:blur(8px);opacity:0.92;transform-origin:bottom center;animation:fire7 3.3s ease-in-out infinite;animation-delay:0.3s;pointer-events:none;will-change:transform;"></div>
+                        <div class="card-content-wrapper">
+                            <h3 class="top-list-card-title">Top Artists</h3>
+                            <ol class="top-ranked-list" id="top-artists-list"></ol>
+                        </div>
                     </div>
 
                     <!-- Top Songs -->
                     <div class="top-list-card">
-                        <h3 class="top-list-card-title">Top Songs</h3>
-                        <ol class="top-ranked-list" id="top-songs-list"></ol>
+                        <div style="position:absolute;left:0;right:0;bottom:0;height:57%;background:radial-gradient(ellipse 160% 100% at 50% 100%, #ff1f4b 0%, #ed254e 20%, rgba(160,10,38,0.72) 50%, transparent 88%);opacity:1;pointer-events:none;"></div>
+                        <div class="fire-flame" style="position:absolute;left:-3%;bottom:0;width:22%;height:64%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #c41f42 0%, #c41f42dd 18%, #c41f4288 44%, #c41f4233 68%, transparent 88%);filter:blur(8px);opacity:0.92;transform-origin:bottom center;animation:fire4 3.2s ease-in-out infinite;animation-delay:0s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:5%;bottom:0;width:26%;height:80%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ed254e 0%, #ed254edd 18%, #ed254e88 44%, #ed254e33 68%, transparent 88%);filter:blur(10px);opacity:0.92;transform-origin:bottom center;animation:fire1 2.7s ease-in-out infinite;animation-delay:0.5s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:18%;bottom:0;width:30%;height:90%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ff2952 0%, #ff2952dd 18%, #ff295288 44%, #ff295233 68%, transparent 88%);filter:blur(11px);opacity:0.92;transform-origin:bottom center;animation:fire3 3.4s ease-in-out infinite;animation-delay:0.9s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:36%;bottom:0;width:32%;height:96%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ff1f4b 0%, #ff1f4bdd 18%, #ff1f4b88 44%, #ff1f4b33 68%, transparent 88%);filter:blur(12px);opacity:0.92;transform-origin:bottom center;animation:fire2 2.5s ease-in-out infinite;animation-delay:1.2s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:55%;bottom:0;width:28%;height:86%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #f2527a 0%, #f2527add 18%, #f2527a88 44%, #f2527a33 68%, transparent 88%);filter:blur(10px);opacity:0.92;transform-origin:bottom center;animation:fire5 3.7s ease-in-out infinite;animation-delay:0.7s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:69%;bottom:0;width:24%;height:74%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ed254e 0%, #ed254edd 18%, #ed254e88 44%, #ed254e33 68%, transparent 88%);filter:blur(9px);opacity:0.92;transform-origin:bottom center;animation:fire6 2.9s ease-in-out infinite;animation-delay:1.5s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:80%;bottom:0;width:22%;height:66%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #c41f42 0%, #c41f42dd 18%, #c41f4288 44%, #c41f4233 68%, transparent 88%);filter:blur(8px);opacity:0.92;transform-origin:bottom center;animation:fire7 3.3s ease-in-out infinite;animation-delay:0.3s;pointer-events:none;will-change:transform;"></div>
+                        <div class="card-content-wrapper">
+                            <h3 class="top-list-card-title">Top Songs</h3>
+                            <ol class="top-ranked-list" id="top-songs-list"></ol>
+                        </div>
                     </div>
 
                     <!-- Top Albums -->
                     <div class="top-list-card">
-                        <h3 class="top-list-card-title">Top Albums</h3>
-                        <ol class="top-ranked-list" id="top-albums-list"></ol>
+                        <div style="position:absolute;left:0;right:0;bottom:0;height:57%;background:radial-gradient(ellipse 160% 100% at 50% 100%, #ff1f4b 0%, #ed254e 20%, rgba(160,10,38,0.72) 50%, transparent 88%);opacity:1;pointer-events:none;"></div>
+                        <div class="fire-flame" style="position:absolute;left:-3%;bottom:0;width:22%;height:64%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #c41f42 0%, #c41f42dd 18%, #c41f4288 44%, #c41f4233 68%, transparent 88%);filter:blur(8px);opacity:0.92;transform-origin:bottom center;animation:fire4 3.2s ease-in-out infinite;animation-delay:0s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:5%;bottom:0;width:26%;height:80%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ed254e 0%, #ed254edd 18%, #ed254e88 44%, #ed254e33 68%, transparent 88%);filter:blur(10px);opacity:0.92;transform-origin:bottom center;animation:fire1 2.7s ease-in-out infinite;animation-delay:0.5s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:18%;bottom:0;width:30%;height:90%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ff2952 0%, #ff2952dd 18%, #ff295288 44%, #ff295233 68%, transparent 88%);filter:blur(11px);opacity:0.92;transform-origin:bottom center;animation:fire3 3.4s ease-in-out infinite;animation-delay:0.9s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:36%;bottom:0;width:32%;height:96%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ff1f4b 0%, #ff1f4bdd 18%, #ff1f4b88 44%, #ff1f4b33 68%, transparent 88%);filter:blur(12px);opacity:0.92;transform-origin:bottom center;animation:fire2 2.5s ease-in-out infinite;animation-delay:1.2s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:55%;bottom:0;width:28%;height:86%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #f2527a 0%, #f2527add 18%, #f2527a88 44%, #f2527a33 68%, transparent 88%);filter:blur(10px);opacity:0.92;transform-origin:bottom center;animation:fire5 3.7s ease-in-out infinite;animation-delay:0.7s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:69%;bottom:0;width:24%;height:74%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ed254e 0%, #ed254edd 18%, #ed254e88 44%, #ed254e33 68%, transparent 88%);filter:blur(9px);opacity:0.92;transform-origin:bottom center;animation:fire6 2.9s ease-in-out infinite;animation-delay:1.5s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:80%;bottom:0;width:22%;height:66%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #c41f42 0%, #c41f42dd 18%, #c41f4288 44%, #c41f4233 68%, transparent 88%);filter:blur(8px);opacity:0.92;transform-origin:bottom center;animation:fire7 3.3s ease-in-out infinite;animation-delay:0.3s;pointer-events:none;will-change:transform;"></div>
+                        <div class="card-content-wrapper">
+                            <h3 class="top-list-card-title">Top Albums</h3>
+                            <ol class="top-ranked-list" id="top-albums-list"></ol>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -601,8 +671,18 @@
 
                 <!-- Genre Breakdown -->
                 <div class="genre-breakdown-card" style="margin-top: 14px;">
-                    <h3 class="top-list-card-title" style="margin-bottom: 10px;">Genre & Mood Distribution</h3>
-                    <div class="genre-bars-container" id="genre-bars-container"></div>
+                    <div style="position:absolute;left:0;right:0;bottom:0;height:57%;background:radial-gradient(ellipse 160% 100% at 50% 100%, #ff1f4b 0%, #ed254e 20%, rgba(160,10,38,0.72) 50%, transparent 88%);opacity:1;pointer-events:none;"></div>
+                    <div class="fire-flame" style="position:absolute;left:-3%;bottom:0;width:22%;height:64%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #c41f42 0%, #c41f42dd 18%, #c41f4288 44%, #c41f4233 68%, transparent 88%);filter:blur(8px);opacity:0.92;transform-origin:bottom center;animation:fire4 3.2s ease-in-out infinite;animation-delay:0s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:5%;bottom:0;width:26%;height:80%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ed254e 0%, #ed254edd 18%, #ed254e88 44%, #ed254e33 68%, transparent 88%);filter:blur(10px);opacity:0.92;transform-origin:bottom center;animation:fire1 2.7s ease-in-out infinite;animation-delay:0.5s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:18%;bottom:0;width:30%;height:90%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ff2952 0%, #ff2952dd 18%, #ff295288 44%, #ff295233 68%, transparent 88%);filter:blur(11px);opacity:0.92;transform-origin:bottom center;animation:fire3 3.4s ease-in-out infinite;animation-delay:0.9s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:36%;bottom:0;width:32%;height:96%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ff1f4b 0%, #ff1f4bdd 18%, #ff1f4b88 44%, #ff1f4b33 68%, transparent 88%);filter:blur(12px);opacity:0.92;transform-origin:bottom center;animation:fire2 2.5s ease-in-out infinite;animation-delay:1.2s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:55%;bottom:0;width:28%;height:86%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #f2527a 0%, #f2527add 18%, #f2527a88 44%, #f2527a33 68%, transparent 88%);filter:blur(10px);opacity:0.92;transform-origin:bottom center;animation:fire5 3.7s ease-in-out infinite;animation-delay:0.7s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:69%;bottom:0;width:24%;height:74%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ed254e 0%, #ed254edd 18%, #ed254e88 44%, #ed254e33 68%, transparent 88%);filter:blur(9px);opacity:0.92;transform-origin:bottom center;animation:fire6 2.9s ease-in-out infinite;animation-delay:1.5s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:80%;bottom:0;width:22%;height:66%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #c41f42 0%, #c41f42dd 18%, #c41f4288 44%, #c41f4233 68%, transparent 88%);filter:blur(8px);opacity:0.92;transform-origin:bottom center;animation:fire7 3.3s ease-in-out infinite;animation-delay:0.3s;pointer-events:none;will-change:transform;"></div>
+                    <div class="card-content-wrapper">
+                        <h3 class="top-list-card-title" style="margin-bottom: 10px;">Genre & Mood Distribution</h3>
+                        <div class="genre-bars-container" id="genre-bars-container"></div>
+                    </div>
                 </div>
             </section>
 
@@ -614,21 +694,51 @@
 
                 <div class="milestones-grid">
                     <div class="milestone-card">
-                        <div class="milestone-badge">✨ New Discoveries</div>
-                        <div class="milestone-value" id="stat-new-artists">0 new artists</div>
-                        <p class="milestone-desc">Discovered during this selected range</p>
+                        <div style="position:absolute;left:0;right:0;bottom:0;height:57%;background:radial-gradient(ellipse 160% 100% at 50% 100%, #ff1f4b 0%, #ed254e 20%, rgba(160,10,38,0.72) 50%, transparent 88%);opacity:1;pointer-events:none;"></div>
+                        <div class="fire-flame" style="position:absolute;left:-3%;bottom:0;width:22%;height:64%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #c41f42 0%, #c41f42dd 18%, #c41f4288 44%, #c41f4233 68%, transparent 88%);filter:blur(8px);opacity:0.92;transform-origin:bottom center;animation:fire4 3.2s ease-in-out infinite;animation-delay:0s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:5%;bottom:0;width:26%;height:80%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ed254e 0%, #ed254edd 18%, #ed254e88 44%, #ed254e33 68%, transparent 88%);filter:blur(10px);opacity:0.92;transform-origin:bottom center;animation:fire1 2.7s ease-in-out infinite;animation-delay:0.5s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:18%;bottom:0;width:30%;height:90%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ff2952 0%, #ff2952dd 18%, #ff295288 44%, #ff295233 68%, transparent 88%);filter:blur(11px);opacity:0.92;transform-origin:bottom center;animation:fire3 3.4s ease-in-out infinite;animation-delay:0.9s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:36%;bottom:0;width:32%;height:96%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ff1f4b 0%, #ff1f4bdd 18%, #ff1f4b88 44%, #ff1f4b33 68%, transparent 88%);filter:blur(12px);opacity:0.92;transform-origin:bottom center;animation:fire2 2.5s ease-in-out infinite;animation-delay:1.2s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:55%;bottom:0;width:28%;height:86%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #f2527a 0%, #f2527add 18%, #f2527a88 44%, #f2527a33 68%, transparent 88%);filter:blur(10px);opacity:0.92;transform-origin:bottom center;animation:fire5 3.7s ease-in-out infinite;animation-delay:0.7s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:69%;bottom:0;width:24%;height:74%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ed254e 0%, #ed254edd 18%, #ed254e88 44%, #ed254e33 68%, transparent 88%);filter:blur(9px);opacity:0.92;transform-origin:bottom center;animation:fire6 2.9s ease-in-out infinite;animation-delay:1.5s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:80%;bottom:0;width:22%;height:66%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #c41f42 0%, #c41f42dd 18%, #c41f4288 44%, #c41f4233 68%, transparent 88%);filter:blur(8px);opacity:0.92;transform-origin:bottom center;animation:fire7 3.3s ease-in-out infinite;animation-delay:0.3s;pointer-events:none;will-change:transform;"></div>
+                        <div class="card-content-wrapper">
+                            <div class="milestone-badge">✨ New Discoveries</div>
+                            <div class="milestone-value" id="stat-new-artists">0 new artists</div>
+                            <p class="milestone-desc">Discovered during this selected range</p>
+                        </div>
                     </div>
 
                     <div class="milestone-card">
-                        <div class="milestone-badge">🔥 Listening Streak</div>
-                        <div class="milestone-value" id="stat-streak-days">0 days</div>
-                        <p class="milestone-desc">Longest streak of consecutive listening days</p>
+                        <div style="position:absolute;left:0;right:0;bottom:0;height:57%;background:radial-gradient(ellipse 160% 100% at 50% 100%, #ff1f4b 0%, #ed254e 20%, rgba(160,10,38,0.72) 50%, transparent 88%);opacity:1;pointer-events:none;"></div>
+                        <div class="fire-flame" style="position:absolute;left:-3%;bottom:0;width:22%;height:64%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #c41f42 0%, #c41f42dd 18%, #c41f4288 44%, #c41f4233 68%, transparent 88%);filter:blur(8px);opacity:0.92;transform-origin:bottom center;animation:fire4 3.2s ease-in-out infinite;animation-delay:0s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:5%;bottom:0;width:26%;height:80%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ed254e 0%, #ed254edd 18%, #ed254e88 44%, #ed254e33 68%, transparent 88%);filter:blur(10px);opacity:0.92;transform-origin:bottom center;animation:fire1 2.7s ease-in-out infinite;animation-delay:0.5s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:18%;bottom:0;width:30%;height:90%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ff2952 0%, #ff2952dd 18%, #ff295288 44%, #ff295233 68%, transparent 88%);filter:blur(11px);opacity:0.92;transform-origin:bottom center;animation:fire3 3.4s ease-in-out infinite;animation-delay:0.9s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:36%;bottom:0;width:32%;height:96%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ff1f4b 0%, #ff1f4bdd 18%, #ff1f4b88 44%, #ff1f4b33 68%, transparent 88%);filter:blur(12px);opacity:0.92;transform-origin:bottom center;animation:fire2 2.5s ease-in-out infinite;animation-delay:1.2s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:55%;bottom:0;width:28%;height:86%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #f2527a 0%, #f2527add 18%, #f2527a88 44%, #f2527a33 68%, transparent 88%);filter:blur(10px);opacity:0.92;transform-origin:bottom center;animation:fire5 3.7s ease-in-out infinite;animation-delay:0.7s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:69%;bottom:0;width:24%;height:74%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ed254e 0%, #ed254edd 18%, #ed254e88 44%, #ed254e33 68%, transparent 88%);filter:blur(9px);opacity:0.92;transform-origin:bottom center;animation:fire6 2.9s ease-in-out infinite;animation-delay:1.5s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:80%;bottom:0;width:22%;height:66%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #c41f42 0%, #c41f42dd 18%, #c41f4288 44%, #c41f4233 68%, transparent 88%);filter:blur(8px);opacity:0.92;transform-origin:bottom center;animation:fire7 3.3s ease-in-out infinite;animation-delay:0.3s;pointer-events:none;will-change:transform;"></div>
+                        <div class="card-content-wrapper">
+                            <div class="milestone-badge">🔥 Listening Streak</div>
+                            <div class="milestone-value" id="stat-streak-days">0 days</div>
+                            <p class="milestone-desc">Longest streak of consecutive listening days</p>
+                        </div>
                     </div>
 
                     <div class="milestone-card">
-                        <div class="milestone-badge">🔁 Most Repeated Track</div>
-                        <div class="milestone-value" id="stat-most-repeated-title">None</div>
-                        <p class="milestone-desc" id="stat-most-repeated-count">Played 0 times</p>
+                        <div style="position:absolute;left:0;right:0;bottom:0;height:57%;background:radial-gradient(ellipse 160% 100% at 50% 100%, #ff1f4b 0%, #ed254e 20%, rgba(160,10,38,0.72) 50%, transparent 88%);opacity:1;pointer-events:none;"></div>
+                        <div class="fire-flame" style="position:absolute;left:-3%;bottom:0;width:22%;height:64%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #c41f42 0%, #c41f42dd 18%, #c41f4288 44%, #c41f4233 68%, transparent 88%);filter:blur(8px);opacity:0.92;transform-origin:bottom center;animation:fire4 3.2s ease-in-out infinite;animation-delay:0s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:5%;bottom:0;width:26%;height:80%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ed254e 0%, #ed254edd 18%, #ed254e88 44%, #ed254e33 68%, transparent 88%);filter:blur(10px);opacity:0.92;transform-origin:bottom center;animation:fire1 2.7s ease-in-out infinite;animation-delay:0.5s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:18%;bottom:0;width:30%;height:90%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ff2952 0%, #ff2952dd 18%, #ff295288 44%, #ff295233 68%, transparent 88%);filter:blur(11px);opacity:0.92;transform-origin:bottom center;animation:fire3 3.4s ease-in-out infinite;animation-delay:0.9s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:36%;bottom:0;width:32%;height:96%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ff1f4b 0%, #ff1f4bdd 18%, #ff1f4b88 44%, #ff1f4b33 68%, transparent 88%);filter:blur(12px);opacity:0.92;transform-origin:bottom center;animation:fire2 2.5s ease-in-out infinite;animation-delay:1.2s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:55%;bottom:0;width:28%;height:86%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #f2527a 0%, #f2527add 18%, #f2527a88 44%, #f2527a33 68%, transparent 88%);filter:blur(10px);opacity:0.92;transform-origin:bottom center;animation:fire5 3.7s ease-in-out infinite;animation-delay:0.7s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:69%;bottom:0;width:24%;height:74%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ed254e 0%, #ed254edd 18%, #ed254e88 44%, #ed254e33 68%, transparent 88%);filter:blur(9px);opacity:0.92;transform-origin:bottom center;animation:fire6 2.9s ease-in-out infinite;animation-delay:1.5s;pointer-events:none;will-change:transform;"></div>
+                        <div class="fire-flame" style="position:absolute;left:80%;bottom:0;width:22%;height:66%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #c41f42 0%, #c41f42dd 18%, #c41f4288 44%, #c41f4233 68%, transparent 88%);filter:blur(8px);opacity:0.92;transform-origin:bottom center;animation:fire7 3.3s ease-in-out infinite;animation-delay:0.3s;pointer-events:none;will-change:transform;"></div>
+                        <div class="card-content-wrapper">
+                            <div class="milestone-badge">🔁 Most Repeated Track</div>
+                            <div class="milestone-value" id="stat-most-repeated-title">None</div>
+                            <p class="milestone-desc" id="stat-most-repeated-count">Played 0 times</p>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -641,7 +751,17 @@
                 </div>
 
                 <div class="history-table-card">
-                    <ul class="history-list" id="recent-history-list"></ul>
+                    <div style="position:absolute;left:0;right:0;bottom:0;height:57%;background:radial-gradient(ellipse 160% 100% at 50% 100%, #ff1f4b 0%, #ed254e 20%, rgba(160,10,38,0.72) 50%, transparent 88%);opacity:1;pointer-events:none;"></div>
+                    <div class="fire-flame" style="position:absolute;left:-3%;bottom:0;width:22%;height:64%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #c41f42 0%, #c41f42dd 18%, #c41f4288 44%, #c41f4233 68%, transparent 88%);filter:blur(8px);opacity:0.92;transform-origin:bottom center;animation:fire4 3.2s ease-in-out infinite;animation-delay:0s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:5%;bottom:0;width:26%;height:80%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ed254e 0%, #ed254edd 18%, #ed254e88 44%, #ed254e33 68%, transparent 88%);filter:blur(10px);opacity:0.92;transform-origin:bottom center;animation:fire1 2.7s ease-in-out infinite;animation-delay:0.5s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:18%;bottom:0;width:30%;height:90%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ff2952 0%, #ff2952dd 18%, #ff295288 44%, #ff295233 68%, transparent 88%);filter:blur(11px);opacity:0.92;transform-origin:bottom center;animation:fire3 3.4s ease-in-out infinite;animation-delay:0.9s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:36%;bottom:0;width:32%;height:96%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ff1f4b 0%, #ff1f4bdd 18%, #ff1f4b88 44%, #ff1f4b33 68%, transparent 88%);filter:blur(12px);opacity:0.92;transform-origin:bottom center;animation:fire2 2.5s ease-in-out infinite;animation-delay:1.2s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:55%;bottom:0;width:28%;height:86%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #f2527a 0%, #f2527add 18%, #f2527a88 44%, #f2527a33 68%, transparent 88%);filter:blur(10px);opacity:0.92;transform-origin:bottom center;animation:fire5 3.7s ease-in-out infinite;animation-delay:0.7s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:69%;bottom:0;width:24%;height:74%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #ed254e 0%, #ed254edd 18%, #ed254e88 44%, #ed254e33 68%, transparent 88%);filter:blur(9px);opacity:0.92;transform-origin:bottom center;animation:fire6 2.9s ease-in-out infinite;animation-delay:1.5s;pointer-events:none;will-change:transform;"></div>
+                    <div class="fire-flame" style="position:absolute;left:80%;bottom:0;width:22%;height:66%;border-radius:50% 50% 40% 40% / 85% 85% 15% 15%;background:radial-gradient(ellipse 90% 55% at 50% 100%, #c41f42 0%, #c41f42dd 18%, #c41f4288 44%, #c41f4233 68%, transparent 88%);filter:blur(8px);opacity:0.92;transform-origin:bottom center;animation:fire7 3.3s ease-in-out infinite;animation-delay:0.3s;pointer-events:none;will-change:transform;"></div>
+                    <div class="card-content-wrapper">
+                        <ul class="history-list" id="recent-history-list"></ul>
+                    </div>
                 </div>
             </section>
         </div>
