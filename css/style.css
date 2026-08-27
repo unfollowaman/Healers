@@ -29,6 +29,10 @@ html, body {
 }
 
 /* Aurora Canvas Background */
+#aurora-canvas {
+    display: none;
+}
+
 .aurora-canvas {
     position: fixed;
     top: 0;
@@ -38,6 +42,7 @@ html, body {
     z-index: 1;
     pointer-events: none;
     display: block;
+    display: none;
 }
 
 /* Top Navigation Menu */
@@ -185,6 +190,7 @@ html, body {
     background: rgba(0, 0, 0, 0.25);
     z-index: 2;
     pointer-events: none;
+    display: none;
 }
 
 /* All Songs Overlay Page */
@@ -2888,4 +2894,81 @@ html, body {
     .track-album-cell, .track-date-cell {
         display: none;
     }
+}
+
+/* ── FIRE BACKGROUND ── */
+#fire-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+#fire-bg .fire-base {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 38%;
+  background: radial-gradient(ellipse 160% 100% at 50% 100%, #ff1f4b 0%, #ed254e 20%, rgba(160,10,38,0.72) 50%, transparent 88%);
+  opacity: 1;
+  pointer-events: none;
+}
+
+#fire-bg .fire-flame {
+  position: absolute;
+  bottom: 0;
+  border-radius: 50% 50% 40% 40% / 85% 85% 15% 15%;
+  pointer-events: none;
+  will-change: transform;
+  transform-origin: bottom center;
+}
+
+@keyframes fire1 {
+  0%,100% { transform: scaleY(1)    skewX(2deg)   translateX(0px); }
+  18%      { transform: scaleY(1.28) skewX(-11deg) translateX(-7px); }
+  42%      { transform: scaleY(0.78) skewX(7deg)   translateX(8px); }
+  68%      { transform: scaleY(1.18) skewX(-5deg)  translateX(-4px); }
+  86%      { transform: scaleY(0.88) skewX(9deg)   translateX(6px); }
+}
+@keyframes fire2 {
+  0%,100% { transform: scaleY(1)    skewX(-3deg)  translateX(0px); }
+  22%      { transform: scaleY(1.38) skewX(9deg)   translateX(8px); }
+  48%      { transform: scaleY(0.72) skewX(-8deg)  translateX(-10px); }
+  74%      { transform: scaleY(1.22) skewX(5deg)   translateX(5px); }
+}
+@keyframes fire3 {
+  0%,100% { transform: scaleY(1)    skewX(0deg)   translateX(0px); }
+  28%      { transform: scaleY(1.42) skewX(-13deg) translateX(-6px); }
+  54%      { transform: scaleY(0.82) skewX(10deg)  translateX(11px); }
+  80%      { transform: scaleY(1.12) skewX(-3deg)  translateX(-5px); }
+}
+@keyframes fire4 {
+  0%,100% { transform: scaleY(1)    skewX(4deg)   translateX(0px); }
+  20%      { transform: scaleY(0.88) skewX(-7deg)  translateX(-8px); }
+  46%      { transform: scaleY(1.32) skewX(11deg)  translateX(9px); }
+  72%      { transform: scaleY(0.78) skewX(-9deg)  translateX(-7px); }
+}
+@keyframes fire5 {
+  0%,100% { transform: scaleY(1)    skewX(-2deg)  translateX(0px); }
+  33%      { transform: scaleY(1.24) skewX(12deg)  translateX(10px); }
+  58%      { transform: scaleY(0.85) skewX(-10deg) translateX(-9px); }
+  84%      { transform: scaleY(1.16) skewX(6deg)   translateX(5px); }
+}
+@keyframes fire6 {
+  0%,100% { transform: scaleY(1)    skewX(3deg)   translateX(0px); }
+  26%      { transform: scaleY(1.3)  skewX(-8deg)  translateX(-11px); }
+  52%      { transform: scaleY(0.76) skewX(13deg)  translateX(8px); }
+  78%      { transform: scaleY(1.2)  skewX(-4deg)  translateX(-3px); }
+}
+@keyframes fire7 {
+  0%,100% { transform: scaleY(1)    skewX(-4deg)  translateX(0px); }
+  30%      { transform: scaleY(1.34) skewX(10deg)  translateX(9px); }
+  56%      { transform: scaleY(0.8)  skewX(-12deg) translateX(-8px); }
+  82%      { transform: scaleY(1.1)  skewX(7deg)   translateX(6px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #fire-bg .fire-flame { animation: none !important; }
 }
