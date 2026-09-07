@@ -71,6 +71,7 @@ const elements = {
 
     songsOverlay: document.querySelector('#songs-overlay'),
     songsBackButton: document.querySelector('#songs-back-button'),
+    refreshSongsBtn: document.querySelector('#refresh-songs-btn'),
     sortSelect: document.querySelector('#sort-select'),
     songsList: document.querySelector('#songs-list'),
     playerContainer: document.querySelector('#player-container'),
@@ -1873,6 +1874,63 @@ async function loadSongs() {
     }
 }
 
+async function refreshCatalog() {
+    const btn = elements.refreshSongsBtn;
+    if (!btn || btn.disabled) return;
+
+    btn.disabled = true;
+    btn.classList.add('loading');
+
+    const defaultIconSvg = `<svg class="refresh-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>`;
+    const successIconSvg = `<svg class="refresh-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+
+    try {
+        const response = await fetch('/api/songs?refresh=1', {
+            headers: { Accept: 'application/json' }
+        });
+        const payload = await response.json().catch(() => null);
+
+        if (!response.ok || payload?.error) {
+            throw new Error(payload?.error || `Server error (${response.status})`);
+        }
+
+        const newSongs = Array.isArray(payload) ? payload : [];
+        const prevCount = state.songs.length;
+        state.songs = newSongs;
+
+        if (state.currentIndex === -1 && state.songs.length > 0) {
+            state.currentIndex = 0;
+            updateNowPlaying(getCurrentSong());
+        }
+
+        if (state.isSongsOverlayOpen) renderSongsList();
+        if (state.isArtistsOverlayOpen) {
+            if (state.activeArtistName) renderArtistDetail();
+            else renderArtistsHub();
+        }
+        if (state.isStatsOverlayOpen) renderStatsPage();
+
+        btn.classList.remove('loading');
+        const iconEl = btn.querySelector('.refresh-icon');
+        if (iconEl) iconEl.outerHTML = successIconSvg;
+
+        const addedCount = Math.max(0, newSongs.length - prevCount);
+        showToast(addedCount > 0 ? `Synced ${addedCount} new track${addedCount === 1 ? '' : 's'}` : 'Library up to date');
+
+        setTimeout(() => {
+            const currentIcon = btn.querySelector('.refresh-icon');
+            if (currentIcon) currentIcon.outerHTML = defaultIconSvg;
+            btn.disabled = false;
+        }, 1500);
+
+    } catch (error) {
+        console.error('Refresh catalog error:', error);
+        btn.classList.remove('loading');
+        btn.disabled = false;
+        showToast(error.message || 'Refresh failed');
+    }
+}
+
 /* ==========================================================================
    STATS RENDERING & CALCULATION FUNCTIONS
    ========================================================================== */
@@ -2282,6 +2340,12 @@ function bindEvents() {
     if (elements.songsBackButton) {
         elements.songsBackButton.addEventListener('click', () => {
             closeSongsOverlay();
+        });
+    }
+
+    if (elements.refreshSongsBtn) {
+        elements.refreshSongsBtn.addEventListener('click', () => {
+            refreshCatalog();
         });
     }
 
