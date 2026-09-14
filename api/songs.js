@@ -11,7 +11,7 @@ export function normalizeChannelId(value) {
   return String(value || '').trim();
 }
 
-function isExpectedChannel(chat, expectedChannelId) {
+export function isExpectedChannel(chat, expectedChannelId) {
   if (!expectedChannelId) return true;
 
   const expected = normalizeChannelId(expectedChannelId);
