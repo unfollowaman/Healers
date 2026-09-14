@@ -39,7 +39,7 @@ const state = {
     playHistory: []
 };
 
-const elements = {
+const elements = typeof document !== 'undefined' ? {
     topNavContainer: document.querySelector('.top-nav-container'),
     hamburgerButton: document.querySelector('#hamburger-button'),
     navDropdown: document.querySelector('#nav-dropdown'),
@@ -172,9 +172,9 @@ const elements = {
     statMostRepeatedCount: document.querySelector('#stat-most-repeated-count'),
 
     recentHistoryList: document.querySelector('#recent-history-list')
-};
+} : {};
 
-function formatDuration(seconds) {
+export function formatDuration(seconds) {
     if (!Number.isFinite(seconds) || seconds <= 0) return '0:00';
     const rounded = Math.floor(seconds);
     const minutes = Math.floor(rounded / 60);
@@ -2652,4 +2652,6 @@ function init() {
     loadSongs();
 }
 
-init();
+if (typeof document !== 'undefined') {
+    init();
+}
