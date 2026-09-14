@@ -182,6 +182,33 @@ export function formatDuration(seconds) {
     return `${minutes}:${remainder}`;
 }
 
+export function getSongThumbHtml(song, isActive, isPlaying) {
+    if (isActive && isPlaying) {
+        return `
+            <div class="equalizer-visualizer">
+                <span class="equalizer-bar"></span>
+                <span class="equalizer-bar"></span>
+                <span class="equalizer-bar"></span>
+                <span class="equalizer-bar"></span>
+            </div>
+        `;
+    } else if (song && song.coverFileId) {
+        return `
+            <img src="/api/cover?file_id=${encodeURIComponent(song.coverFileId)}" alt="" onerror="this.parentElement.innerHTML='<div class=\\'song-thumb-fallback\\'><svg width=\\'20\\' height=\\'20\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'2\\' stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\'><path d=\\'M9 18V5l12-2v13\\'></path><circle cx=\\'6\\' cy=\\'18\\' r=\\'3\\'></circle><circle cx=\\'18\\' cy=\\'16\\' r=\\'3\\'></circle></svg></div>'">
+        `;
+    } else {
+        return `
+            <div class="song-thumb-fallback">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 18V5l12-2v13"></path>
+                    <circle cx="6" cy="18" r="3"></circle>
+                    <circle cx="18" cy="16" r="3"></circle>
+                </svg>
+            </div>
+        `;
+    }
+}
+
 function getCurrentSong() {
     return state.songs[state.currentIndex] || null;
 }
@@ -1567,6 +1594,18 @@ function getSortedSongIndices() {
     return items;
 }
 
+function updateSongsListPlaybackState() {
+    if (!state.isSongsOverlayOpen || !elements.songsList) return;
+    const activeLi = elements.songsList.querySelector('.song-item.active');
+    if (!activeLi) return;
+    const thumbWrapper = activeLi.querySelector('.song-thumb-wrapper');
+    if (!thumbWrapper) return;
+    const song = getCurrentSong();
+    if (!song) return;
+    const isPlaying = elements.audio && !elements.audio.paused && !elements.audio.ended;
+    thumbWrapper.innerHTML = getSongThumbHtml(song, true, isPlaying);
+}
+
 function renderSongsList() {
     if (!elements.songsList) return;
     elements.songsList.innerHTML = '';
@@ -1579,32 +1618,7 @@ function renderSongsList() {
         const isActive = originalIndex === state.currentIndex;
         li.className = `song-item ${isActive ? 'active' : ''}`;
 
-        // Build thumbnail / visualizer element
-        let thumbHtml = '';
-        if (isActive && isPlaying) {
-            thumbHtml = `
-                <div class="equalizer-visualizer">
-                    <span class="equalizer-bar"></span>
-                    <span class="equalizer-bar"></span>
-                    <span class="equalizer-bar"></span>
-                    <span class="equalizer-bar"></span>
-                </div>
-            `;
-        } else if (song.coverFileId) {
-            thumbHtml = `
-                <img src="/api/cover?file_id=${encodeURIComponent(song.coverFileId)}" alt="" onerror="this.parentElement.innerHTML='<div class=\\'song-thumb-fallback\\'><svg width=\\'20\\' height=\\'20\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'2\\' stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\'><path d=\\'M9 18V5l12-2v13\\'></path><circle cx=\\'6\\' cy=\\'18\\' r=\\'3\\'></circle><circle cx=\\'18\\' cy=\\'16\\' r=\\'3\\'></circle></svg></div>'">
-            `;
-        } else {
-            thumbHtml = `
-                <div class="song-thumb-fallback">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M9 18V5l12-2v13"></path>
-                        <circle cx="6" cy="18" r="3"></circle>
-                        <circle cx="18" cy="16" r="3"></circle>
-                    </svg>
-                </div>
-            `;
-        }
+        const thumbHtml = getSongThumbHtml(song, isActive, isPlaying);
 
         li.innerHTML = `
             <div class="song-thumb-wrapper">
@@ -1800,7 +1814,7 @@ function updatePlayButton() {
     }
 
     if (state.isSongsOverlayOpen) {
-        renderSongsList();
+        updateSongsListPlaybackState();
     }
 }
 
