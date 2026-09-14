@@ -21,7 +21,7 @@ export function isExpectedChannel(chat, expectedChannelId) {
   return numericChatId === expected || username === expected.toLowerCase();
 }
 
-function trimExtension(fileName = '') {
+export function trimExtension(fileName = '') {
   return fileName.replace(/\.[^/.]+$/, '').replace(/[_-]+/g, ' ').trim();
 }
 
