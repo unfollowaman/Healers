@@ -4,7 +4,7 @@ import { requireEnv } from './_lib/utils.js';
 const TELEGRAM_API_BASE = 'https://api.telegram.org/bot';
 const TELEGRAM_FILE_BASE = 'https://api.telegram.org/file/bot';
 
-function validateFileId(fileId) {
+export function validateFileId(fileId) {
   if (!fileId || typeof fileId !== 'string') {
     const error = new Error('Missing required file_id query parameter.');
     error.statusCode = 400;
