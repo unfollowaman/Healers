@@ -35,7 +35,6 @@ function toSong(update) {
     title: audio.title || trimExtension(audio.file_name) || 'Untitled track',
     performer: audio.performer || 'Unknown Artist',
     duration: Number(audio.duration || 0),
-    filename: audio.file_name || '',
     message_id: message.message_id,
     date: message.date || 0,
     file_unique_id: audio.file_unique_id || audio.file_id,
