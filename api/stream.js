@@ -18,7 +18,7 @@ export function validateFileId(fileId) {
   }
 }
 
-async function getTelegramFile(token, fileId) {
+export async function getTelegramFile(token, fileId) {
   const url = new URL(`${TELEGRAM_API_BASE}${token}/getFile`);
   url.searchParams.set('file_id', fileId);
 
