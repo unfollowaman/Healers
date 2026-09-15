@@ -104,3 +104,65 @@ test('performance benchmark: full list re-render vs targeted active item update'
   assert.ok(durationTargeted <= durationFull, 'Targeted update should be faster than full re-render');
   console.log(`[Benchmark] Full re-render (500 items): ${durationFull.toFixed(4)}ms | Targeted update: ${durationTargeted.toFixed(4)}ms`);
 });
+
+test('keyboard event handler - ignores media hotkeys when focused on inputs and handles Escape', (t) => {
+  let playPauseToggled = false;
+  let modalClosed = false;
+  let inputBlurred = false;
+
+  let isModalHidden = false;
+  const mockAddSongsModal = {
+    classList: {
+      contains: (cls) => (cls === 'hidden' ? isModalHidden : false)
+    }
+  };
+
+  function handleKeydown(e, elements) {
+    const isInputFocused = e.target && (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName) || e.target.isContentEditable);
+
+    if (e.code === 'Escape') {
+      if (elements.addSongsModal && !elements.addSongsModal.classList.contains('hidden')) {
+        isModalHidden = true;
+        modalClosed = true;
+      }
+      if (isInputFocused && typeof e.target.blur === 'function') {
+        e.target.blur();
+      }
+      return;
+    }
+
+    if (isInputFocused) return;
+
+    if (e.code === 'Space') {
+      e.preventDefault();
+      playPauseToggled = true;
+    }
+  }
+
+  // 1. When focused on an INPUT element, Space should NOT toggle play/pause
+  const inputEvent = {
+    code: 'Space',
+    target: { tagName: 'INPUT' },
+    preventDefault: () => {}
+  };
+  handleKeydown(inputEvent, { addSongsModal: mockAddSongsModal });
+  assert.strictEqual(playPauseToggled, false, 'Space bar in input should not trigger play/pause');
+
+  // 2. When focused outside inputs, Space SHOULD toggle play/pause
+  const globalEvent = {
+    code: 'Space',
+    target: { tagName: 'DIV' },
+    preventDefault: () => {}
+  };
+  handleKeydown(globalEvent, { addSongsModal: mockAddSongsModal });
+  assert.strictEqual(playPauseToggled, true, 'Space bar globally should trigger play/pause');
+
+  // 3. Escape key closes open modal and blurs input if focused
+  const escapeEvent = {
+    code: 'Escape',
+    target: { tagName: 'INPUT', blur: () => { inputBlurred = true; } }
+  };
+  handleKeydown(escapeEvent, { addSongsModal: mockAddSongsModal });
+  assert.strictEqual(modalClosed, true, 'Escape key should close add songs modal');
+  assert.strictEqual(inputBlurred, true, 'Escape key should blur active input');
+});

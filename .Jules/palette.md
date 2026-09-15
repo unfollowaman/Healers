@@ -1,0 +1,3 @@
+## 2026-09-15 - Input Hotkey Safety & Escape Key Modal Dismissal
+**Learning:** Global media keydown shortcuts (`Space` for play/pause, arrow keys for seeking) interfere with user text input across search bars and modals unless explicitly guarded against focused form elements (`INPUT`, `TEXTAREA`, `SELECT`, `isContentEditable`). Supporting `Escape` key dismissal provides an intuitive, accessible way to exit overlay UI states and blur active inputs.
+**Action:** Always check `e.target` element types before processing global hotkeys in media player apps, and handle `Escape` key events to close open modals and dropdowns.
