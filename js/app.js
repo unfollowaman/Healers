@@ -2652,15 +2652,37 @@ function bindEvents() {
     elements.progressBar.addEventListener('change', seekToProgress);
 
     document.addEventListener('keydown', (e) => {
+        const isInputFocused = e.target && (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName) || e.target.isContentEditable);
+
+        if (e.code === 'Escape') {
+            if (elements.addSongsModal && !elements.addSongsModal.classList.contains('hidden')) {
+                closeAddSongsModal();
+            } else if (state.isNavMenuOpen) {
+                closeNavMenu();
+            } else if (state.isMoreOpen) {
+                toggleMoreSection();
+            }
+            if (isInputFocused && typeof e.target.blur === 'function') {
+                e.target.blur();
+            }
+            return;
+        }
+
+        if (isInputFocused) return;
+
         if (e.code === 'Space') {
             e.preventDefault();
             togglePlayPause();
         } else if (e.code === 'ArrowLeft') {
-            elements.audio.currentTime = Math.max(0, elements.audio.currentTime - 5);
-            updateProgress();
+            if (elements.audio) {
+                elements.audio.currentTime = Math.max(0, (elements.audio.currentTime || 0) - 5);
+                updateProgress();
+            }
         } else if (e.code === 'ArrowRight') {
-            elements.audio.currentTime = Math.min(elements.audio.duration || 0, elements.audio.currentTime + 5);
-            updateProgress();
+            if (elements.audio) {
+                elements.audio.currentTime = Math.min(elements.audio.duration || 0, (elements.audio.currentTime || 0) + 5);
+                updateProgress();
+            }
         }
     });
 }
