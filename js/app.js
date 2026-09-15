@@ -1,4 +1,4 @@
-const state = {
+export const state = {
     songs: [],
     currentIndex: -1,
     isSeeking: false,
@@ -39,7 +39,7 @@ const state = {
     playHistory: []
 };
 
-const elements = typeof document !== 'undefined' ? {
+export const elements = typeof document !== 'undefined' ? {
     topNavContainer: document.querySelector('.top-nav-container'),
     hamburgerButton: document.querySelector('#hamburger-button'),
     navDropdown: document.querySelector('#nav-dropdown'),
@@ -230,24 +230,26 @@ function updateNowPlaying(song) {
     resetAlbumArtRotation();
 
     if (!song) {
-        elements.nowTitle.textContent = 'No Song Loaded';
-        elements.nowArtist.textContent = 'Ready to play';
-        elements.currentTime.textContent = '0:00';
-        elements.totalTime.textContent = '0:00';
-        elements.albumArtPlaceholder.innerHTML = '';
+        if (elements.nowTitle) elements.nowTitle.textContent = 'No Song Loaded';
+        if (elements.nowArtist) elements.nowArtist.textContent = 'Ready to play';
+        if (elements.currentTime) elements.currentTime.textContent = '0:00';
+        if (elements.totalTime) elements.totalTime.textContent = '0:00';
+        if (elements.albumArtPlaceholder) elements.albumArtPlaceholder.innerHTML = '';
         return;
     }
 
-    elements.nowTitle.textContent = song.title || 'Untitled';
-    elements.nowArtist.textContent = song.performer || 'Unknown Artist';
-    elements.totalTime.textContent = formatDuration(song.duration);
+    if (elements.nowTitle) elements.nowTitle.textContent = song.title || 'Untitled';
+    if (elements.nowArtist) elements.nowArtist.textContent = song.performer || 'Unknown Artist';
+    if (elements.totalTime) elements.totalTime.textContent = formatDuration(song.duration);
 
-    if (song.coverFileId) {
-        elements.albumArtPlaceholder.innerHTML = `
-            <img src="/api/cover?file_id=${encodeURIComponent(song.coverFileId)}" alt="" onerror="this.parentElement.innerHTML=''">
-        `;
-    } else {
-        elements.albumArtPlaceholder.innerHTML = '';
+    if (elements.albumArtPlaceholder) {
+        if (song.coverFileId) {
+            elements.albumArtPlaceholder.innerHTML = `
+                <img src="/api/cover?file_id=${encodeURIComponent(song.coverFileId)}" alt="" onerror="this.parentElement.innerHTML=''">
+            `;
+        } else {
+            elements.albumArtPlaceholder.innerHTML = '';
+        }
     }
 }
 
@@ -846,6 +848,7 @@ function getArtistsList() {
 }
 
 function loadPlayHistory() {
+    if (typeof localStorage === 'undefined') return;
     try {
         const saved = localStorage.getItem('murex_play_history');
         if (saved) {
@@ -863,6 +866,7 @@ function loadPlayHistory() {
 }
 
 function savePlayHistory() {
+    if (typeof localStorage === 'undefined') return;
     try {
         localStorage.setItem('murex_play_history', JSON.stringify(state.playHistory));
     } catch (err) {
@@ -1023,6 +1027,7 @@ function showPlaylistDetailView() {
 }
 
 function loadPlaylists() {
+    if (typeof localStorage === 'undefined') return;
     try {
         const saved = localStorage.getItem('murex_playlists');
         if (saved) {
@@ -1061,6 +1066,7 @@ function loadPlaylists() {
 }
 
 function savePlaylists() {
+    if (typeof localStorage === 'undefined') return;
     try {
         localStorage.setItem('murex_playlists', JSON.stringify(state.playlists));
     } catch (err) {
@@ -1840,9 +1846,9 @@ function seekToProgress() {
     updateProgress();
 }
 
-async function loadSongs() {
-    elements.nowTitle.textContent = 'Loading songs...';
-    elements.nowArtist.textContent = 'Connecting to library';
+export async function loadSongs() {
+    if (elements.nowTitle) elements.nowTitle.textContent = 'Loading songs...';
+    if (elements.nowArtist) elements.nowArtist.textContent = 'Connecting to library';
 
     try {
         const response = await fetch('/api/songs', {
@@ -1859,8 +1865,8 @@ async function loadSongs() {
             state.currentIndex = 0;
             updateNowPlaying(getCurrentSong());
         } else {
-            elements.nowTitle.textContent = 'No songs found';
-            elements.nowArtist.textContent = 'Library empty';
+            if (elements.nowTitle) elements.nowTitle.textContent = 'No songs found';
+            if (elements.nowArtist) elements.nowArtist.textContent = 'Library empty';
         }
 
         if (state.isSongsOverlayOpen) {
@@ -1883,8 +1889,8 @@ async function loadSongs() {
             renderStatsPage();
         }
     } catch (error) {
-        elements.nowTitle.textContent = 'Error loading songs';
-        elements.nowArtist.textContent = error.message || 'Check channel source';
+        if (elements.nowTitle) elements.nowTitle.textContent = 'Error loading songs';
+        if (elements.nowArtist) elements.nowArtist.textContent = error.message || 'Check channel source';
     }
 }
 
