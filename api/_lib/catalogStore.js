@@ -3,40 +3,43 @@ export async function getCatalogFromStore() {
   const token = process.env.UPSTASH_REDIS_REST_TOKEN;
 
   try {
-    const catalogResponse = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(["GET", "murex:catalog"])
-    });
+    // Perform both Upstash GET requests in parallel to avoid sequential network round-trips
+    const [catalogResponse, offsetResponse] = await Promise.all([
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(["GET", "murex:catalog"])
+      }),
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(["GET", "murex:offset"])
+      })
+    ]);
 
     if (!catalogResponse.ok) {
       throw new Error(`status ${catalogResponse.status}`);
     }
+    if (!offsetResponse.ok) {
+      throw new Error(`status ${offsetResponse.status}`);
+    }
 
-    const catalogData = await catalogResponse.json();
+    const [catalogData, offsetData] = await Promise.all([
+      catalogResponse.json(),
+      offsetResponse.json()
+    ]);
+
     if (catalogData.error) {
       const err = new Error(`murex:catalog read failed: ${catalogData.error}`);
       err.statusCode = 503;
       throw err;
     }
-
-    const offsetResponse = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(["GET", "murex:offset"])
-    });
-
-    if (!offsetResponse.ok) {
-      throw new Error(`status ${offsetResponse.status}`);
-    }
-
-    const offsetData = await offsetResponse.json();
     if (offsetData.error) {
       const err = new Error(`murex:offset read failed: ${offsetData.error}`);
       err.statusCode = 503;
@@ -48,6 +51,9 @@ export async function getCatalogFromStore() {
 
     return { catalog, offset };
   } catch (error) {
+    if (error.statusCode) {
+      throw error;
+    }
     throw new Error(`Upstash request failed: ${error.message}`);
   }
 }
@@ -57,44 +63,52 @@ export async function saveCatalogToStore(catalog, offset) {
   const token = process.env.UPSTASH_REDIS_REST_TOKEN;
 
   try {
-    const catalogResponse = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(["SET", "murex:catalog", JSON.stringify(catalog)])
-    });
+    // Perform both Upstash SET requests in parallel to avoid sequential network round-trips
+    const [catalogResponse, offsetResponse] = await Promise.all([
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(["SET", "murex:catalog", JSON.stringify(catalog)])
+      }),
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(["SET", "murex:offset", String(offset)])
+      })
+    ]);
 
     if (!catalogResponse.ok) {
       throw new Error(`status ${catalogResponse.status}`);
     }
-    const catalogData = await catalogResponse.json();
+    if (!offsetResponse.ok) {
+      throw new Error(`status ${offsetResponse.status}`);
+    }
+
+    const [catalogData, offsetData] = await Promise.all([
+      catalogResponse.json(),
+      offsetResponse.json()
+    ]);
+
     if (catalogData.error) {
       const err = new Error(`murex:catalog write failed: ${catalogData.error}`);
       err.statusCode = 503;
       throw err;
     }
-
-    const offsetResponse = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(["SET", "murex:offset", String(offset)])
-    });
-
-    if (!offsetResponse.ok) {
-      throw new Error(`status ${offsetResponse.status}`);
-    }
-    const offsetData = await offsetResponse.json();
     if (offsetData.error) {
       const err = new Error(`murex:offset write failed: ${offsetData.error}`);
       err.statusCode = 503;
       throw err;
     }
   } catch (error) {
+    if (error.statusCode) {
+      throw error;
+    }
     throw new Error(`Upstash request failed: ${error.message}`);
   }
 }
