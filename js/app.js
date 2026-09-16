@@ -530,10 +530,37 @@ function showArtistDetailView() {
     renderArtistDetail();
 }
 
-function getActiveArtist() {
+// Fast single-pass lookup for active artist without building full artist catalog or sorting
+export function getActiveArtist() {
     if (!state.activeArtistName) return null;
-    const artists = getArtistsList();
-    return artists.find((a) => a.name === state.activeArtistName) || null;
+    const targetName = state.activeArtistName;
+    const songs = [];
+    const covers = [];
+    let totalDuration = 0;
+    let latestIdx = -1;
+
+    for (let i = 0; i < state.songs.length; i++) {
+        const song = state.songs[i];
+        const rawName = (song.performer || '').trim() || 'Unknown Artist';
+        if (rawName === targetName) {
+            songs.push(song);
+            totalDuration += (song.duration || 0);
+            latestIdx = i;
+            if (song.coverFileId && !covers.includes(song.coverFileId)) {
+                covers.push(song.coverFileId);
+            }
+        }
+    }
+
+    if (songs.length === 0) return null;
+
+    return {
+        name: targetName,
+        songs,
+        covers,
+        totalDuration,
+        latestIdx
+    };
 }
 
 function renderArtistDetail() {

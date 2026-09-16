@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { formatDuration, getSongThumbHtml, loadSongs, state, elements } from '../js/app.js';
+import { formatDuration, getSongThumbHtml, getActiveArtist, loadSongs, state, elements } from '../js/app.js';
 
 test('formatDuration - valid positive seconds', (t) => {
   assert.strictEqual(formatDuration(0), '0:00');
@@ -299,4 +299,89 @@ test('keyboard event handler - ignores media hotkeys when focused on inputs and 
   handleKeydown(escapeEvent, { addSongsModal: mockAddSongsModal });
   assert.strictEqual(modalClosed, true, 'Escape key should close add songs modal');
   assert.strictEqual(inputBlurred, true, 'Escape key should blur active input');
+});
+
+test('getActiveArtist - correctness and edge cases', (t) => {
+  state.songs = [
+    { file_id: 's1', performer: 'Artist A', title: 'Track 1', duration: 180, coverFileId: 'c1' },
+    { file_id: 's2', performer: 'Artist B', title: 'Track 2', duration: 200, coverFileId: 'c2' },
+    { file_id: 's3', performer: 'Artist A', title: 'Track 3', duration: 220, coverFileId: 'c1' },
+    { file_id: 's4', performer: 'Artist A', title: 'Track 4', duration: 100, coverFileId: 'c3' }
+  ];
+
+  // Null when activeArtistName is null
+  state.activeArtistName = null;
+  assert.strictEqual(getActiveArtist(), null);
+
+  // Null when activeArtistName doesn't exist in library
+  state.activeArtistName = 'Nonexistent Artist';
+  assert.strictEqual(getActiveArtist(), null);
+
+  // Returns aggregated metadata when artist exists
+  state.activeArtistName = 'Artist A';
+  const result = getActiveArtist();
+  assert.ok(result);
+  assert.strictEqual(result.name, 'Artist A');
+  assert.strictEqual(result.songs.length, 3);
+  assert.strictEqual(result.totalDuration, 500);
+  assert.deepStrictEqual(result.covers, ['c1', 'c3']);
+  assert.strictEqual(result.latestIdx, 3);
+});
+
+test('performance benchmark: getActiveArtist direct scan vs full artist list allocation & sort', (t) => {
+  const songCount = 2000;
+  const mockSongs = [];
+  for (let i = 0; i < songCount; i++) {
+    mockSongs.push({
+      file_id: `s_${i}`,
+      performer: `Artist ${i % 150}`,
+      title: `Track ${i}`,
+      duration: 180 + (i % 60),
+      coverFileId: i % 5 === 0 ? `cover_${i % 50}` : null
+    });
+  }
+
+  state.songs = mockSongs;
+  state.activeArtistName = 'Artist 42';
+
+  // Benchmark direct single-pass lookup (optimized)
+  const iterations = 100;
+  const startOptimized = performance.now();
+  for (let iter = 0; iter < iterations; iter++) {
+    getActiveArtist();
+  }
+  const durationOptimized = performance.now() - startOptimized;
+
+  // Simulate full catalog mapping & sorting (unoptimized baseline)
+  const startBaseline = performance.now();
+  for (let iter = 0; iter < iterations; iter++) {
+    const artistMap = new Map();
+    state.songs.forEach((song, originalIdx) => {
+      const rawName = (song.performer || '').trim() || 'Unknown Artist';
+      if (!artistMap.has(rawName)) {
+        artistMap.set(rawName, {
+          name: rawName,
+          songs: [],
+          covers: [],
+          totalDuration: 0,
+          latestIdx: originalIdx
+        });
+      }
+      const artist = artistMap.get(rawName);
+      artist.songs.push(song);
+      artist.totalDuration += (song.duration || 0);
+      artist.latestIdx = Math.max(artist.latestIdx, originalIdx);
+      if (song.coverFileId && !artist.covers.includes(song.coverFileId)) {
+        artist.covers.push(song.coverFileId);
+      }
+    });
+
+    let list = Array.from(artistMap.values());
+    list.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
+    list.find((a) => a.name === state.activeArtistName);
+  }
+  const durationBaseline = performance.now() - startBaseline;
+
+  assert.ok(durationOptimized <= durationBaseline, 'Single-pass lookup should be faster than full catalog aggregation and sorting');
+  console.log(`[Benchmark] getActiveArtist full catalog map & sort (${iterations} ops): ${durationBaseline.toFixed(4)}ms | Direct scan: ${durationOptimized.toFixed(4)}ms`);
 });
