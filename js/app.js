@@ -612,7 +612,7 @@ function renderArtistTracks(artist) {
             <div class="col-date track-date-cell">Added recently</div>
             <div class="col-time track-time-cell">${formatDuration(song.duration)}</div>
             <div class="col-actions track-actions-cell">
-                <button class="track-action-btn add-to-queue-btn" type="button" title="Add to Queue">
+                <button class="track-action-btn add-to-queue-btn" type="button" title="Add to Queue" aria-label="Add to Queue">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                 </button>
             </div>
@@ -776,6 +776,7 @@ function renderArtistsList(artists) {
         actionBtn.className = 'pl-btn-icon';
         actionBtn.type = 'button';
         actionBtn.title = 'Play all';
+        actionBtn.setAttribute('aria-label', `Play all songs by ${artist.name}`);
         actionBtn.innerHTML = `
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                 <polygon points="5 3 19 12 5 21 5 3"></polygon>
@@ -1299,13 +1300,13 @@ function renderPlaylistTracks() {
             <div class="col-date track-date-cell">Added recently</div>
             <div class="col-time track-time-cell">${formatDuration(song.duration)}</div>
             <div class="col-actions track-actions-cell">
-                <button class="track-action-btn move-up-btn" type="button" title="Move Up" ${originalIndexInPl === 0 ? 'disabled style="opacity:0.2;"' : ''}>
+                <button class="track-action-btn move-up-btn" type="button" title="Move Up" aria-label="Move track up" ${originalIndexInPl === 0 ? 'disabled style="opacity:0.2;"' : ''}>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"></polyline></svg>
                 </button>
-                <button class="track-action-btn move-down-btn" type="button" title="Move Down" ${originalIndexInPl === pl.songs.length - 1 ? 'disabled style="opacity:0.2;"' : ''}>
+                <button class="track-action-btn move-down-btn" type="button" title="Move Down" aria-label="Move track down" ${originalIndexInPl === pl.songs.length - 1 ? 'disabled style="opacity:0.2;"' : ''}>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </button>
-                <button class="track-action-btn danger remove-track-btn" type="button" title="Remove from playlist">
+                <button class="track-action-btn danger remove-track-btn" type="button" title="Remove from playlist" aria-label="Remove track from playlist">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
             </div>
@@ -1391,7 +1392,7 @@ function renderPlaylistRecommendations() {
                     <span class="track-artist" style="font-size:11px;">${song.performer || 'Unknown Artist'}</span>
                 </div>
             </div>
-            <button class="rec-add-btn" type="button">
+            <button class="rec-add-btn" type="button" aria-label="Add ${song.title || 'song'} to playlist">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                 <span>Add</span>
             </button>
