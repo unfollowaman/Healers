@@ -447,6 +447,9 @@ function renderArtistsHub() {
 function renderArtistsGrid(artists) {
     if (!elements.artistsGrid) return;
     elements.artistsGrid.innerHTML = '';
+    // Bolt Optimization: Batch DOM appends using DocumentFragment to avoid triggering
+    // browser reflow and repaint on every iteration when rendering artist grid cards.
+    const fragment = document.createDocumentFragment();
 
     artists.forEach((artist) => {
         const card = document.createElement('div');
@@ -493,8 +496,9 @@ function renderArtistsGrid(artists) {
             showArtistContextMenu(e, artist);
         });
 
-        elements.artistsGrid.appendChild(card);
+        fragment.appendChild(card);
     });
+    elements.artistsGrid.appendChild(fragment);
 }
 
 function openArtistsOverlay() {
@@ -564,6 +568,8 @@ function renderArtistTracks(artist) {
 
     const currentSong = getCurrentSong();
     const isPlaying = elements.audio && !elements.audio.paused && !elements.audio.ended;
+    // Bolt Optimization: Batch DOM appends via DocumentFragment to reduce layout shifts & reflows.
+    const fragment = document.createDocumentFragment();
 
     artist.songs.forEach((song, displayIdx) => {
         const isCurrentActive = currentSong && currentSong.file_id === song.file_id;
@@ -638,8 +644,9 @@ function renderArtistTracks(artist) {
             });
         }
 
-        elements.artistTrackList.appendChild(li);
+        fragment.appendChild(li);
     });
+    elements.artistTrackList.appendChild(fragment);
 }
 
 function playSongFromArtist(artist, index) {
@@ -744,6 +751,8 @@ function renderArtistsList(artists) {
     elements.artistsList.innerHTML = '';
 
     let currentLetter = '';
+    // Bolt Optimization: Batch DOM appends via DocumentFragment to reduce layout shifts & reflows.
+    const fragment = document.createDocumentFragment();
 
     artists.forEach((artist) => {
         const firstChar = artist.name.trim().charAt(0).toUpperCase();
@@ -755,7 +764,7 @@ function renderArtistsList(artists) {
             const sectionHeader = document.createElement('li');
             sectionHeader.className = 'artist-list-section-header';
             sectionHeader.textContent = currentLetter;
-            elements.artistsList.appendChild(sectionHeader);
+            fragment.appendChild(sectionHeader);
         }
 
         const item = document.createElement('li');
@@ -801,8 +810,9 @@ function renderArtistsList(artists) {
             showArtistContextMenu(e, artist);
         });
 
-        elements.artistsList.appendChild(item);
+        fragment.appendChild(item);
     });
+    elements.artistsList.appendChild(fragment);
 }
 
 function getArtistsList() {
@@ -1249,6 +1259,8 @@ function renderPlaylistTracks() {
 
     const currentSong = getCurrentSong();
     const isPlaying = elements.audio && !elements.audio.paused && !elements.audio.ended;
+    // Bolt Optimization: Batch DOM appends via DocumentFragment to reduce layout shifts & reflows.
+    const fragment = document.createDocumentFragment();
 
     songsToRender.forEach((song, displayIdx) => {
         const originalIndexInPl = pl.songs.indexOf(song);
@@ -1352,8 +1364,9 @@ function renderPlaylistTracks() {
             });
         }
 
-        elements.plTrackList.appendChild(li);
+        fragment.appendChild(li);
     });
+    elements.plTrackList.appendChild(fragment);
 }
 
 function renderPlaylistRecommendations() {
@@ -1377,6 +1390,8 @@ function renderPlaylistRecommendations() {
     elements.plRecommendations.classList.remove('hidden');
 
     const suggested = candidates.slice(0, 4);
+    // Bolt Optimization: Batch DOM appends via DocumentFragment.
+    const fragment = document.createDocumentFragment();
 
     suggested.forEach((song) => {
         const li = document.createElement('li');
@@ -1403,8 +1418,9 @@ function renderPlaylistRecommendations() {
             showToast(`Added "${song.title || 'Song'}" to ${pl.title}`);
         });
 
-        elements.recsList.appendChild(li);
+        fragment.appendChild(li);
     });
+    elements.recsList.appendChild(fragment);
 }
 
 function playSongFromPlaylist(playlist, index) {
@@ -1549,6 +1565,9 @@ function renderAddSongsModal() {
         candidates = candidates.filter((s) => (s.title || '').toLowerCase().includes(query) || (s.performer || '').toLowerCase().includes(query));
     }
 
+    // Bolt Optimization: Batch DOM appends via DocumentFragment to reduce layout shifts & reflows.
+    const fragment = document.createDocumentFragment();
+
     candidates.forEach((song) => {
         const isAdded = pl.songs.some((s) => s.file_id === song.file_id);
 
@@ -1577,8 +1596,9 @@ function renderAddSongsModal() {
             renderAddSongsModal();
         });
 
-        elements.modalSongList.appendChild(li);
+        fragment.appendChild(li);
     });
+    elements.modalSongList.appendChild(fragment);
 }
 
 function getSortedSongIndices() {
@@ -1620,6 +1640,10 @@ function renderSongsList() {
     const sortedItems = getSortedSongIndices();
     const isPlaying = elements.audio && !elements.audio.paused && !elements.audio.ended;
 
+    // Bolt Optimization: Batch DOM appends via DocumentFragment to avoid triggering N
+    // reflows and repaints during list rendering, replacing them with a single insertion.
+    const fragment = document.createDocumentFragment();
+
     sortedItems.forEach(({ song, originalIndex }) => {
         const li = document.createElement('li');
         const isActive = originalIndex === state.currentIndex;
@@ -1645,8 +1669,9 @@ function renderSongsList() {
             closeSongsOverlay();
         });
 
-        elements.songsList.appendChild(li);
+        fragment.appendChild(li);
     });
+    elements.songsList.appendChild(fragment);
 }
 
 function toggleMoreSection() {
@@ -1673,6 +1698,9 @@ function renderQueueList() {
     if (!elements.queueList) return;
     elements.queueList.innerHTML = '';
 
+    // Bolt Optimization: Batch DOM appends via DocumentFragment.
+    const fragment = document.createDocumentFragment();
+
     state.songs.forEach((song, idx) => {
         const li = document.createElement('li');
         li.className = `queue-item ${idx === state.currentIndex ? 'active' : ''}`;
@@ -1686,8 +1714,9 @@ function renderQueueList() {
             }
             startSong(idx);
         });
-        elements.queueList.appendChild(li);
+        fragment.appendChild(li);
     });
+    elements.queueList.appendChild(fragment);
 }
 
 function updateVolumeStyle() {
@@ -2311,6 +2340,8 @@ function renderRecentHistory(events) {
     }
 
     const recent = events.slice(0, 20); // Top 20 chronological log
+    // Bolt Optimization: Batch DOM appends via DocumentFragment.
+    const fragment = document.createDocumentFragment();
 
     recent.forEach((item) => {
         const li = document.createElement('li');
@@ -2346,8 +2377,9 @@ function renderRecentHistory(events) {
             }
         });
 
-        elements.recentHistoryList.appendChild(li);
+        fragment.appendChild(li);
     });
+    elements.recentHistoryList.appendChild(fragment);
 }
 
 function bindEvents() {

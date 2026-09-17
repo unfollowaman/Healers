@@ -184,6 +184,58 @@ test('loadSongs - handles non-OK response with invalid JSON response gracefully'
   }
 });
 
+test('performance benchmark: sequential DOM appends vs DocumentFragment batched rendering', (t) => {
+  const itemCount = 500;
+
+  class MockElement {
+    constructor(tag) {
+      this.tag = tag;
+      this.children = [];
+    }
+    appendChild(child) {
+      if (child.isFragment) {
+        this.children.push(...child.children);
+      } else {
+        this.children.push(child);
+      }
+    }
+  }
+
+  class MockDocumentFragment {
+    constructor() {
+      this.isFragment = true;
+      this.children = [];
+    }
+    appendChild(child) {
+      this.children.push(child);
+    }
+  }
+
+  // Sequential appends benchmark
+  const sequentialContainer = new MockElement('ul');
+  const startSequential = performance.now();
+  for (let i = 0; i < itemCount; i++) {
+    const li = new MockElement('li');
+    sequentialContainer.appendChild(li);
+  }
+  const durationSequential = performance.now() - startSequential;
+
+  // DocumentFragment batched appends benchmark
+  const fragmentContainer = new MockElement('ul');
+  const startBatched = performance.now();
+  const fragment = new MockDocumentFragment();
+  for (let i = 0; i < itemCount; i++) {
+    const li = new MockElement('li');
+    fragment.appendChild(li);
+  }
+  fragmentContainer.appendChild(fragment);
+  const durationBatched = performance.now() - startBatched;
+
+  assert.strictEqual(fragmentContainer.children.length, itemCount);
+  assert.strictEqual(sequentialContainer.children.length, itemCount);
+  console.log(`[Benchmark] Sequential appends (500 items): ${durationSequential.toFixed(4)}ms | Batched fragment append: ${durationBatched.toFixed(4)}ms`);
+});
+
 test('performance benchmark: full list re-render vs targeted active item update', (t) => {
   const songCount = 500;
 
