@@ -272,6 +272,8 @@ function toggleShuffle() {
     state.isShuffle = !state.isShuffle;
     if (elements.shuffleButton) {
         elements.shuffleButton.classList.toggle('active', state.isShuffle);
+        elements.shuffleButton.setAttribute('aria-pressed', String(state.isShuffle));
+        elements.shuffleButton.setAttribute('aria-label', state.isShuffle ? 'Shuffle on' : 'Shuffle off');
     }
     if (state.isShuffle) {
         state.shuffledIndices = generateShuffleOrder(state.currentIndex);
@@ -289,14 +291,25 @@ function cycleRepeatMode() {
         state.repeatMode = 'off';
     }
 
+    let modeLabel = 'Off';
+    let ariaLabelText = 'Repeat off';
+    if (state.repeatMode === 'all') {
+        modeLabel = 'All';
+        ariaLabelText = 'Repeat all';
+    } else if (state.repeatMode === 'one') {
+        modeLabel = 'One';
+        ariaLabelText = 'Repeat current song';
+    }
+
     if (elements.repeatLabel) {
-        if (state.repeatMode === 'off') elements.repeatLabel.textContent = 'Off';
-        else if (state.repeatMode === 'all') elements.repeatLabel.textContent = 'All';
-        else if (state.repeatMode === 'one') elements.repeatLabel.textContent = 'One';
+        elements.repeatLabel.textContent = modeLabel;
     }
 
     if (elements.repeatButton) {
-        elements.repeatButton.classList.toggle('active', state.repeatMode !== 'off');
+        const isActive = state.repeatMode !== 'off';
+        elements.repeatButton.classList.toggle('active', isActive);
+        elements.repeatButton.setAttribute('aria-pressed', String(isActive));
+        elements.repeatButton.setAttribute('aria-label', ariaLabelText);
     }
 }
 
@@ -1729,7 +1742,10 @@ function updateVolumeStyle() {
 function setVolume(val) {
     state.volume = Math.max(0, Math.min(1, val));
     if (elements.audio) elements.audio.volume = state.volume;
-    if (elements.volumeBar) elements.volumeBar.value = String(state.volume);
+    if (elements.volumeBar) {
+        elements.volumeBar.value = String(state.volume);
+        elements.volumeBar.setAttribute('aria-valuetext', `${Math.round(state.volume * 100)}% volume`);
+    }
     updateVolumeStyle();
 
     if (state.volume > 0 && state.isMuted) {
@@ -1746,8 +1762,13 @@ function toggleMute() {
 }
 
 function updateVolumeIcon() {
+    const isMutedState = state.isMuted || state.volume === 0;
+    if (elements.muteButton) {
+        elements.muteButton.setAttribute('aria-pressed', String(isMutedState));
+        elements.muteButton.setAttribute('aria-label', isMutedState ? 'Unmute' : 'Mute');
+    }
     if (!elements.volumeIcon) return;
-    if (state.isMuted || state.volume === 0) {
+    if (isMutedState) {
         elements.volumeIcon.innerHTML = `
             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
             <line x1="23" y1="9" x2="17" y2="15"></line>
@@ -1861,10 +1882,16 @@ function updateProgress() {
     const current = elements.audio.currentTime || 0;
     const percent = duration ? (current / duration) * 100 : 0;
 
-    elements.progressBar.value = String(percent);
-    updateRangeStyle(elements.progressBar);
-    elements.currentTime.textContent = formatDuration(current);
-    elements.totalTime.textContent = formatDuration(duration);
+    const currentFormatted = formatDuration(current);
+    const totalFormatted = formatDuration(duration);
+
+    if (elements.progressBar) {
+        elements.progressBar.value = String(percent);
+        elements.progressBar.setAttribute('aria-valuetext', `${currentFormatted} of ${totalFormatted}`);
+        updateRangeStyle(elements.progressBar);
+    }
+    if (elements.currentTime) elements.currentTime.textContent = currentFormatted;
+    if (elements.totalTime) elements.totalTime.textContent = totalFormatted;
 }
 
 function seekToProgress() {
@@ -1930,6 +1957,8 @@ async function refreshCatalog() {
 
     btn.disabled = true;
     btn.classList.add('loading');
+    btn.setAttribute('aria-busy', 'true');
+    btn.setAttribute('aria-label', 'Refreshing library...');
 
     const defaultIconSvg = `<svg class="refresh-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>`;
     const successIconSvg = `<svg class="refresh-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
@@ -1970,12 +1999,16 @@ async function refreshCatalog() {
         setTimeout(() => {
             const currentIcon = btn.querySelector('.refresh-icon');
             if (currentIcon) currentIcon.outerHTML = defaultIconSvg;
+            btn.setAttribute('aria-busy', 'false');
+            btn.setAttribute('aria-label', 'Refresh library');
             btn.disabled = false;
         }, 1500);
 
     } catch (error) {
         console.error('Refresh catalog error:', error);
         btn.classList.remove('loading');
+        btn.setAttribute('aria-busy', 'false');
+        btn.setAttribute('aria-label', 'Refresh library');
         btn.disabled = false;
         showToast(error.message || 'Refresh failed');
     }
@@ -2680,7 +2713,10 @@ function bindEvents() {
         state.isSeeking = true;
         updateRangeStyle(elements.progressBar);
         const duration = elements.audio.duration || getCurrentSong()?.duration || 0;
-        elements.currentTime.textContent = formatDuration((Number(elements.progressBar.value) / 100) * duration);
+        const currentFormatted = formatDuration((Number(elements.progressBar.value) / 100) * duration);
+        const totalFormatted = formatDuration(duration);
+        elements.progressBar.setAttribute('aria-valuetext', `${currentFormatted} of ${totalFormatted}`);
+        elements.currentTime.textContent = currentFormatted;
     });
     elements.progressBar.addEventListener('change', seekToProgress);
 

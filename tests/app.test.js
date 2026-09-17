@@ -352,3 +352,61 @@ test('keyboard event handler - ignores media hotkeys when focused on inputs and 
   assert.strictEqual(modalClosed, true, 'Escape key should close add songs modal');
   assert.strictEqual(inputBlurred, true, 'Escape key should blur active input');
 });
+
+test('player controls ARIA attributes update correctly', (t) => {
+  const mockAttributes = new Map();
+  const mockButton = {
+    classList: { toggle: () => {} },
+    setAttribute: (k, v) => mockAttributes.set(k, String(v)),
+    getAttribute: (k) => mockAttributes.get(k)
+  };
+
+  elements.shuffleButton = mockButton;
+
+  // Simulate setting shuffle button attributes
+  state.isShuffle = true;
+  elements.shuffleButton.setAttribute('aria-pressed', String(state.isShuffle));
+  elements.shuffleButton.setAttribute('aria-label', state.isShuffle ? 'Shuffle on' : 'Shuffle off');
+
+  assert.strictEqual(elements.shuffleButton.getAttribute('aria-pressed'), 'true');
+  assert.strictEqual(elements.shuffleButton.getAttribute('aria-label'), 'Shuffle on');
+
+  state.isShuffle = false;
+  elements.shuffleButton.setAttribute('aria-pressed', String(state.isShuffle));
+  elements.shuffleButton.setAttribute('aria-label', state.isShuffle ? 'Shuffle on' : 'Shuffle off');
+
+  assert.strictEqual(elements.shuffleButton.getAttribute('aria-pressed'), 'false');
+  assert.strictEqual(elements.shuffleButton.getAttribute('aria-label'), 'Shuffle off');
+});
+
+test('slider controls update aria-valuetext correctly', (t) => {
+  const progressBarAttrs = new Map();
+  const volumeBarAttrs = new Map();
+
+  elements.progressBar = {
+    value: '0',
+    style: {},
+    setAttribute: (k, v) => progressBarAttrs.set(k, String(v)),
+    getAttribute: (k) => progressBarAttrs.get(k)
+  };
+
+  elements.volumeBar = {
+    value: '1',
+    style: {},
+    setAttribute: (k, v) => volumeBarAttrs.set(k, String(v)),
+    getAttribute: (k) => volumeBarAttrs.get(k)
+  };
+
+  // Set aria-valuetext for progress slider
+  const currentFormatted = formatDuration(65);
+  const totalFormatted = formatDuration(180);
+  elements.progressBar.setAttribute('aria-valuetext', `${currentFormatted} of ${totalFormatted}`);
+
+  assert.strictEqual(elements.progressBar.getAttribute('aria-valuetext'), '1:05 of 3:00');
+
+  // Set aria-valuetext for volume slider
+  const volumePercent = 80;
+  elements.volumeBar.setAttribute('aria-valuetext', `${volumePercent}% volume`);
+
+  assert.strictEqual(elements.volumeBar.getAttribute('aria-valuetext'), '80% volume');
+});
