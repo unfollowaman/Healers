@@ -410,3 +410,24 @@ test('slider controls update aria-valuetext correctly', (t) => {
 
   assert.strictEqual(elements.volumeBar.getAttribute('aria-valuetext'), '80% volume');
 });
+
+test('performance benchmark: localeCompare with inline options vs reused Intl.Collator instance', (t) => {
+  const sampleNames = Array.from({ length: 500 }, (_, i) => `Artist ${Math.floor(Math.sin(i) * 1000)}`);
+
+  // Inline localeCompare with options
+  const startInline = performance.now();
+  const arrInline = [...sampleNames];
+  arrInline.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+  const durationInline = performance.now() - startInline;
+
+  // Reused Intl.Collator instance
+  const stringCollator = new Intl.Collator(undefined, { sensitivity: 'base' });
+  const startCollator = performance.now();
+  const arrCollator = [...sampleNames];
+  arrCollator.sort((a, b) => stringCollator.compare(a, b));
+  const durationCollator = performance.now() - startCollator;
+
+  assert.deepStrictEqual(arrCollator, arrInline, 'Reused Intl.Collator sorting results must match localeCompare results');
+  assert.ok(durationCollator <= durationInline, 'Reused Intl.Collator comparison should be faster than inline localeCompare options');
+  console.log(`[Benchmark] Inline localeCompare options (500 strings): ${durationInline.toFixed(4)}ms | Reused Intl.Collator: ${durationCollator.toFixed(4)}ms`);
+});
