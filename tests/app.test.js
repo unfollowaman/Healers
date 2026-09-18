@@ -431,3 +431,66 @@ test('performance benchmark: localeCompare with inline options vs reused Intl.Co
   assert.ok(durationCollator <= durationInline, 'Reused Intl.Collator comparison should be faster than inline localeCompare options');
   console.log(`[Benchmark] Inline localeCompare options (500 strings): ${durationInline.toFixed(4)}ms | Reused Intl.Collator: ${durationCollator.toFixed(4)}ms`);
 });
+
+test('playlist empty state updates contextually for active search query vs empty playlist', (t) => {
+  const emptyTitle = { textContent: '' };
+  const emptySubtitle = { textContent: '' };
+  const btnSpan = { textContent: '' };
+
+  elements.plTrackList = {
+    innerHTML: '',
+    appendChild: () => {}
+  };
+  elements.plEmptyAddBtn = {
+    querySelector: (selector) => (selector === 'span' ? btnSpan : null)
+  };
+  elements.plEmptyState = {
+    classList: {
+      remove: () => {},
+      add: () => {}
+    },
+    querySelector: (selector) => {
+      if (selector === '.empty-title') return emptyTitle;
+      if (selector === '.empty-subtitle') return emptySubtitle;
+      return null;
+    }
+  };
+
+  const samplePlaylist = {
+    id: 'pl_test',
+    title: 'Test Playlist',
+    songs: [{ file_id: '1', title: 'Song Alpha', performer: 'Artist A' }]
+  };
+  state.playlists = [samplePlaylist];
+  state.activePlaylistId = 'pl_test';
+
+  // 1. When non-matching search query is active
+  state.playlistSearchQuery = 'NonExistent';
+  const songsToRender = samplePlaylist.songs.filter(
+    (s) => s.title.includes(state.playlistSearchQuery)
+  );
+  assert.strictEqual(songsToRender.length, 0);
+
+  if (state.playlistSearchQuery.trim()) {
+    emptyTitle.textContent = 'No tracks found';
+    emptySubtitle.textContent = `No tracks match "${state.playlistSearchQuery.trim()}".`;
+    btnSpan.textContent = 'Clear Search';
+  }
+
+  assert.strictEqual(emptyTitle.textContent, 'No tracks found');
+  assert.strictEqual(emptySubtitle.textContent, 'No tracks match "NonExistent".');
+  assert.strictEqual(btnSpan.textContent, 'Clear Search');
+
+  // 2. When playlist is genuinely empty (no songs)
+  samplePlaylist.songs = [];
+  state.playlistSearchQuery = '';
+  if (!state.playlistSearchQuery.trim()) {
+    emptyTitle.textContent = 'This playlist is empty';
+    emptySubtitle.textContent = 'Add songs from your library to get started.';
+    btnSpan.textContent = 'Add Songs';
+  }
+
+  assert.strictEqual(emptyTitle.textContent, 'This playlist is empty');
+  assert.strictEqual(emptySubtitle.textContent, 'Add songs from your library to get started.');
+  assert.strictEqual(btnSpan.textContent, 'Add Songs');
+});

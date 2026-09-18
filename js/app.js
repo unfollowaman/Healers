@@ -43,6 +43,10 @@ export const state = {
     playHistory: []
 };
 
+if (typeof window !== 'undefined') {
+    window.state = state;
+}
+
 export const elements = typeof document !== 'undefined' ? {
     topNavContainer: document.querySelector('.top-nav-container'),
     hamburgerButton: document.querySelector('#hamburger-button'),
@@ -1269,7 +1273,22 @@ function renderPlaylistTracks() {
     const songsToRender = getSortedPlaylistSongs(pl.songs);
 
     if (songsToRender.length === 0) {
-        if (elements.plEmptyState) elements.plEmptyState.classList.remove('hidden');
+        if (elements.plEmptyState) {
+            elements.plEmptyState.classList.remove('hidden');
+            const emptyTitle = elements.plEmptyState.querySelector('.empty-title');
+            const emptySubtitle = elements.plEmptyState.querySelector('.empty-subtitle');
+            const emptyBtnText = elements.plEmptyAddBtn ? (elements.plEmptyAddBtn.querySelector('span') || elements.plEmptyAddBtn) : null;
+
+            if (state.playlistSearchQuery.trim()) {
+                if (emptyTitle) emptyTitle.textContent = 'No tracks found';
+                if (emptySubtitle) emptySubtitle.textContent = `No tracks match "${state.playlistSearchQuery.trim()}".`;
+                if (emptyBtnText) emptyBtnText.textContent = 'Clear Search';
+            } else {
+                if (emptyTitle) emptyTitle.textContent = 'This playlist is empty';
+                if (emptySubtitle) emptySubtitle.textContent = 'Add songs from your library to get started.';
+                if (emptyBtnText) emptyBtnText.textContent = 'Add Songs';
+            }
+        }
     } else {
         if (elements.plEmptyState) elements.plEmptyState.classList.add('hidden');
     }
@@ -2594,7 +2613,13 @@ function bindEvents() {
 
     if (elements.plEmptyAddBtn) {
         elements.plEmptyAddBtn.addEventListener('click', () => {
-            openAddSongsModal();
+            if (state.playlistSearchQuery.trim()) {
+                state.playlistSearchQuery = '';
+                if (elements.plSearchInput) elements.plSearchInput.value = '';
+                renderPlaylistTracks();
+            } else {
+                openAddSongsModal();
+            }
         });
     }
 
@@ -2724,6 +2749,25 @@ function bindEvents() {
         const isInputFocused = e.target && (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName) || e.target.isContentEditable);
 
         if (e.code === 'Escape') {
+            if (isInputFocused && e.target.value) {
+                if (e.target === elements.plSearchInput) {
+                    state.playlistSearchQuery = '';
+                    e.target.value = '';
+                    renderPlaylistTracks();
+                    return;
+                } else if (e.target === elements.artistsSearchInput) {
+                    state.artistSearchQuery = '';
+                    e.target.value = '';
+                    renderArtistsHub();
+                    return;
+                } else if (e.target === elements.modalSearchInput) {
+                    state.modalSearchQuery = '';
+                    e.target.value = '';
+                    renderAddSongsModal();
+                    return;
+                }
+            }
+
             if (elements.addSongsModal && !elements.addSongsModal.classList.contains('hidden')) {
                 closeAddSongsModal();
             } else if (state.isNavMenuOpen) {
@@ -2765,4 +2809,7 @@ function init() {
 
 if (typeof document !== 'undefined') {
     init();
+}
+if (typeof window !== 'undefined') {
+    window.elements = elements;
 }
