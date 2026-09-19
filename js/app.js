@@ -1236,6 +1236,7 @@ function renderPlaylistDetail() {
 
     if (elements.plOfflineBtn) {
         elements.plOfflineBtn.classList.toggle('active', !!pl.isOffline);
+        elements.plOfflineBtn.setAttribute('aria-pressed', String(!!pl.isOffline));
     }
     if (elements.plOfflineLabel) {
         elements.plOfflineLabel.textContent = pl.isOffline ? 'Downloaded' : 'Offline';
@@ -1725,6 +1726,8 @@ function toggleQueue() {
     if (elements.queueContainer && elements.queueButton) {
         elements.queueContainer.classList.toggle('hidden', !state.isQueueOpen);
         elements.queueButton.classList.toggle('active', state.isQueueOpen);
+        elements.queueButton.setAttribute('aria-pressed', String(state.isQueueOpen));
+        elements.queueButton.setAttribute('aria-expanded', String(state.isQueueOpen));
     }
     if (state.isQueueOpen) {
         renderQueueList();
@@ -2558,8 +2561,14 @@ function bindEvents() {
     if (elements.artistViewGridBtn) {
         elements.artistViewGridBtn.addEventListener('click', () => {
             state.artistViewMode = 'grid';
-            if (elements.artistViewGridBtn) elements.artistViewGridBtn.classList.add('active');
-            if (elements.artistViewListBtn) elements.artistViewListBtn.classList.remove('active');
+            if (elements.artistViewGridBtn) {
+                elements.artistViewGridBtn.classList.add('active');
+                elements.artistViewGridBtn.setAttribute('aria-pressed', 'true');
+            }
+            if (elements.artistViewListBtn) {
+                elements.artistViewListBtn.classList.remove('active');
+                elements.artistViewListBtn.setAttribute('aria-pressed', 'false');
+            }
             renderArtistsHub();
         });
     }
@@ -2567,8 +2576,14 @@ function bindEvents() {
     if (elements.artistViewListBtn) {
         elements.artistViewListBtn.addEventListener('click', () => {
             state.artistViewMode = 'list';
-            if (elements.artistViewListBtn) elements.artistViewListBtn.classList.add('active');
-            if (elements.artistViewGridBtn) elements.artistViewGridBtn.classList.remove('active');
+            if (elements.artistViewListBtn) {
+                elements.artistViewListBtn.classList.add('active');
+                elements.artistViewListBtn.setAttribute('aria-pressed', 'true');
+            }
+            if (elements.artistViewGridBtn) {
+                elements.artistViewGridBtn.classList.remove('active');
+                elements.artistViewGridBtn.setAttribute('aria-pressed', 'false');
+            }
             renderArtistsHub();
         });
     }
@@ -2631,7 +2646,10 @@ function bindEvents() {
             if (!pl) return;
             pl.isOffline = !pl.isOffline;
             savePlaylists();
-            if (elements.plOfflineBtn) elements.plOfflineBtn.classList.toggle('active', pl.isOffline);
+            if (elements.plOfflineBtn) {
+                elements.plOfflineBtn.classList.toggle('active', pl.isOffline);
+                elements.plOfflineBtn.setAttribute('aria-pressed', String(pl.isOffline));
+            }
             if (elements.plOfflineLabel) elements.plOfflineLabel.textContent = pl.isOffline ? 'Downloaded' : 'Offline';
             showToast(pl.isOffline ? 'Downloaded for offline listening' : 'Removed from offline storage');
         });
