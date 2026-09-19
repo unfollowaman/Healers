@@ -1,6 +1,26 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { normalizeChannelId, isExpectedChannel, trimExtension } from '../api/songs.js';
+import handler, { normalizeChannelId, isExpectedChannel, trimExtension } from '../api/songs.js';
+
+function createMockRes() {
+  const res = {
+    statusCode: 200,
+    headers: {},
+    body: null,
+    setHeader(key, val) {
+      res.headers[key.toLowerCase()] = val;
+    },
+    status(code) {
+      res.statusCode = code;
+      return res;
+    },
+    json(data) {
+      res.body = data;
+      return res;
+    }
+  };
+  return res;
+}
 
 test('normalizeChannelId', (t) => {
   assert.strictEqual(normalizeChannelId(''), '');
@@ -62,4 +82,70 @@ test('trimExtension', (t) => {
   assert.strictEqual(trimExtension(), '');
   assert.strictEqual(trimExtension('   spaced_file.mp3   '), 'spaced file');
   assert.strictEqual(trimExtension('---___'), '');
+});
+
+test('handler - HTTP method validation', async (t) => {
+  const req = { method: 'POST' };
+  const res = createMockRes();
+
+  await handler(req, res);
+
+  assert.strictEqual(res.statusCode, 405);
+  assert.strictEqual(res.headers['allow'], 'GET');
+  assert.deepStrictEqual(res.body, { error: 'Method not allowed.' });
+});
+
+test('handler - refresh parameter requires authentication', async (t) => {
+  const originalSecret = process.env.CRON_SECRET;
+  process.env.CRON_SECRET = 'test-cron-secret-123';
+
+  t.after(() => {
+    if (originalSecret !== undefined) {
+      process.env.CRON_SECRET = originalSecret;
+    } else {
+      delete process.env.CRON_SECRET;
+    }
+  });
+
+  // Case 1: Missing Authorization header when refresh=1
+  {
+    const req = { method: 'GET', query: { refresh: '1' }, headers: {} };
+    const res = createMockRes();
+
+    await handler(req, res);
+
+    assert.strictEqual(res.statusCode, 401);
+    assert.deepStrictEqual(res.body, { error: 'Unauthorized' });
+  }
+
+  // Case 2: Incorrect Authorization header when refresh=1
+  {
+    const req = {
+      method: 'GET',
+      query: { refresh: '1' },
+      headers: { authorization: 'Bearer wrong-secret' }
+    };
+    const res = createMockRes();
+
+    await handler(req, res);
+
+    assert.strictEqual(res.statusCode, 401);
+    assert.deepStrictEqual(res.body, { error: 'Unauthorized' });
+  }
+
+  // Case 3: Missing CRON_SECRET in environment
+  {
+    delete process.env.CRON_SECRET;
+    const req = {
+      method: 'GET',
+      query: { refresh: '1' },
+      headers: { authorization: 'Bearer test-cron-secret-123' }
+    };
+    const res = createMockRes();
+
+    await handler(req, res);
+
+    assert.strictEqual(res.statusCode, 401);
+    assert.deepStrictEqual(res.body, { error: 'Unauthorized' });
+  }
 });
