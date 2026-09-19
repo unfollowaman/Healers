@@ -1160,6 +1160,10 @@ function renderPlaylistsHub() {
     if (!elements.playlistsGrid) return;
     elements.playlistsGrid.innerHTML = '';
 
+    // Bolt Optimization: Batch DOM appends via DocumentFragment to avoid triggering
+    // browser reflow and repaint on every iteration when rendering playlist cards.
+    const fragment = document.createDocumentFragment();
+
     state.playlists.forEach((pl) => {
         const card = document.createElement('div');
         card.className = 'playlist-card';
@@ -1187,8 +1191,9 @@ function renderPlaylistsHub() {
             showPlaylistDetailView();
         });
 
-        elements.playlistsGrid.appendChild(card);
+        fragment.appendChild(card);
     });
+    elements.playlistsGrid.appendChild(fragment);
 }
 
 function renderPlaylistDetail() {
@@ -2096,8 +2101,15 @@ function renderHeadlineSummary(events) {
 
     let daysCount = 1;
     if (events.length > 1) {
-        const timestamps = events.map((e) => e.timestamp).sort((a, b) => a - b);
-        const spanMs = Math.max(timestamps[timestamps.length - 1] - timestamps[0], 24 * 3600 * 1000);
+        // Bolt Optimization: Linear O(N) min/max scan avoids allocating intermediate array and O(N log N) sort.
+        let minTime = events[0].timestamp;
+        let maxTime = events[0].timestamp;
+        for (let i = 1; i < events.length; i++) {
+            const t = events[i].timestamp;
+            if (t < minTime) minTime = t;
+            if (t > maxTime) maxTime = t;
+        }
+        const spanMs = Math.max(maxTime - minTime, 24 * 3600 * 1000);
         daysCount = Math.max(Math.ceil(spanMs / (24 * 3600 * 1000)), 1);
     }
 
@@ -2136,6 +2148,9 @@ function renderTopArtistsList(events) {
         return;
     }
 
+    // Bolt Optimization: Batch DOM appends via DocumentFragment to reduce layout reflows.
+    const fragment = document.createDocumentFragment();
+
     sorted.forEach((artist, idx) => {
         const li = document.createElement('li');
         li.className = 'top-ranked-item';
@@ -2166,8 +2181,9 @@ function renderTopArtistsList(events) {
             }
         });
 
-        elements.topArtistsList.appendChild(li);
+        fragment.appendChild(li);
     });
+    elements.topArtistsList.appendChild(fragment);
 }
 
 function renderTopSongsList(events) {
@@ -2189,6 +2205,9 @@ function renderTopSongsList(events) {
         elements.topSongsList.innerHTML = '<li class="top-ranked-item" style="color:var(--ink-faint); font-size:12px;">No song data in range</li>';
         return;
     }
+
+    // Bolt Optimization: Batch DOM appends via DocumentFragment to reduce layout reflows.
+    const fragment = document.createDocumentFragment();
 
     sorted.forEach((song, idx) => {
         const li = document.createElement('li');
@@ -2219,8 +2238,9 @@ function renderTopSongsList(events) {
             }
         });
 
-        elements.topSongsList.appendChild(li);
+        fragment.appendChild(li);
     });
+    elements.topSongsList.appendChild(fragment);
 }
 
 function renderTopAlbumsList(events) {
@@ -2245,6 +2265,9 @@ function renderTopAlbumsList(events) {
         return;
     }
 
+    // Bolt Optimization: Batch DOM appends via DocumentFragment to reduce layout reflows.
+    const fragment = document.createDocumentFragment();
+
     sorted.forEach((album, idx) => {
         const li = document.createElement('li');
         li.className = 'top-ranked-item';
@@ -2266,8 +2289,9 @@ function renderTopAlbumsList(events) {
             <div class="top-item-stat">${album.count} tracks</div>
         `;
 
-        elements.topAlbumsList.appendChild(li);
+        fragment.appendChild(li);
     });
+    elements.topAlbumsList.appendChild(fragment);
 }
 
 function renderActivityVisualization(events) {
@@ -2294,6 +2318,9 @@ function renderActivityVisualization(events) {
 
     const maxVal = Math.max(...buckets.map((b) => b.count), 1);
 
+    // Bolt Optimization: Batch DOM appends via DocumentFragment to reduce layout reflows.
+    const fragment = document.createDocumentFragment();
+
     buckets.forEach((b) => {
         const col = document.createElement('div');
         col.className = 'chart-bar-col';
@@ -2308,8 +2335,9 @@ function renderActivityVisualization(events) {
             <span class="chart-bar-label">${b.label}</span>
         `;
 
-        elements.activityChartBars.appendChild(col);
+        fragment.appendChild(col);
     });
+    elements.activityChartBars.appendChild(fragment);
 
     renderGenreBreakdown(events);
 }
@@ -2327,6 +2355,9 @@ function renderGenreBreakdown(events) {
 
     const total = events.length || 1;
 
+    // Bolt Optimization: Batch DOM appends via DocumentFragment to reduce layout reflows.
+    const fragment = document.createDocumentFragment();
+
     genres.forEach((g) => {
         const pct = Math.min(Math.round((g.count / total) * 100), 100);
 
@@ -2340,8 +2371,9 @@ function renderGenreBreakdown(events) {
             <span class="genre-pct">${pct}%</span>
         `;
 
-        elements.genreBarsContainer.appendChild(row);
+        fragment.appendChild(row);
     });
+    elements.genreBarsContainer.appendChild(fragment);
 }
 
 function renderMilestones(events) {

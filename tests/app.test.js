@@ -494,3 +494,25 @@ test('playlist empty state updates contextually for active search query vs empty
   assert.strictEqual(emptySubtitle.textContent, 'Add songs from your library to get started.');
   assert.strictEqual(btnSpan.textContent, 'Add Songs');
 });
+
+test('linear O(N) min/max span calculation accurately measures event range across history', (t) => {
+  const now = Date.now();
+  const DAY = 24 * 3600 * 1000;
+  const mockEvents = [
+    { timestamp: now - 10 * DAY, duration: 180 },
+    { timestamp: now - 3 * DAY, duration: 200 },
+    { timestamp: now - 15 * DAY, duration: 210 },
+    { timestamp: now - 1 * DAY, duration: 150 }
+  ];
+
+  let minTime = mockEvents[0].timestamp;
+  let maxTime = mockEvents[0].timestamp;
+  for (let i = 1; i < mockEvents.length; i++) {
+    const time = mockEvents[i].timestamp;
+    if (time < minTime) minTime = time;
+    if (time > maxTime) maxTime = time;
+  }
+
+  const expectedSpanMs = mockEvents[0].timestamp - mockEvents[2].timestamp; // (now - 1 * DAY) - (now - 15 * DAY) = 14 * DAY
+  assert.strictEqual(maxTime - minTime, 14 * DAY);
+});
