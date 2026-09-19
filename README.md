@@ -51,6 +51,7 @@ Set these variables locally and in Vercel:
 | `TELEGRAM_CHANNEL_ID` | Channel numeric ID, for example `-1001234567890`, or public username, for example `@my_music_channel`. |
 | `UPSTASH_REDIS_REST_URL` | REST URL of your Upstash Redis database. |
 | `UPSTASH_REDIS_REST_TOKEN` | REST token for your Upstash Redis database. |
+| `CRON_SECRET` | Secret key used to authorize internal endpoints and catalog refresh triggers. |
 
 ## Persistent catalog storage (Upstash Redis)
 
@@ -97,8 +98,9 @@ To store the song catalog persistently across Vercel serverless function restart
    - `TELEGRAM_CHANNEL_ID`
    - `UPSTASH_REDIS_REST_URL`
    - `UPSTASH_REDIS_REST_TOKEN`
+   - `CRON_SECRET`
 4. Deploy the project.
-5. After deploying and uploading songs to the Telegram channel, visit `/api/songs?refresh=1` once (or tap **Refresh** in the UI) to build the initial persisted catalog. This single refresh now handles bulk uploads of any size via pagination, not just the most recent 100.
+5. After deploying and uploading songs to the Telegram channel, call `/api/songs?refresh=1` with `Authorization: Bearer <CRON_SECRET>` once to build the initial persisted catalog. This single refresh now handles bulk uploads of any size via pagination, not just the most recent 100.
 6. For future additions (weeks or months later): upload new audio to the channel, then tap **Refresh** once. New songs are merged into the existing persisted catalog automatically - nothing is lost even if the app hasn't been opened in days.
 
 ## API reference
@@ -119,6 +121,8 @@ Returns audio messages discovered from the configured Telegram channel:
 ```
 
 The endpoint filters updates by `TELEGRAM_CHANNEL_ID`, extracts Telegram `audio` attachments, deduplicates songs by Telegram file identity, and persists the catalog in Upstash Redis for fast repeat loads.
+
+> Note: Triggering a catalog sync via `GET /api/songs?refresh=1` requires an `Authorization: Bearer <CRON_SECRET>` header. Unauthenticated `refresh=1` requests will return `401 Unauthorized`.
 
 ### `GET /api/stream?file_id=...`
 
