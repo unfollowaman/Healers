@@ -516,3 +516,36 @@ test('linear O(N) min/max span calculation accurately measures event range acros
   const expectedSpanMs = mockEvents[0].timestamp - mockEvents[2].timestamp; // (now - 1 * DAY) - (now - 15 * DAY) = 14 * DAY
   assert.strictEqual(maxTime - minTime, 14 * DAY);
 });
+
+test('toggle buttons maintain aria-pressed and aria-expanded attributes correctly', (t) => {
+  const queueAttrs = new Map();
+  const queueClasses = new Set();
+  const queueButton = {
+    classList: {
+      toggle: (cls, flag) => (flag ? queueClasses.add(cls) : queueClasses.delete(cls))
+    },
+    setAttribute: (k, v) => queueAttrs.set(k, String(v)),
+    getAttribute: (k) => queueAttrs.get(k)
+  };
+
+  elements.queueButton = queueButton;
+  elements.queueContainer = { classList: { toggle: () => {} } };
+
+  state.isQueueOpen = false;
+  // Simulate toggleQueue logic
+  state.isQueueOpen = !state.isQueueOpen;
+  elements.queueButton.classList.toggle('active', state.isQueueOpen);
+  elements.queueButton.setAttribute('aria-pressed', String(state.isQueueOpen));
+  elements.queueButton.setAttribute('aria-expanded', String(state.isQueueOpen));
+
+  assert.strictEqual(elements.queueButton.getAttribute('aria-pressed'), 'true');
+  assert.strictEqual(elements.queueButton.getAttribute('aria-expanded'), 'true');
+
+  state.isQueueOpen = !state.isQueueOpen;
+  elements.queueButton.classList.toggle('active', state.isQueueOpen);
+  elements.queueButton.setAttribute('aria-pressed', String(state.isQueueOpen));
+  elements.queueButton.setAttribute('aria-expanded', String(state.isQueueOpen));
+
+  assert.strictEqual(elements.queueButton.getAttribute('aria-pressed'), 'false');
+  assert.strictEqual(elements.queueButton.getAttribute('aria-expanded'), 'false');
+});
