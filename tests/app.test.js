@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { formatDuration, getSongThumbHtml, loadSongs, state, elements } from '../js/app.js';
+import { formatDuration, getSongThumbHtml, loadSongs, generateShuffleOrder, state, elements } from '../js/app.js';
 
 test('formatDuration - valid positive seconds', (t) => {
   assert.strictEqual(formatDuration(0), '0:00');
@@ -548,4 +548,59 @@ test('toggle buttons maintain aria-pressed and aria-expanded attributes correctl
 
   assert.strictEqual(elements.queueButton.getAttribute('aria-pressed'), 'false');
   assert.strictEqual(elements.queueButton.getAttribute('aria-expanded'), 'false');
+});
+
+test('generateShuffleOrder - creates valid permutation starting with startIndex', (t) => {
+  state.songs = Array.from({ length: 100 }, (_, i) => ({ file_id: `song_${i}`, title: `Track ${i}` }));
+
+  // Test valid startIndex = 25
+  const shuffleOrder = generateShuffleOrder(25);
+  assert.strictEqual(shuffleOrder.length, 100);
+  assert.strictEqual(shuffleOrder[0], 25);
+
+  const sortedIndices = [...shuffleOrder].sort((a, b) => a - b);
+  const expectedIndices = Array.from({ length: 100 }, (_, i) => i);
+  assert.deepStrictEqual(sortedIndices, expectedIndices);
+
+  // Test invalid / negative startIndex
+  const fullShuffle = generateShuffleOrder(-1);
+  assert.strictEqual(fullShuffle.length, 100);
+  assert.deepStrictEqual([...fullShuffle].sort((a, b) => a - b), expectedIndices);
+});
+
+test('performance benchmark: generateShuffleOrder full scan/shift vs O(1) initial swap', (t) => {
+  const songCount = 1000;
+  state.songs = Array.from({ length: songCount }, (_, i) => ({ file_id: `song_${i}` }));
+  const targetIndex = 500;
+  const iterations = 500;
+
+  // Unoptimized legacy approach simulation
+  const legacyGenerateShuffleOrder = (startIndex) => {
+    const indices = Array.from({ length: state.songs.length }, (_, i) => i);
+    for (let i = indices.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+    if (startIndex >= 0 && indices.includes(startIndex)) {
+      const currPos = indices.indexOf(startIndex);
+      indices.splice(currPos, 1);
+      indices.unshift(startIndex);
+    }
+    return indices;
+  };
+
+  const startLegacy = performance.now();
+  for (let i = 0; i < iterations; i++) {
+    legacyGenerateShuffleOrder(targetIndex);
+  }
+  const durationLegacy = performance.now() - startLegacy;
+
+  const startOptimized = performance.now();
+  for (let i = 0; i < iterations; i++) {
+    generateShuffleOrder(targetIndex);
+  }
+  const durationOptimized = performance.now() - startOptimized;
+
+  assert.ok(durationOptimized <= durationLegacy, 'Optimized shuffle order must be faster or equal to legacy shuffle order');
+  console.log(`[Benchmark] Legacy shuffle order (1000 items x 500 runs): ${durationLegacy.toFixed(4)}ms | O(1) swap shuffle: ${durationOptimized.toFixed(4)}ms`);
 });

@@ -261,17 +261,29 @@ function updateNowPlaying(song) {
     }
 }
 
-function generateShuffleOrder(startIndex) {
-    if (!state.songs.length) return [];
-    const indices = Array.from({ length: state.songs.length }, (_, i) => i);
-    for (let i = indices.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [indices[i], indices[j]] = [indices[j], indices[i]];
-    }
-    if (startIndex >= 0 && indices.includes(startIndex)) {
-        const currPos = indices.indexOf(startIndex);
-        indices.splice(currPos, 1);
-        indices.unshift(startIndex);
+// Bolt Optimization: O(1) initial swap for shuffle starting element avoids O(N) array scans
+// (includes, indexOf) and O(N) array shifts (splice, unshift).
+export function generateShuffleOrder(startIndex) {
+    const len = state.songs.length;
+    if (!len) return [];
+    const indices = Array.from({ length: len }, (_, i) => i);
+
+    if (startIndex >= 0 && startIndex < len) {
+        // Swap selected start track to index 0 in O(1) time
+        indices[startIndex] = 0;
+        indices[0] = startIndex;
+
+        // Fisher-Yates shuffle remaining elements (indices 1 to len - 1)
+        for (let i = len - 1; i > 1; i--) {
+            const j = 1 + Math.floor(Math.random() * i);
+            [indices[i], indices[j]] = [indices[j], indices[i]];
+        }
+    } else {
+        // Standard Fisher-Yates shuffle across full array when no specific start track is selected
+        for (let i = len - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [indices[i], indices[j]] = [indices[j], indices[i]];
+        }
     }
     return indices;
 }
