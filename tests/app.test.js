@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { formatDuration, getSongThumbHtml, loadSongs, generateShuffleOrder, state, elements } from '../js/app.js';
+import { formatDuration, getSongThumbHtml, loadSongs, generateShuffleOrder, state, elements, openAddSongsModal, closeAddSongsModal, renderArtistTracks, renderPlaylistTracks } from '../js/app.js';
 
 test('formatDuration - valid positive seconds', (t) => {
   assert.strictEqual(formatDuration(0), '0:00');
@@ -566,6 +566,164 @@ test('generateShuffleOrder - creates valid permutation starting with startIndex'
   const fullShuffle = generateShuffleOrder(-1);
   assert.strictEqual(fullShuffle.length, 100);
   assert.deepStrictEqual([...fullShuffle].sort((a, b) => a - b), expectedIndices);
+});
+
+test('modal focus management captures and restores focus correctly', (t) => {
+  let focusedInput = false;
+  let restoredTriggerFocus = false;
+
+  const triggerButton = {
+    focus: () => { restoredTriggerFocus = true; }
+  };
+
+  globalThis.document = globalThis.document || {};
+  globalThis.document.activeElement = triggerButton;
+
+  let modalHidden = true;
+  elements.addSongsModal = {
+    classList: {
+      remove: (cls) => { if (cls === 'hidden') modalHidden = false; },
+      add: (cls) => { if (cls === 'hidden') modalHidden = true; }
+    }
+  };
+
+  elements.modalSearchInput = {
+    focus: () => { focusedInput = true; }
+  };
+
+  openAddSongsModal();
+  assert.strictEqual(modalHidden, false, 'Modal should no longer be hidden');
+  assert.strictEqual(focusedInput, true, 'Focus should be transferred to modalSearchInput');
+
+  closeAddSongsModal();
+  assert.strictEqual(modalHidden, true, 'Modal should be hidden after closing');
+  assert.strictEqual(restoredTriggerFocus, true, 'Focus should be restored to previously focused element');
+});
+
+test('renderArtistTracks generates contextual ARIA labels for track actions', (t) => {
+  class MockElement {
+    constructor(tag) {
+      this.tag = tag;
+      this.children = [];
+      this.className = '';
+      this.innerHTML = '';
+    }
+    appendChild(child) {
+      if (child.isFragment) {
+        this.children.push(...child.children);
+      } else {
+        this.children.push(child);
+      }
+    }
+    querySelector() {
+      return { addEventListener: () => {} };
+    }
+    querySelectorAll() {
+      return [];
+    }
+    addEventListener() {}
+  }
+
+  class MockDocumentFragment {
+    constructor() {
+      this.isFragment = true;
+      this.children = [];
+    }
+    appendChild(child) {
+      this.children.push(child);
+    }
+  }
+
+  const originalDoc = globalThis.document;
+  globalThis.document = {
+    createElement: (tag) => new MockElement(tag),
+    createDocumentFragment: () => new MockDocumentFragment()
+  };
+
+  elements.artistTrackList = new MockElement('ul');
+
+  const mockArtist = {
+    name: 'Stellar Sound',
+    songs: [{ file_id: 's10', title: 'Cosmic Journey', performer: 'Stellar Sound', duration: 200 }]
+  };
+
+  try {
+    renderArtistTracks(mockArtist);
+    assert.strictEqual(elements.artistTrackList.children.length, 1);
+    const li = elements.artistTrackList.children[0];
+    assert.ok(li.innerHTML.includes('aria-label="Add &quot;Cosmic Journey&quot; to queue"'));
+  } finally {
+    globalThis.document = originalDoc;
+  }
+});
+
+test('renderPlaylistTracks generates contextual ARIA labels for track actions', (t) => {
+  class MockElement {
+    constructor(tag) {
+      this.tag = tag;
+      this.children = [];
+      this.className = '';
+      this.innerHTML = '';
+    }
+    appendChild(child) {
+      if (child.isFragment) {
+        this.children.push(...child.children);
+      } else {
+        this.children.push(child);
+      }
+    }
+    querySelector() {
+      return { addEventListener: () => {} };
+    }
+    querySelectorAll() {
+      return [];
+    }
+    addEventListener() {}
+  }
+
+  class MockDocumentFragment {
+    constructor() {
+      this.isFragment = true;
+      this.children = [];
+    }
+    appendChild(child) {
+      this.children.push(child);
+    }
+  }
+
+  const originalDoc = globalThis.document;
+  globalThis.document = {
+    createElement: (tag) => new MockElement(tag),
+    createDocumentFragment: () => new MockDocumentFragment()
+  };
+
+  elements.plTrackList = new MockElement('ul');
+  elements.plEmptyState = { classList: { add: () => {}, remove: () => {} } };
+
+  const samplePl = {
+    id: 'pl_aria',
+    title: 'A11y Test Playlist',
+    songs: [
+      { file_id: 'p1', title: 'Track One', performer: 'Artist A', duration: 180 },
+      { file_id: 'p2', title: 'Track Two', performer: 'Artist B', duration: 210 }
+    ]
+  };
+
+  state.playlists = [samplePl];
+  state.activePlaylistId = 'pl_aria';
+  state.playlistSearchQuery = '';
+  state.playlistSortOrder = 'custom';
+
+  try {
+    renderPlaylistTracks();
+    assert.strictEqual(elements.plTrackList.children.length, 2);
+    const firstLi = elements.plTrackList.children[0];
+    assert.ok(firstLi.innerHTML.includes('aria-label="Move &quot;Track One&quot; up"'));
+    assert.ok(firstLi.innerHTML.includes('aria-label="Move &quot;Track One&quot; down"'));
+    assert.ok(firstLi.innerHTML.includes('aria-label="Remove &quot;Track One&quot; from playlist"'));
+  } finally {
+    globalThis.document = originalDoc;
+  }
 });
 
 test('performance benchmark: generateShuffleOrder full scan/shift vs O(1) initial swap', (t) => {

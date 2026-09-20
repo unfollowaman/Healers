@@ -595,7 +595,7 @@ function renderArtistDetail() {
     renderArtistTracks(artist);
 }
 
-function renderArtistTracks(artist) {
+export function renderArtistTracks(artist) {
     if (!elements.artistTrackList) return;
     elements.artistTrackList.innerHTML = '';
 
@@ -651,7 +651,7 @@ function renderArtistTracks(artist) {
             <div class="col-date track-date-cell">Added recently</div>
             <div class="col-time track-time-cell">${formatDuration(song.duration)}</div>
             <div class="col-actions track-actions-cell">
-                <button class="track-action-btn add-to-queue-btn" type="button" title="Add to Queue" aria-label="Add to Queue">
+                <button class="track-action-btn add-to-queue-btn" type="button" title="Add to Queue" aria-label="Add &quot;${song.title || 'Track'}&quot; to queue">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                 </button>
             </div>
@@ -1281,7 +1281,7 @@ function getSortedPlaylistSongs(songs) {
     return list;
 }
 
-function renderPlaylistTracks() {
+export function renderPlaylistTracks() {
     if (!elements.plTrackList) return;
     elements.plTrackList.innerHTML = '';
 
@@ -1366,13 +1366,13 @@ function renderPlaylistTracks() {
             <div class="col-date track-date-cell">Added recently</div>
             <div class="col-time track-time-cell">${formatDuration(song.duration)}</div>
             <div class="col-actions track-actions-cell">
-                <button class="track-action-btn move-up-btn" type="button" title="Move Up" aria-label="Move track up" ${originalIndexInPl === 0 ? 'disabled style="opacity:0.2;"' : ''}>
+                <button class="track-action-btn move-up-btn" type="button" title="Move Up" aria-label="Move &quot;${song.title || 'Track'}&quot; up" ${originalIndexInPl === 0 ? 'disabled style="opacity:0.2;"' : ''}>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"></polyline></svg>
                 </button>
-                <button class="track-action-btn move-down-btn" type="button" title="Move Down" aria-label="Move track down" ${originalIndexInPl === pl.songs.length - 1 ? 'disabled style="opacity:0.2;"' : ''}>
+                <button class="track-action-btn move-down-btn" type="button" title="Move Down" aria-label="Move &quot;${song.title || 'Track'}&quot; down" ${originalIndexInPl === pl.songs.length - 1 ? 'disabled style="opacity:0.2;"' : ''}>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </button>
-                <button class="track-action-btn danger remove-track-btn" type="button" title="Remove from playlist" aria-label="Remove track from playlist">
+                <button class="track-action-btn danger remove-track-btn" type="button" title="Remove from playlist" aria-label="Remove &quot;${song.title || 'Track'}&quot; from playlist">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
             </div>
@@ -1596,13 +1596,25 @@ function movePlaylistTrack(playlist, fromIndex, toIndex) {
     renderPlaylistDetail();
 }
 
-function openAddSongsModal() {
+let previouslyFocusedElement = null;
+
+export function openAddSongsModal() {
+    if (typeof document !== 'undefined') {
+        previouslyFocusedElement = document.activeElement;
+    }
     if (elements.addSongsModal) elements.addSongsModal.classList.remove('hidden');
     renderAddSongsModal();
+    if (elements.modalSearchInput && typeof elements.modalSearchInput.focus === 'function') {
+        elements.modalSearchInput.focus();
+    }
 }
 
-function closeAddSongsModal() {
+export function closeAddSongsModal() {
     if (elements.addSongsModal) elements.addSongsModal.classList.add('hidden');
+    if (previouslyFocusedElement && typeof previouslyFocusedElement.focus === 'function') {
+        previouslyFocusedElement.focus();
+        previouslyFocusedElement = null;
+    }
 }
 
 function renderAddSongsModal() {
