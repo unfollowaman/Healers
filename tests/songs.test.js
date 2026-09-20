@@ -95,57 +95,113 @@ test('handler - HTTP method validation', async (t) => {
   assert.deepStrictEqual(res.body, { error: 'Method not allowed.' });
 });
 
-test('handler - refresh parameter requires authentication', async (t) => {
-  const originalSecret = process.env.CRON_SECRET;
-  process.env.CRON_SECRET = 'test-cron-secret-123';
+test('handler - refresh parameter works without authorization header and respects 30s cooldown', async (t) => {
+  const originalFetch = globalThis.fetch;
+  const originalBotToken = process.env.TELEGRAM_BOT_TOKEN;
+  const originalChannelId = process.env.TELEGRAM_CHANNEL_ID;
+  const originalRedisUrl = process.env.UPSTASH_REDIS_REST_URL;
+  const originalRedisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+  process.env.TELEGRAM_BOT_TOKEN = 'mock-bot-token';
+  process.env.TELEGRAM_CHANNEL_ID = 'mock-channel';
+  process.env.UPSTASH_REDIS_REST_URL = 'https://mock.upstash.io';
+  process.env.UPSTASH_REDIS_REST_TOKEN = 'mock-redis-token';
 
   t.after(() => {
-    if (originalSecret !== undefined) {
-      process.env.CRON_SECRET = originalSecret;
-    } else {
-      delete process.env.CRON_SECRET;
-    }
+    globalThis.fetch = originalFetch;
+    if (originalBotToken) process.env.TELEGRAM_BOT_TOKEN = originalBotToken; else delete process.env.TELEGRAM_BOT_TOKEN;
+    if (originalChannelId) process.env.TELEGRAM_CHANNEL_ID = originalChannelId; else delete process.env.TELEGRAM_CHANNEL_ID;
+    if (originalRedisUrl) process.env.UPSTASH_REDIS_REST_URL = originalRedisUrl; else delete process.env.UPSTASH_REDIS_REST_URL;
+    if (originalRedisToken) process.env.UPSTASH_REDIS_REST_TOKEN = originalRedisToken; else delete process.env.UPSTASH_REDIS_REST_TOKEN;
   });
 
-  // Case 1: Missing Authorization header when refresh=1
+  let mockLastRun = null;
+  let mockCatalog = [{ file_id: 's1', title: 'Song 1', performer: 'Artist 1', duration: 100 }];
+  let telegramCalled = false;
+
+  globalThis.fetch = async (url, options = {}) => {
+    const urlString = String(url);
+
+    // Mock Upstash calls
+    if (urlString.includes('mock.upstash.io')) {
+      const body = JSON.parse(options.body || '[]');
+      const command = body[0];
+      const key = body[1];
+
+      if (command === 'GET') {
+        if (key === 'murex:refresh:lastrun') {
+          return { ok: true, json: async () => ({ result: mockLastRun ? String(mockLastRun) : null }) };
+        }
+        if (key === 'murex:catalog') {
+          return { ok: true, json: async () => ({ result: JSON.stringify(mockCatalog) }) };
+        }
+        if (key === 'murex:offset') {
+          return { ok: true, json: async () => ({ result: '0' }) };
+        }
+      }
+      if (command === 'SET') {
+        if (key === 'murex:refresh:lastrun') {
+          mockLastRun = parseInt(body[2], 10);
+          return { ok: true, json: async () => ({ result: 'OK' }) };
+        }
+        if (key === 'murex:catalog' || key === 'murex:offset') {
+          return { ok: true, json: async () => ({ result: 'OK' }) };
+        }
+      }
+    }
+
+    // Mock Telegram getUpdates calls
+    if (urlString.includes('api.telegram.org')) {
+      telegramCalled = true;
+      return {
+        ok: true,
+        json: async () => ({ ok: true, result: [] })
+      };
+    }
+
+    return { ok: false, status: 404, json: async () => ({}) };
+  };
+
+  // 1. Initial refresh call with no Authorization header -> runs sync, sets lastrun timestamp, throttled: false
   {
+    telegramCalled = false;
     const req = { method: 'GET', query: { refresh: '1' }, headers: {} };
     const res = createMockRes();
 
     await handler(req, res);
 
-    assert.strictEqual(res.statusCode, 401);
-    assert.deepStrictEqual(res.body, { error: 'Unauthorized' });
+    assert.strictEqual(res.statusCode, 200);
+    assert.strictEqual(telegramCalled, true);
+    assert.strictEqual(res.body.throttled, false);
+    assert.strictEqual(Array.isArray(res.body), true);
+    assert.ok(mockLastRun > 0);
   }
 
-  // Case 2: Incorrect Authorization header when refresh=1
+  // 2. Second refresh call immediately after -> throttled: true, no Telegram call made
   {
-    const req = {
-      method: 'GET',
-      query: { refresh: '1' },
-      headers: { authorization: 'Bearer wrong-secret' }
-    };
+    telegramCalled = false;
+    const req = { method: 'GET', query: { refresh: '1' }, headers: {} };
     const res = createMockRes();
 
     await handler(req, res);
 
-    assert.strictEqual(res.statusCode, 401);
-    assert.deepStrictEqual(res.body, { error: 'Unauthorized' });
+    assert.strictEqual(res.statusCode, 200);
+    assert.strictEqual(telegramCalled, false);
+    assert.strictEqual(res.body.throttled, true);
+    assert.strictEqual(Array.isArray(res.body), true);
   }
 
-  // Case 3: Missing CRON_SECRET in environment
+  // 3. Normal GET /api/songs -> does not include throttled field
   {
-    delete process.env.CRON_SECRET;
-    const req = {
-      method: 'GET',
-      query: { refresh: '1' },
-      headers: { authorization: 'Bearer test-cron-secret-123' }
-    };
+    telegramCalled = false;
+    const req = { method: 'GET', query: {}, headers: {} };
     const res = createMockRes();
 
     await handler(req, res);
 
-    assert.strictEqual(res.statusCode, 401);
-    assert.deepStrictEqual(res.body, { error: 'Unauthorized' });
+    assert.strictEqual(res.statusCode, 200);
+    assert.strictEqual(telegramCalled, false);
+    assert.strictEqual(res.body.throttled, undefined);
+    assert.strictEqual(Array.isArray(res.body), true);
   }
 });

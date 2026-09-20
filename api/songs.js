@@ -1,8 +1,9 @@
 import { requireEnv } from './_lib/utils.js';
-import { getCatalogFromStore, saveCatalogToStore } from './_lib/catalogStore.js';
+import { getCatalogFromStore, saveCatalogToStore, getLastRefreshTime, setLastRefreshTime } from './_lib/catalogStore.js';
 
 const TELEGRAM_API_BASE = 'https://api.telegram.org/bot';
 const UPDATE_PAGE_SIZE = 100;
+const REFRESH_COOLDOWN_MS = 30000;
 
 const CACHE_S_MAXAGE = 3600;
 const CACHE_STALE_WHILE_REVALIDATE = 86400;
@@ -158,23 +159,33 @@ export default async function handler(req, res) {
   try {
     const refresh = req.query?.refresh === '1';
 
-    if (refresh) {
-      const authHeader = req.headers?.authorization;
-      if (!process.env.CRON_SECRET || authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-        return res.status(401).json({ error: 'Unauthorized' });
-      }
-    }
-
     let songs;
+    let isThrottled = false;
+
     if (refresh) {
-      songs = await discoverSongs();
+      const now = Date.now();
+      const lastRun = await getLastRefreshTime();
+
+      if (lastRun && (now - lastRun < REFRESH_COOLDOWN_MS)) {
+        isThrottled = true;
+        const storeData = await getCatalogFromStore();
+        songs = storeData.catalog;
+      } else {
+        await setLastRefreshTime(now);
+        songs = await discoverSongs();
+      }
     } else {
       const storeData = await getCatalogFromStore();
       songs = storeData.catalog;
     }
 
     res.setHeader('Cache-Control', refresh ? 'no-store' : `s-maxage=${CACHE_S_MAXAGE}, stale-while-revalidate=${CACHE_STALE_WHILE_REVALIDATE}`);
-    return res.status(200).json(songs.map(publicSong));
+    const payload = songs.map(publicSong);
+    if (refresh) {
+      payload.throttled = isThrottled;
+      res.setHeader('X-Throttled', String(isThrottled));
+    }
+    return res.status(200).json(payload);
   } catch (error) {
     console.error('Error handling /api/songs request:', error);
     if (error.statusCode === 503) {
