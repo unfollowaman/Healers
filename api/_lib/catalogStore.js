@@ -58,6 +58,61 @@ export async function getCatalogFromStore() {
   }
 }
 
+export async function getLastRefreshTime() {
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+  if (!url || !token) return 0;
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(["GET", "murex:refresh:lastrun"])
+    });
+
+    if (!response.ok) return 0;
+
+    const data = await response.json().catch(() => null);
+    if (!data || data.error) return 0;
+
+    return data.result ? parseInt(data.result, 10) : 0;
+  } catch (error) {
+    console.warn('Failed to read murex:refresh:lastrun:', error.message);
+    return 0;
+  }
+}
+
+export async function setLastRefreshTime(timestamp) {
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+  if (!url || !token) return;
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(["SET", "murex:refresh:lastrun", String(timestamp)])
+    });
+
+    if (!response.ok) return;
+
+    const data = await response.json().catch(() => null);
+    if (data?.error) {
+      console.warn('Failed to write murex:refresh:lastrun:', data.error);
+    }
+  } catch (error) {
+    console.warn('Failed to write murex:refresh:lastrun:', error.message);
+  }
+}
+
 export async function saveCatalogToStore(catalog, offset) {
   const url = process.env.UPSTASH_REDIS_REST_URL;
   const token = process.env.UPSTASH_REDIS_REST_TOKEN;
