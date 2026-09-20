@@ -1,3 +1,7 @@
+## 2025-05-21 - O(1) initial element swap for shuffle order generation
+**Learning:** Performing a full Fisher-Yates shuffle followed by `includes()`, `indexOf()`, `splice()`, and `unshift()` to pin a target starting track incurs O(N) linear array scans and memory shifts. Swapping the selected start index to position 0 first in O(1) time and running Fisher-Yates over indices 1 to N-1 avoids array scans and memory shifts while maintaining uniform randomness across remaining items.
+**Action:** Swap target start elements to index 0 before performing partial Fisher-Yates shuffles on remaining indices.
+
 ## 2025-05-20 - Module-scoped Intl.Collator instance for Array.prototype.sort comparators
 **Learning:** Calling `String.prototype.localeCompare` with options inside array sort comparators instantiates a new `Intl.Collator` on every comparison in V8. Declaring a single, module-scoped `Intl.Collator` instance and calling `collator.compare(a, b)` reduces comparison time by ~95% (~35x-50x speedup) on 500+ item sorts without adding dependencies or altering comparison behavior.
 **Action:** Re-use a single `Intl.Collator` instance for all repeated string comparison loops and sort comparators.
