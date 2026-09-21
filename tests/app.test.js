@@ -762,3 +762,37 @@ test('performance benchmark: generateShuffleOrder full scan/shift vs O(1) initia
   assert.ok(durationOptimized <= durationLegacy + 10, 'Optimized shuffle order must be faster or equal to legacy shuffle order');
   console.log(`[Benchmark] Legacy shuffle order (1000 items x 500 runs): ${durationLegacy.toFixed(4)}ms | O(1) swap shuffle: ${durationOptimized.toFixed(4)}ms`);
 });
+
+test('performance benchmark: modal track membership check linear scan vs O(1) Set lookup', (t) => {
+  const candidateCount = 500;
+  const playlistCount = 100;
+  const candidates = Array.from({ length: candidateCount }, (_, i) => ({ file_id: `song_${i}`, title: `Song ${i}` }));
+  const playlistSongs = Array.from({ length: playlistCount }, (_, i) => ({ file_id: `song_${i * 2}`, title: `Song ${i * 2}` }));
+  const iterations = 500;
+
+  // Unoptimized linear scan: Array.prototype.some per candidate song
+  const startLinear = performance.now();
+  for (let iter = 0; iter < iterations; iter++) {
+    const isAddedList = [];
+    candidates.forEach((song) => {
+      const isAdded = playlistSongs.some((s) => s.file_id === song.file_id);
+      isAddedList.push(isAdded);
+    });
+  }
+  const durationLinear = performance.now() - startLinear;
+
+  // Optimized Set lookup: O(1) Set.prototype.has per candidate song
+  const startSet = performance.now();
+  for (let iter = 0; iter < iterations; iter++) {
+    const isAddedList = [];
+    const addedFileIds = new Set((playlistSongs || []).map((s) => s.file_id));
+    candidates.forEach((song) => {
+      const isAdded = addedFileIds.has(song.file_id);
+      isAddedList.push(isAdded);
+    });
+  }
+  const durationSet = performance.now() - startSet;
+
+  assert.ok(durationSet <= durationLinear + 10, 'Set lookup must be faster than or equal to linear scan');
+  console.log(`[Benchmark] Modal track membership linear scan (500 candidates x 100 pl x 500 runs): ${durationLinear.toFixed(4)}ms | O(1) Set lookup: ${durationSet.toFixed(4)}ms`);
+});
