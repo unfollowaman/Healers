@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { formatDuration, getSongThumbHtml, loadSongs, generateShuffleOrder, state, elements, openAddSongsModal, closeAddSongsModal, renderArtistTracks, renderPlaylistTracks } from '../js/app.js';
+import { formatDuration, getSongThumbHtml, loadSongs, generateShuffleOrder, state, elements, openAddSongsModal, closeAddSongsModal, renderArtistTracks, renderPlaylistTracks, renderPlaylistsHub, renderArtistsGrid, renderPlaylistDetail, renderArtistDetail } from '../js/app.js';
 
 test('formatDuration - valid positive seconds', (t) => {
   assert.strictEqual(formatDuration(0), '0:00');
@@ -607,6 +607,7 @@ test('renderArtistTracks generates contextual ARIA labels for track actions', (t
       this.children = [];
       this.className = '';
       this.innerHTML = '';
+      this.style = {};
     }
     appendChild(child) {
       if (child.isFragment) {
@@ -664,6 +665,7 @@ test('renderPlaylistTracks generates contextual ARIA labels for track actions', 
       this.children = [];
       this.className = '';
       this.innerHTML = '';
+      this.style = {};
     }
     appendChild(child) {
       if (child.isFragment) {
@@ -795,4 +797,217 @@ test('performance benchmark: modal track membership check linear scan vs O(1) Se
 
   assert.ok(durationSet <= durationLinear + 10, 'Set lookup must be faster than or equal to linear scan');
   console.log(`[Benchmark] Modal track membership linear scan (500 candidates x 100 pl x 500 runs): ${durationLinear.toFixed(4)}ms | O(1) Set lookup: ${durationSet.toFixed(4)}ms`);
+});
+
+test('renderPlaylistsHub sets keyboard accessibility attributes and keydown listeners on cards', (t) => {
+  class MockElement {
+    constructor(tag) {
+      this.tag = tag;
+      this.children = [];
+      this.className = '';
+      this.innerHTML = '';
+      this.attrs = new Map();
+      this.listeners = {};
+      this.style = {};
+    }
+    appendChild(child) {
+      if (child.isFragment) {
+        this.children.push(...child.children);
+      } else {
+        this.children.push(child);
+      }
+    }
+    setAttribute(k, v) { this.attrs.set(k, String(v)); }
+    getAttribute(k) { return this.attrs.get(k); }
+    addEventListener(evt, fn) { this.listeners[evt] = fn; }
+    querySelector() { return new MockElement('div'); }
+  }
+
+  class MockDocumentFragment {
+    constructor() {
+      this.isFragment = true;
+      this.children = [];
+    }
+    appendChild(child) {
+      this.children.push(child);
+    }
+  }
+
+  const originalDoc = globalThis.document;
+  globalThis.document = {
+    createElement: (tag) => new MockElement(tag),
+    createDocumentFragment: () => new MockDocumentFragment()
+  };
+
+  elements.playlistsGrid = new MockElement('div');
+  state.playlists = [
+    { id: 'pl_100', title: 'A11y Classics', songs: [{ file_id: 's1' }, { file_id: 's2' }] }
+  ];
+
+  try {
+    renderPlaylistsHub();
+    assert.strictEqual(elements.playlistsGrid.children.length, 1);
+    const card = elements.playlistsGrid.children[0];
+    assert.strictEqual(card.tabIndex, 0);
+    assert.strictEqual(card.getAttribute('role'), 'button');
+    assert.strictEqual(card.getAttribute('aria-label'), 'Open playlist "A11y Classics", 2 tracks');
+    assert.ok(typeof card.listeners['keydown'] === 'function');
+  } finally {
+    globalThis.document = originalDoc;
+  }
+});
+
+test('renderArtistsGrid sets keyboard accessibility attributes and keydown listeners on cards', (t) => {
+  class MockElement {
+    constructor(tag) {
+      this.tag = tag;
+      this.children = [];
+      this.className = '';
+      this.innerHTML = '';
+      this.attrs = new Map();
+      this.listeners = {};
+      this.style = {};
+    }
+    appendChild(child) {
+      if (child.isFragment) {
+        this.children.push(...child.children);
+      } else {
+        this.children.push(child);
+      }
+    }
+    setAttribute(k, v) { this.attrs.set(k, String(v)); }
+    getAttribute(k) { return this.attrs.get(k); }
+    addEventListener(evt, fn) { this.listeners[evt] = fn; }
+    querySelector() { return new MockElement('div'); }
+  }
+
+  class MockDocumentFragment {
+    constructor() {
+      this.isFragment = true;
+      this.children = [];
+    }
+    appendChild(child) {
+      this.children.push(child);
+    }
+  }
+
+  const originalDoc = globalThis.document;
+  globalThis.document = {
+    createElement: (tag) => new MockElement(tag),
+    createDocumentFragment: () => new MockDocumentFragment()
+  };
+
+  elements.artistsGrid = new MockElement('div');
+  const mockArtists = [
+    { name: 'Daft Punk', songs: [{ file_id: 'd1' }, { file_id: 'd2' }], covers: [], totalDuration: 500 }
+  ];
+
+  try {
+    renderArtistsGrid(mockArtists);
+    assert.strictEqual(elements.artistsGrid.children.length, 1);
+    const card = elements.artistsGrid.children[0];
+    assert.strictEqual(card.tabIndex, 0);
+    assert.strictEqual(card.getAttribute('role'), 'button');
+    assert.strictEqual(card.getAttribute('aria-label'), 'View artist Daft Punk, 2 tracks');
+    assert.ok(typeof card.listeners['keydown'] === 'function');
+  } finally {
+    globalThis.document = originalDoc;
+  }
+});
+
+test('renderPlaylistDetail and renderArtistDetail assign contextual entity ARIA labels to header buttons', (t) => {
+  class MockElement {
+    constructor(tag) {
+      this.tag = tag;
+      this.children = [];
+      this.className = '';
+      this.innerHTML = '';
+      this.attrs = new Map();
+      this.listeners = {};
+      this.style = {};
+    }
+    appendChild(child) {
+      if (child.isFragment) {
+        this.children.push(...child.children);
+      } else {
+        this.children.push(child);
+      }
+    }
+    setAttribute(k, v) { this.attrs.set(k, String(v)); }
+    getAttribute(k) { return this.attrs.get(k); }
+    addEventListener(evt, fn) { this.listeners[evt] = fn; }
+    querySelector() { return new MockElement('div'); }
+    querySelectorAll() { return []; }
+  }
+
+  class MockDocumentFragment {
+    constructor() {
+      this.isFragment = true;
+      this.children = [];
+    }
+    appendChild(child) {
+      this.children.push(child);
+    }
+  }
+
+  const originalDoc = globalThis.document;
+  globalThis.document = {
+    createElement: (tag) => new MockElement(tag),
+    createDocumentFragment: () => new MockDocumentFragment()
+  };
+
+  const makeMockButton = () => {
+    const attrs = new Map();
+    return {
+      classList: { toggle: () => {} },
+      setAttribute: (k, v) => attrs.set(k, String(v)),
+      getAttribute: (k) => attrs.get(k)
+    };
+  };
+
+  elements.plPlayBtn = makeMockButton();
+  elements.plShuffleBtn = makeMockButton();
+  elements.plAddSongsBtn = makeMockButton();
+  elements.plEditBtn = makeMockButton();
+  elements.plShareBtn = makeMockButton();
+  elements.plDeleteBtn = makeMockButton();
+  elements.plOfflineBtn = makeMockButton();
+  elements.plCoverGrid = { innerHTML: '' };
+  elements.plTrackList = new MockElement('ul');
+  elements.plEmptyState = { classList: { add: () => {}, remove: () => {} }, querySelector: () => new MockElement('span') };
+  elements.plRecommendations = { classList: { add: () => {} } };
+
+  state.playlists = [{ id: 'pl_synth', title: 'Synthwave Beats', songs: [] }];
+  state.activePlaylistId = 'pl_synth';
+
+  try {
+    renderPlaylistDetail();
+
+    assert.strictEqual(elements.plPlayBtn.getAttribute('aria-label'), 'Play playlist "Synthwave Beats"');
+    assert.strictEqual(elements.plDeleteBtn.getAttribute('aria-label'), 'Delete playlist "Synthwave Beats"');
+
+    const makeArtistButton = () => {
+      const attrs = new Map();
+      return {
+        setAttribute: (k, v) => attrs.set(k, String(v)),
+        getAttribute: (k) => attrs.get(k)
+      };
+    };
+
+    elements.artistPlayBtn = makeArtistButton();
+    elements.artistShuffleBtn = makeArtistButton();
+    elements.artistQueueBtn = makeArtistButton();
+    elements.artistDetailAvatar = { innerHTML: '', appendChild: () => {} };
+    elements.artistTrackList = new MockElement('ul');
+
+    state.songs = [{ file_id: 'a1', performer: 'The Midnight', title: 'Sunset', duration: 240 }];
+    state.activeArtistName = 'The Midnight';
+
+    renderArtistDetail();
+
+    assert.strictEqual(elements.artistPlayBtn.getAttribute('aria-label'), 'Play all songs by The Midnight');
+    assert.strictEqual(elements.artistShuffleBtn.getAttribute('aria-label'), 'Shuffle songs by The Midnight');
+  } finally {
+    globalThis.document = originalDoc;
+  }
 });
