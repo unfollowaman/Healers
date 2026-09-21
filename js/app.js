@@ -711,11 +711,13 @@ function playArtistSongs(artist, isShuffle = false) {
 
 function addArtistSongsToQueue(artist) {
     if (!artist || !artist.songs || artist.songs.length === 0) return;
-    // Append songs to current state.songs if not present
+    // Bolt Optimization: Pre-populate a Set of existing file_ids to make track existence checks O(1) instead of O(N) array linear scans.
+    const existingFileIds = new Set((state.songs || []).map((s) => s.file_id));
     let addedCount = 0;
     artist.songs.forEach((s) => {
-        if (!state.songs.some((existing) => existing.file_id === s.file_id)) {
+        if (!existingFileIds.has(s.file_id)) {
             state.songs.push(s);
+            existingFileIds.add(s.file_id);
             addedCount++;
         }
     });
@@ -1634,8 +1636,11 @@ function renderAddSongsModal() {
     // Bolt Optimization: Batch DOM appends via DocumentFragment to reduce layout shifts & reflows.
     const fragment = document.createDocumentFragment();
 
+    // Bolt Optimization: Construct a Set of playlist track file_ids for O(1) membership lookups, avoiding O(M) linear searches per candidate song.
+    const addedFileIds = new Set((pl.songs || []).map((s) => s.file_id));
+
     candidates.forEach((song) => {
-        const isAdded = pl.songs.some((s) => s.file_id === song.file_id);
+        const isAdded = addedFileIds.has(song.file_id);
 
         const li = document.createElement('li');
         li.className = 'modal-song-item';
