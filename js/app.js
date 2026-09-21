@@ -477,7 +477,7 @@ function renderArtistsHub() {
     }
 }
 
-function renderArtistsGrid(artists) {
+export function renderArtistsGrid(artists) {
     if (!elements.artistsGrid) return;
     elements.artistsGrid.innerHTML = '';
     // Bolt Optimization: Batch DOM appends using DocumentFragment to avoid triggering
@@ -487,6 +487,9 @@ function renderArtistsGrid(artists) {
     artists.forEach((artist) => {
         const card = document.createElement('div');
         card.className = 'artist-grid-card';
+        card.tabIndex = 0;
+        card.setAttribute('role', 'button');
+        card.setAttribute('aria-label', `View artist ${artist.name}, ${artist.songs.length} track${artist.songs.length === 1 ? '' : 's'}`);
 
         const avatarWrapper = document.createElement('div');
         avatarWrapper.className = 'artist-card-avatar-wrapper';
@@ -515,6 +518,14 @@ function renderArtistsGrid(artists) {
         card.addEventListener('click', () => {
             state.activeArtistName = artist.name;
             showArtistDetailView();
+        });
+
+        card.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                state.activeArtistName = artist.name;
+                showArtistDetailView();
+            }
         });
 
         // Quick play on overlay click
@@ -573,7 +584,7 @@ function getActiveArtist() {
     return artists.find((a) => a.name === state.activeArtistName) || null;
 }
 
-function renderArtistDetail() {
+export function renderArtistDetail() {
     const artist = getActiveArtist();
     if (!artist) {
         showArtistsHubView();
@@ -591,6 +602,10 @@ function renderArtistDetail() {
 
     if (elements.artistDetailTrackCount) elements.artistDetailTrackCount.textContent = `${count} track${count === 1 ? '' : 's'}`;
     if (elements.artistDetailTotalDuration) elements.artistDetailTotalDuration.textContent = `${mins} min`;
+
+    if (elements.artistPlayBtn) elements.artistPlayBtn.setAttribute('aria-label', `Play all songs by ${artist.name}`);
+    if (elements.artistShuffleBtn) elements.artistShuffleBtn.setAttribute('aria-label', `Shuffle songs by ${artist.name}`);
+    if (elements.artistQueueBtn) elements.artistQueueBtn.setAttribute('aria-label', `Add all songs by ${artist.name} to queue`);
 
     renderArtistTracks(artist);
 }
@@ -1170,7 +1185,7 @@ function renderPlaylistCoverGrid(container, songList) {
     }
 }
 
-function renderPlaylistsHub() {
+export function renderPlaylistsHub() {
     if (!elements.playlistsGrid) return;
     elements.playlistsGrid.innerHTML = '';
 
@@ -1181,6 +1196,10 @@ function renderPlaylistsHub() {
     state.playlists.forEach((pl) => {
         const card = document.createElement('div');
         card.className = 'playlist-card';
+        card.tabIndex = 0;
+        card.setAttribute('role', 'button');
+        const songCount = (pl.songs || []).length;
+        card.setAttribute('aria-label', `Open playlist "${pl.title || 'Untitled'}", ${songCount} track${songCount === 1 ? '' : 's'}`);
 
         const coverDiv = document.createElement('div');
         coverDiv.className = 'card-cover';
@@ -1205,12 +1224,20 @@ function renderPlaylistsHub() {
             showPlaylistDetailView();
         });
 
+        card.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                state.activePlaylistId = pl.id;
+                showPlaylistDetailView();
+            }
+        });
+
         fragment.appendChild(card);
     });
     elements.playlistsGrid.appendChild(fragment);
 }
 
-function renderPlaylistDetail() {
+export function renderPlaylistDetail() {
     const pl = getActivePlaylist();
     if (!pl) {
         showPlaylistsHubView();
@@ -1248,9 +1275,17 @@ function renderPlaylistDetail() {
     if (elements.plTrackCount) elements.plTrackCount.textContent = `${trackCount} track${trackCount === 1 ? '' : 's'}`;
     if (elements.plTotalDuration) elements.plTotalDuration.textContent = `${totalMins} min`;
 
+    if (elements.plPlayBtn) elements.plPlayBtn.setAttribute('aria-label', `Play playlist "${pl.title || 'Playlist'}"`);
+    if (elements.plShuffleBtn) elements.plShuffleBtn.setAttribute('aria-label', `Shuffle playlist "${pl.title || 'Playlist'}"`);
+    if (elements.plAddSongsBtn) elements.plAddSongsBtn.setAttribute('aria-label', `Add songs to playlist "${pl.title || 'Playlist'}"`);
+    if (elements.plEditBtn) elements.plEditBtn.setAttribute('aria-label', `${state.isEditingPlaylist ? 'Save' : 'Edit'} playlist "${pl.title || 'Playlist'}" details`);
+    if (elements.plShareBtn) elements.plShareBtn.setAttribute('aria-label', `Share playlist "${pl.title || 'Playlist'}"`);
+    if (elements.plDeleteBtn) elements.plDeleteBtn.setAttribute('aria-label', `Delete playlist "${pl.title || 'Playlist'}"`);
+
     if (elements.plOfflineBtn) {
         elements.plOfflineBtn.classList.toggle('active', !!pl.isOffline);
         elements.plOfflineBtn.setAttribute('aria-pressed', String(!!pl.isOffline));
+        elements.plOfflineBtn.setAttribute('aria-label', `${pl.isOffline ? 'Remove download' : 'Download'} playlist "${pl.title || 'Playlist'}"`);
     }
     if (elements.plOfflineLabel) {
         elements.plOfflineLabel.textContent = pl.isOffline ? 'Downloaded' : 'Offline';
