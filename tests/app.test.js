@@ -658,6 +658,88 @@ test('renderArtistTracks generates contextual ARIA labels for track actions', (t
   }
 });
 
+test('openAddSongsModal generates track-specific ARIA labels and empty state message', (t) => {
+  class MockElement {
+    constructor(tag) {
+      this.tag = tag;
+      this.children = [];
+      this.className = '';
+      this._innerHTML = '';
+      this.style = {};
+      this.textContent = '';
+    }
+    set innerHTML(val) {
+      this._innerHTML = val;
+      if (val === '') this.children = [];
+    }
+    get innerHTML() {
+      return this._innerHTML;
+    }
+    appendChild(child) {
+      if (child.isFragment) {
+        this.children.push(...child.children);
+      } else {
+        this.children.push(child);
+      }
+    }
+    querySelector() {
+      return { addEventListener: () => {} };
+    }
+  }
+
+  class MockDocumentFragment {
+    constructor() {
+      this.isFragment = true;
+      this.children = [];
+    }
+    appendChild(child) {
+      this.children.push(child);
+    }
+  }
+
+  const originalDoc = globalThis.document;
+  globalThis.document = {
+    createElement: (tag) => new MockElement(tag),
+    createDocumentFragment: () => new MockDocumentFragment(),
+    activeElement: null
+  };
+
+  elements.addSongsModal = { classList: { remove: () => {}, add: () => {} } };
+  elements.modalSongList = new MockElement('ul');
+  elements.modalSearchInput = { focus: () => {} };
+
+  state.songs = [
+    { file_id: 'song_1', title: 'Midnight City', performer: 'M83' },
+    { file_id: 'song_2', title: 'Starboy', performer: 'The Weeknd' }
+  ];
+  state.playlists = [{ id: 'pl_1', title: 'Favorites', songs: [{ file_id: 'song_1', title: 'Midnight City' }] }];
+  state.activePlaylistId = 'pl_1';
+  state.modalSearchQuery = '';
+
+  try {
+    openAddSongsModal();
+    assert.strictEqual(elements.modalSongList.children.length, 2);
+
+    const firstItemHtml = elements.modalSongList.children[0].innerHTML;
+    const secondItemHtml = elements.modalSongList.children[1].innerHTML;
+
+    assert.ok(firstItemHtml.includes('aria-label="Remove &quot;Midnight City&quot; from playlist"'));
+    assert.ok(secondItemHtml.includes('aria-label="Add &quot;Starboy&quot; to playlist"'));
+
+    // Test empty state on non-matching query
+    state.modalSearchQuery = 'NonExistentTrack';
+    openAddSongsModal();
+
+    assert.strictEqual(elements.modalSongList.children.length, 1);
+    const emptyLi = elements.modalSongList.children[0];
+    assert.strictEqual(emptyLi.className, 'modal-empty-state');
+    assert.strictEqual(emptyLi.textContent, 'No songs found matching "NonExistentTrack"');
+  } finally {
+    globalThis.document = originalDoc;
+    state.modalSearchQuery = '';
+  }
+});
+
 test('renderPlaylistTracks generates contextual ARIA labels for track actions', (t) => {
   class MockElement {
     constructor(tag) {
