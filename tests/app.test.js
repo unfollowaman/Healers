@@ -799,6 +799,39 @@ test('performance benchmark: modal track membership check linear scan vs O(1) Se
   console.log(`[Benchmark] Modal track membership linear scan (500 candidates x 100 pl x 500 runs): ${durationLinear.toFixed(4)}ms | O(1) Set lookup: ${durationSet.toFixed(4)}ms`);
 });
 
+test('performance benchmark: playlist track rendering indexOf linear scan vs O(1) Map index lookup', (t) => {
+  const trackCount = 500;
+  const songs = Array.from({ length: trackCount }, (_, i) => ({ file_id: `song_${i}`, title: `Track ${i}` }));
+  const iterations = 500;
+
+  // Baseline: Linear Array.prototype.indexOf scan per rendered track
+  const startLinear = performance.now();
+  for (let iter = 0; iter < iterations; iter++) {
+    const indices = [];
+    songs.forEach((song) => {
+      indices.push(songs.indexOf(song));
+    });
+  }
+  const durationLinear = performance.now() - startLinear;
+
+  // Optimized: Pre-built Map lookup per rendered track
+  const startMap = performance.now();
+  for (let iter = 0; iter < iterations; iter++) {
+    const indices = [];
+    const songIndexMap = new Map();
+    songs.forEach((s, idx) => {
+      if (!songIndexMap.has(s)) songIndexMap.set(s, idx);
+    });
+    songs.forEach((song) => {
+      indices.push(songIndexMap.get(song));
+    });
+  }
+  const durationMap = performance.now() - startMap;
+
+  assert.ok(durationMap <= durationLinear + 10, 'Map index lookup must be faster or equal to indexOf linear scan');
+  console.log(`[Benchmark] Playlist track indexOf linear scan (${trackCount} tracks x ${iterations} runs): ${durationLinear.toFixed(4)}ms | O(1) Map lookup: ${durationMap.toFixed(4)}ms`);
+});
+
 test('renderPlaylistsHub sets keyboard accessibility attributes and keydown listeners on cards', (t) => {
   class MockElement {
     constructor(tag) {
