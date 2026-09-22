@@ -1,3 +1,7 @@
+## 2025-05-23 - Pre-computed Map index lookup for O(1) track position retrieval during playlist rendering
+**Learning:** Invoking `Array.prototype.indexOf` inside a list iteration loop (`songsToRender.forEach`) to locate each track's original position in the master playlist causes O(N^2) quadratic search time per render or re-sort. Pre-building a Map of song object references to their indices prior to rendering reduces track position lookups to O(1) constant time, eliminating quadratic complexity in large playlist views.
+**Action:** When mapping or iterating a transformed slice of an array that requires original array indices, pre-populate a Map of item reference -> index before entering the loop.
+
 ## 2025-05-22 - Pre-populated Set for O(1) track membership checks during list rendering
 **Learning:** Invoking `Array.prototype.some` inside a list iteration loop (e.g. checking if candidate songs exist in a playlist or queue) incurs O(N * M) quadratic search time on every render or search keystroke. Pre-building a Set of target IDs before entering the loop reduces membership lookups to O(1) constant time (O(N + M) total complexity), yielding a ~11x-100x speedup (~91%-99% latency reduction) without changing UI behavior or adding dependencies.
 **Action:** Always extract inner array membership checks (some, includes, find) inside loop iterations into a pre-computed Set or Map prior to looping.

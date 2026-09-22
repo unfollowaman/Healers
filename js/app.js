@@ -1353,8 +1353,15 @@ export function renderPlaylistTracks() {
     // Bolt Optimization: Batch DOM appends via DocumentFragment to reduce layout shifts & reflows.
     const fragment = document.createDocumentFragment();
 
+    // Bolt Optimization: Pre-build a Map of song references to their original playlist indices
+    // for O(1) index lookups during track rendering, avoiding O(N^2) quadratic indexOf scans.
+    const songIndexMap = new Map();
+    pl.songs.forEach((s, idx) => {
+        if (!songIndexMap.has(s)) songIndexMap.set(s, idx);
+    });
+
     songsToRender.forEach((song, displayIdx) => {
-        const originalIndexInPl = pl.songs.indexOf(song);
+        const originalIndexInPl = songIndexMap.has(song) ? songIndexMap.get(song) : pl.songs.indexOf(song);
         const isCurrentActive = currentSong && currentSong.file_id === song.file_id;
 
         const li = document.createElement('li');
