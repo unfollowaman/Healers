@@ -1668,6 +1668,15 @@ function renderAddSongsModal() {
         candidates = candidates.filter((s) => (s.title || '').toLowerCase().includes(query) || (s.performer || '').toLowerCase().includes(query));
     }
 
+    if (candidates.length === 0) {
+        const emptyLi = document.createElement('li');
+        emptyLi.className = 'modal-empty-state';
+        emptyLi.style.cssText = 'text-align:center; padding:24px 12px; color:var(--ink-muted); font-size:14px; list-style:none;';
+        emptyLi.textContent = query ? `No songs found matching "${state.modalSearchQuery.trim()}"` : 'No songs available in library';
+        elements.modalSongList.appendChild(emptyLi);
+        return;
+    }
+
     // Bolt Optimization: Batch DOM appends via DocumentFragment to reduce layout shifts & reflows.
     const fragment = document.createDocumentFragment();
 
@@ -1680,12 +1689,16 @@ function renderAddSongsModal() {
         const li = document.createElement('li');
         li.className = 'modal-song-item';
 
+        const ariaLabel = isAdded
+            ? `Remove &quot;${song.title || 'Untitled'}&quot; from playlist`
+            : `Add &quot;${song.title || 'Untitled'}&quot; to playlist`;
+
         li.innerHTML = `
             <div class="track-meta">
                 <span class="track-name" style="font-size:14px; font-weight:600;">${song.title || 'Untitled'}</span>
                 <span class="track-artist" style="font-size:12px; color:var(--ink-muted);">${song.performer || 'Unknown'}</span>
             </div>
-            <button class="action-btn ${isAdded ? 'secondary-action-btn' : 'primary-action-btn'}" type="button" style="font-size:12px; padding:4px 12px;">
+            <button class="action-btn ${isAdded ? 'secondary-action-btn' : 'primary-action-btn'}" type="button" aria-label="${ariaLabel}" style="font-size:12px; padding:4px 12px;">
                 ${isAdded ? '✓ Added' : '+ Add'}
             </button>
         `;
