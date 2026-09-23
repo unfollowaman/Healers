@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { formatDuration, getSongThumbHtml, loadSongs, generateShuffleOrder, state, elements, openAddSongsModal, closeAddSongsModal, renderArtistTracks, renderPlaylistTracks, renderPlaylistsHub, renderArtistsGrid, renderPlaylistDetail, renderArtistDetail, getSortedSongIndices } from '../js/app.js';
+import { formatDuration, getSongThumbHtml, loadSongs, generateShuffleOrder, state, elements, openAddSongsModal, closeAddSongsModal, renderArtistTracks, renderPlaylistTracks, renderPlaylistsHub, renderArtistsGrid, renderPlaylistDetail, renderArtistDetail, getSortedSongIndices, renderSongsList } from '../js/app.js';
 
 test('formatDuration - valid positive seconds', (t) => {
   assert.strictEqual(formatDuration(0), '0:00');
@@ -653,6 +653,65 @@ test('renderArtistTracks generates contextual ARIA labels for track actions', (t
     assert.strictEqual(elements.artistTrackList.children.length, 1);
     const li = elements.artistTrackList.children[0];
     assert.ok(li.innerHTML.includes('aria-label="Add &quot;Cosmic Journey&quot; to queue"'));
+  } finally {
+    globalThis.document = originalDoc;
+  }
+});
+
+test('renderSongsList sets keyboard accessibility attributes and keydown listeners on song items', (t) => {
+  class MockElement {
+    constructor(tag) {
+      this.tag = tag;
+      this.children = [];
+      this.className = '';
+      this.innerHTML = '';
+      this.attrs = new Map();
+      this.listeners = {};
+      this.style = {};
+    }
+    appendChild(child) {
+      if (child.isFragment) {
+        this.children.push(...child.children);
+      } else {
+        this.children.push(child);
+      }
+    }
+    setAttribute(k, v) { this.attrs.set(k, String(v)); }
+    getAttribute(k) { return this.attrs.get(k); }
+    addEventListener(evt, fn) { this.listeners[evt] = fn; }
+  }
+
+  class MockDocumentFragment {
+    constructor() {
+      this.isFragment = true;
+      this.children = [];
+    }
+    appendChild(child) {
+      this.children.push(child);
+    }
+  }
+
+  const originalDoc = globalThis.document;
+  globalThis.document = {
+    createElement: (tag) => new MockElement(tag),
+    createDocumentFragment: () => new MockDocumentFragment()
+  };
+
+  elements.songsList = new MockElement('ul');
+  state.songs = [
+    { file_id: 's1', title: 'Solar Power', performer: 'Lorde', duration: 192 }
+  ];
+  state.sortOrder = 'oldest';
+
+  try {
+    renderSongsList();
+    assert.strictEqual(elements.songsList.children.length, 1);
+    const item = elements.songsList.children[0];
+    assert.strictEqual(item.tabIndex, 0);
+    assert.strictEqual(item.getAttribute('role'), 'button');
+    assert.strictEqual(item.getAttribute('aria-label'), 'Play "Solar Power" by Lorde');
+    assert.ok(typeof item.listeners['click'] === 'function');
+    assert.ok(typeof item.listeners['keydown'] === 'function');
   } finally {
     globalThis.document = originalDoc;
   }
