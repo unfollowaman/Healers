@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { formatDuration, getSongThumbHtml, loadSongs, generateShuffleOrder, state, elements, openAddSongsModal, closeAddSongsModal, renderArtistTracks, renderPlaylistTracks, renderPlaylistsHub, renderArtistsGrid, renderPlaylistDetail, renderArtistDetail } from '../js/app.js';
+import { formatDuration, getSongThumbHtml, loadSongs, generateShuffleOrder, state, elements, openAddSongsModal, closeAddSongsModal, renderArtistTracks, renderPlaylistTracks, renderPlaylistsHub, renderArtistsGrid, renderPlaylistDetail, renderArtistDetail, getSortedSongIndices } from '../js/app.js';
 
 test('formatDuration - valid positive seconds', (t) => {
   assert.strictEqual(formatDuration(0), '0:00');
@@ -656,6 +656,70 @@ test('renderArtistTracks generates contextual ARIA labels for track actions', (t
   } finally {
     globalThis.document = originalDoc;
   }
+});
+
+test('getSortedSongIndices - correctly maps and sorts tracks across sort modes', (t) => {
+  state.songs = [
+    { file_id: 's1', title: 'Beta Song' },
+    { file_id: 's2', title: 'Alpha Song' },
+    { file_id: 's3', title: 'Gamma Song' }
+  ];
+
+  // 1. newest (reverse order)
+  state.sortOrder = 'newest';
+  const newestResult = getSortedSongIndices();
+  assert.strictEqual(newestResult.length, 3);
+  assert.strictEqual(newestResult[0].song.title, 'Gamma Song');
+  assert.strictEqual(newestResult[0].originalIndex, 2);
+  assert.strictEqual(newestResult[1].song.title, 'Alpha Song');
+  assert.strictEqual(newestResult[1].originalIndex, 1);
+  assert.strictEqual(newestResult[2].song.title, 'Beta Song');
+  assert.strictEqual(newestResult[2].originalIndex, 0);
+
+  // 2. oldest (original order)
+  state.sortOrder = 'oldest';
+  const oldestResult = getSortedSongIndices();
+  assert.strictEqual(oldestResult[0].song.title, 'Beta Song');
+  assert.strictEqual(oldestResult[0].originalIndex, 0);
+  assert.strictEqual(oldestResult[2].song.title, 'Gamma Song');
+  assert.strictEqual(oldestResult[2].originalIndex, 2);
+
+  // 3. alphabetical
+  state.sortOrder = 'alphabetical';
+  const alphaResult = getSortedSongIndices();
+  assert.strictEqual(alphaResult[0].song.title, 'Alpha Song');
+  assert.strictEqual(alphaResult[0].originalIndex, 1);
+  assert.strictEqual(alphaResult[1].song.title, 'Beta Song');
+  assert.strictEqual(alphaResult[1].originalIndex, 0);
+  assert.strictEqual(alphaResult[2].song.title, 'Gamma Song');
+  assert.strictEqual(alphaResult[2].originalIndex, 2);
+
+  // Reset state
+  state.sortOrder = 'newest';
+});
+
+test('performance benchmark: getSortedSongIndices map/reverse vs pre-allocated single pass', (t) => {
+  const songCount = 1000;
+  state.songs = Array.from({ length: songCount }, (_, i) => ({ file_id: `song_${i}`, title: `Song ${i}` }));
+  state.sortOrder = 'newest';
+  const iterations = 1000;
+
+  // Baseline: Unoptimized .map().reverse() simulation
+  const startMapReverse = performance.now();
+  for (let iter = 0; iter < iterations; iter++) {
+    const items = state.songs.map((song, originalIndex) => ({ song, originalIndex })).reverse();
+  }
+  const durationMapReverse = performance.now() - startMapReverse;
+
+  // Optimized: getSortedSongIndices single-pass pre-allocated iteration
+  const startOptimized = performance.now();
+  for (let iter = 0; iter < iterations; iter++) {
+    const items = getSortedSongIndices();
+  }
+  const durationOptimized = performance.now() - startOptimized;
+
+  assert.ok(durationOptimized <= durationMapReverse + 10, 'Pre-allocated single-pass indexing should be faster or equal to .map().reverse()');
+  console.log(`[Benchmark] Legacy .map().reverse() (${songCount} songs x ${iterations} runs): ${durationMapReverse.toFixed(4)}ms | Single-pass pre-allocated: ${durationOptimized.toFixed(4)}ms`);
 });
 
 test('openAddSongsModal generates track-specific ARIA labels and empty state message', (t) => {
