@@ -1768,7 +1768,7 @@ function updateSongsListPlaybackState() {
     thumbWrapper.innerHTML = getSongThumbHtml(song, true, isPlaying);
 }
 
-function renderSongsList() {
+export function renderSongsList() {
     if (!elements.songsList) return;
     elements.songsList.innerHTML = '';
 
@@ -1783,6 +1783,11 @@ function renderSongsList() {
         const li = document.createElement('li');
         const isActive = originalIndex === state.currentIndex;
         li.className = `song-item ${isActive ? 'active' : ''}`;
+        li.tabIndex = 0;
+        li.setAttribute('role', 'button');
+        const songTitle = song.title || 'Untitled';
+        const artistName = song.performer || 'Unknown Artist';
+        li.setAttribute('aria-label', `Play "${songTitle}" by ${artistName}`);
 
         const thumbHtml = getSongThumbHtml(song, isActive, isPlaying);
 
@@ -1791,17 +1796,26 @@ function renderSongsList() {
                 ${thumbHtml}
             </div>
             <div class="song-info">
-                <span class="song-name">${song.title || 'Untitled'}</span>
+                <span class="song-name">${songTitle}</span>
                 <span class="song-duration">${formatDuration(song.duration)}</span>
             </div>
         `;
 
-        li.addEventListener('click', () => {
+        const playTrack = () => {
             if (state.isShuffle) {
                 state.shuffleCurrentPos = state.shuffledIndices.indexOf(originalIndex);
             }
             startSong(originalIndex);
             closeSongsOverlay();
+        };
+
+        li.addEventListener('click', playTrack);
+
+        li.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                playTrack();
+            }
         });
 
         fragment.appendChild(li);
@@ -2959,4 +2973,5 @@ if (typeof document !== 'undefined') {
 }
 if (typeof window !== 'undefined') {
     window.elements = elements;
+    window.renderSongsList = renderSongsList;
 }
