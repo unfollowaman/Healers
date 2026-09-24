@@ -38,8 +38,8 @@
         </button>
         <div class="nav-dropdown hidden" id="nav-dropdown">
             <ul class="nav-menu-list">
-                <li class="nav-menu-item" data-option="all-songs">
-                    <button class="nav-menu-btn" type="button">
+                <li class="nav-menu-item active" data-option="all-songs">
+                    <button class="nav-menu-btn" type="button" aria-current="page">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M9 18V5l12-2v13"></path>
                             <circle cx="6" cy="18" r="3"></circle>
@@ -507,11 +507,11 @@
 
                 <div class="stats-time-range-wrapper">
                     <div class="range-pills" id="stats-range-pills">
-                        <button class="range-pill-btn active" data-range="week" type="button">This week</button>
-                        <button class="range-pill-btn" data-range="month" type="button">This month</button>
-                        <button class="range-pill-btn" data-range="year" type="button">This year</button>
-                        <button class="range-pill-btn" data-range="all" type="button">All time</button>
-                        <button class="range-pill-btn" data-range="custom" type="button">Custom</button>
+                        <button class="range-pill-btn active" data-range="week" type="button" aria-pressed="true">This week</button>
+                        <button class="range-pill-btn" data-range="month" type="button" aria-pressed="false">This month</button>
+                        <button class="range-pill-btn" data-range="year" type="button" aria-pressed="false">This year</button>
+                        <button class="range-pill-btn" data-range="all" type="button" aria-pressed="false">All time</button>
+                        <button class="range-pill-btn" data-range="custom" type="button" aria-pressed="false">Custom</button>
                     </div>
 
                     <div class="custom-range-inputs hidden" id="custom-range-inputs">

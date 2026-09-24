@@ -997,6 +997,14 @@ function selectNavOption(optionKey) {
         elements.navMenuItems.forEach((item) => {
             const isSelected = item.getAttribute('data-option') === optionKey;
             item.classList.toggle('active', isSelected);
+            const btn = item.querySelector('.nav-menu-btn');
+            if (btn) {
+                if (isSelected) {
+                    btn.setAttribute('aria-current', 'page');
+                } else {
+                    btn.removeAttribute('aria-current');
+                }
+            }
         });
     }
     closeNavMenu();
@@ -2626,7 +2634,9 @@ function bindEvents() {
             state.statsTimeRange = range;
 
             elements.statsRangePills.querySelectorAll('.range-pill-btn').forEach((b) => {
-                b.classList.toggle('active', b === btn);
+                const isActive = b === btn;
+                b.classList.toggle('active', isActive);
+                b.setAttribute('aria-pressed', String(isActive));
             });
 
             if (range === 'custom') {
