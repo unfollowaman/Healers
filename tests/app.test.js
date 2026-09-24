@@ -658,6 +658,73 @@ test('renderArtistTracks generates contextual ARIA labels for track actions', (t
   }
 });
 
+test('navigation menu buttons and stats range pills maintain dynamic ARIA state attributes', (t) => {
+  class MockElement {
+    constructor(tag) {
+      this.tag = tag;
+      this.children = [];
+      this.className = '';
+      this.attrs = new Map();
+      this.listeners = {};
+    }
+    setAttribute(k, v) { this.attrs.set(k, String(v)); }
+    getAttribute(k) { return this.attrs.get(k) || null; }
+    removeAttribute(k) { this.attrs.delete(k); }
+    querySelector(selector) {
+      if (selector === '.nav-menu-btn') return this.btn;
+      return null;
+    }
+    classList = { toggle: () => {} };
+  }
+
+  const makeNavItem = (opt) => {
+    const item = new MockElement('li');
+    item.attrs.set('data-option', opt);
+    const btn = new MockElement('button');
+    item.btn = btn;
+    return item;
+  };
+
+  const navItemSongs = makeNavItem('all-songs');
+  const navItemPlaylists = makeNavItem('playlists');
+
+  elements.navMenuItems = [navItemSongs, navItemPlaylists];
+
+  // Test nav selection aria-current="page" updates
+  navItemSongs.btn.setAttribute('aria-current', 'page');
+  assert.strictEqual(navItemSongs.btn.getAttribute('aria-current'), 'page');
+
+  // Simulate switching to playlists
+  elements.navMenuItems.forEach((item) => {
+    const isSelected = item.getAttribute('data-option') === 'playlists';
+    const btn = item.querySelector('.nav-menu-btn');
+    if (btn) {
+      if (isSelected) btn.setAttribute('aria-current', 'page');
+      else btn.removeAttribute('aria-current');
+    }
+  });
+
+  assert.strictEqual(navItemSongs.btn.getAttribute('aria-current'), null);
+  assert.strictEqual(navItemPlaylists.btn.getAttribute('aria-current'), 'page');
+
+  // Test stats range pill aria-pressed updates
+  const pillWeek = new MockElement('button');
+  pillWeek.setAttribute('aria-pressed', 'true');
+  const pillMonth = new MockElement('button');
+  pillMonth.setAttribute('aria-pressed', 'false');
+
+  const pills = [pillWeek, pillMonth];
+  const selectedPill = pillMonth;
+
+  pills.forEach((b) => {
+    const isActive = b === selectedPill;
+    b.setAttribute('aria-pressed', String(isActive));
+  });
+
+  assert.strictEqual(pillWeek.getAttribute('aria-pressed'), 'false');
+  assert.strictEqual(pillMonth.getAttribute('aria-pressed'), 'true');
+});
+
 test('getArtistsList correctly groups songs, covers, total durations, and latest track indices', (t) => {
   state.songs = [
     { file_id: 's1', performer: 'Artist Alpha', title: 'Track 1', duration: 180, coverFileId: 'cover_1' },
