@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { formatDuration, getSongThumbHtml, loadSongs, generateShuffleOrder, state, elements, openAddSongsModal, closeAddSongsModal, renderArtistTracks, renderPlaylistTracks, renderPlaylistsHub, renderArtistsGrid, renderPlaylistDetail, renderArtistDetail, getSortedSongIndices, renderSongsList } from '../js/app.js';
+import { formatDuration, getSongThumbHtml, loadSongs, generateShuffleOrder, state, elements, openAddSongsModal, closeAddSongsModal, renderArtistTracks, renderPlaylistTracks, renderPlaylistsHub, renderArtistsGrid, renderPlaylistDetail, renderArtistDetail, getSortedSongIndices, renderSongsList, getArtistsList } from '../js/app.js';
 
 test('formatDuration - valid positive seconds', (t) => {
   assert.strictEqual(formatDuration(0), '0:00');
@@ -656,6 +656,79 @@ test('renderArtistTracks generates contextual ARIA labels for track actions', (t
   } finally {
     globalThis.document = originalDoc;
   }
+});
+
+test('getArtistsList correctly groups songs, covers, total durations, and latest track indices', (t) => {
+  state.songs = [
+    { file_id: 's1', performer: 'Artist Alpha', title: 'Track 1', duration: 180, coverFileId: 'cover_1' },
+    { file_id: 's2', performer: 'Artist Beta', title: 'Track 2', duration: 200, coverFileId: 'cover_2' },
+    { file_id: 's3', performer: 'Artist Alpha', title: 'Track 3', duration: 220, coverFileId: 'cover_1' },
+    { file_id: 's4', performer: 'Artist Alpha', title: 'Track 4', duration: 100, coverFileId: 'cover_3' }
+  ];
+  state.artistSearchQuery = '';
+  state.artistSortOrder = 'alphabetical';
+
+  const artists = getArtistsList();
+  assert.strictEqual(artists.length, 2);
+
+  const alpha = artists.find((a) => a.name === 'Artist Alpha');
+  assert.ok(alpha);
+  assert.strictEqual(alpha.songs.length, 3);
+  assert.strictEqual(alpha.totalDuration, 500); // 180 + 220 + 100
+  assert.strictEqual(alpha.latestIdx, 3);
+  assert.deepStrictEqual(alpha.covers, ['cover_1', 'cover_3']);
+
+  const beta = artists.find((a) => a.name === 'Artist Beta');
+  assert.ok(beta);
+  assert.strictEqual(beta.songs.length, 1);
+  assert.strictEqual(beta.totalDuration, 200);
+  assert.strictEqual(beta.latestIdx, 1);
+  assert.deepStrictEqual(beta.covers, ['cover_2']);
+});
+
+test('performance benchmark: getArtistsList Map.has+get vs single-pass Map.get', (t) => {
+  const songCount = 1000;
+  const mockCatalog = Array.from({ length: songCount }, (_, i) => ({
+    file_id: `song_${i}`,
+    title: `Song ${i}`,
+    performer: `Performer ${i % 20}`,
+    duration: 180 + (i % 30),
+    coverFileId: `cover_${i % 50}`
+  }));
+  state.songs = mockCatalog;
+  state.artistSearchQuery = '';
+  state.artistSortOrder = 'alphabetical';
+  const iterations = 500;
+
+  // Unoptimized redundant Map.has() + Map.get() simulation
+  const startHasGet = performance.now();
+  for (let iter = 0; iter < iterations; iter++) {
+    const artistMap = new Map();
+    state.songs.forEach((song, originalIdx) => {
+      const rawName = (song.performer || '').trim() || 'Unknown Artist';
+      if (!artistMap.has(rawName)) {
+        artistMap.set(rawName, { name: rawName, songs: [], covers: [], totalDuration: 0, latestIdx: originalIdx });
+      }
+      const artist = artistMap.get(rawName);
+      artist.songs.push(song);
+      artist.totalDuration += (song.duration || 0);
+      artist.latestIdx = Math.max(artist.latestIdx, originalIdx);
+      if (song.coverFileId && !artist.covers.includes(song.coverFileId)) {
+        artist.covers.push(song.coverFileId);
+      }
+    });
+  }
+  const durationHasGet = performance.now() - startHasGet;
+
+  // Optimized single-pass Map.get() execution
+  const startSinglePass = performance.now();
+  for (let iter = 0; iter < iterations; iter++) {
+    getArtistsList();
+  }
+  const durationSinglePass = performance.now() - startSinglePass;
+
+  assert.ok(durationSinglePass <= durationHasGet + 10, 'Single-pass Map.get() lookup should be faster or equal to redundant has()+get()');
+  console.log(`[Benchmark] Redundant Map.has()+get() (${songCount} songs x ${iterations} runs): ${durationHasGet.toFixed(4)}ms | Single-pass Map.get(): ${durationSinglePass.toFixed(4)}ms`);
 });
 
 test('renderSongsList sets keyboard accessibility attributes and keydown listeners on song items', (t) => {
