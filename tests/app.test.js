@@ -658,6 +658,46 @@ test('renderArtistTracks generates contextual ARIA labels for track actions', (t
   }
 });
 
+test('favicons and web manifest setup in index.html and filesystem', async (t) => {
+  const fs = await import('node:fs');
+  const path = await import('node:path');
+
+  const htmlContent = fs.readFileSync('index.html', 'utf8');
+
+  // Verify head tags in index.html
+  assert.ok(htmlContent.includes('<link rel="icon" type="image/png" sizes="96x96" href="/favicons/favicon-96x96.png">'));
+  assert.ok(htmlContent.includes('<link rel="icon" type="image/svg+xml" href="/favicons/favicon.svg">'));
+  assert.ok(htmlContent.includes('<link rel="shortcut icon" href="/favicons/favicon.ico">'));
+  assert.ok(htmlContent.includes('<link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png">'));
+  assert.ok(htmlContent.includes('<meta name="apple-mobile-web-app-title" content="Murex">'));
+  assert.ok(htmlContent.includes('<link rel="manifest" href="/favicons/site.webmanifest">'));
+
+  // Verify physical files exist on disk in favicons directory
+  const requiredFiles = [
+    'apple-touch-icon.png',
+    'favicon-96x96.png',
+    'favicon.ico',
+    'favicon.svg',
+    'site.webmanifest',
+    'web-app-manifest-192x192.png',
+    'web-app-manifest-512x512.png'
+  ];
+
+  for (const filename of requiredFiles) {
+    const filepath = path.join(process.cwd(), 'favicons', filename);
+    assert.ok(fs.existsSync(filepath), `Expected file ${filename} to exist in favicons/`);
+  }
+
+  // Verify web manifest content
+  const manifestRaw = fs.readFileSync(path.join(process.cwd(), 'favicons', 'site.webmanifest'), 'utf8');
+  const manifest = JSON.parse(manifestRaw);
+  assert.strictEqual(manifest.name, 'Murex');
+  assert.ok(Array.isArray(manifest.icons));
+  assert.strictEqual(manifest.icons.length, 2);
+  assert.strictEqual(manifest.icons[0].src, '/favicons/web-app-manifest-192x192.png');
+  assert.strictEqual(manifest.icons[1].src, '/favicons/web-app-manifest-512x512.png');
+});
+
 test('navigation menu buttons and stats range pills maintain dynamic ARIA state attributes', (t) => {
   class MockElement {
     constructor(tag) {
