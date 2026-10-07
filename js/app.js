@@ -182,6 +182,102 @@ export const elements = typeof document !== 'undefined' ? {
     recentHistoryList: document.querySelector('#recent-history-list')
 } : {};
 
+export function randomInt(maxExclusive) {
+    if (!Number.isFinite(maxExclusive) || maxExclusive <= 1) return 0;
+    maxExclusive = Math.floor(maxExclusive);
+
+    const cryptoObj = typeof globalThis !== 'undefined' && globalThis.crypto ? globalThis.crypto : (typeof window !== 'undefined' ? window.crypto : null);
+
+    if (cryptoObj && typeof cryptoObj.getRandomValues === 'function') {
+        const maxUint32 = 0xFFFFFFFF;
+        const limit = maxUint32 - (maxUint32 % maxExclusive);
+        const buffer = new Uint32Array(1);
+
+        while (true) {
+            cryptoObj.getRandomValues(buffer);
+            const val = buffer[0];
+            if (val < limit) {
+                return val % maxExclusive;
+            }
+        }
+    }
+
+    return Math.floor(Math.random() * maxExclusive);
+}
+
+export const recentPlayed = [];
+
+export function recordPlayedSong(song) {
+    if (!song) return;
+    const id = song.file_unique_id || song.file_id;
+    if (!id) return;
+
+    const existingIndex = recentPlayed.indexOf(id);
+    if (existingIndex !== -1) {
+        recentPlayed.splice(existingIndex, 1);
+    }
+    recentPlayed.push(id);
+
+    const catalogLen = state.songs.length || 1;
+    const windowSize = Math.max(1, Math.min(10, Math.floor(catalogLen / 2)));
+    while (recentPlayed.length > windowSize) {
+        recentPlayed.shift();
+    }
+}
+
+export function pickShuffleNextIndex() {
+    const catalog = state.songs;
+    const len = catalog.length;
+    if (!len) return -1;
+    if (len === 1) return 0;
+
+    const currentSong = getCurrentSong();
+    const currentId = currentSong ? (currentSong.file_unique_id || currentSong.file_id) : null;
+
+    const recentSet = new Set(recentPlayed);
+
+    let eligibleIndices = [];
+    for (let i = 0; i < len; i++) {
+        const id = catalog[i].file_unique_id || catalog[i].file_id;
+        if (!recentSet.has(id)) {
+            eligibleIndices.push(i);
+        }
+    }
+
+    if (eligibleIndices.length === 0) {
+        for (let i = 0; i < len; i++) {
+            const id = catalog[i].file_unique_id || catalog[i].file_id;
+            if (id !== currentId) {
+                eligibleIndices.push(i);
+            }
+        }
+    }
+
+    if (eligibleIndices.length === 0) {
+        return state.currentIndex >= 0 ? state.currentIndex : 0;
+    }
+
+    const pickedEligibleIndex = randomInt(eligibleIndices.length);
+    return eligibleIndices[pickedEligibleIndex];
+}
+
+function clearLegacyShuffleStorage() {
+    try {
+        if (typeof localStorage !== 'undefined') {
+            localStorage.removeItem('murex_shuffle_order');
+            localStorage.removeItem('murex_queue_order');
+            localStorage.removeItem('murex_shuffle');
+        }
+    } catch (e) {}
+    try {
+        if (typeof sessionStorage !== 'undefined') {
+            sessionStorage.removeItem('murex_shuffle_order');
+            sessionStorage.removeItem('murex_queue_order');
+            sessionStorage.removeItem('murex_shuffle');
+        }
+    } catch (e) {}
+}
+
 export function formatDuration(seconds) {
     if (!Number.isFinite(seconds) || seconds <= 0) return '0:00';
     const rounded = Math.floor(seconds);
@@ -294,10 +390,6 @@ function toggleShuffle() {
         elements.shuffleButton.classList.toggle('active', state.isShuffle);
         elements.shuffleButton.setAttribute('aria-pressed', String(state.isShuffle));
         elements.shuffleButton.setAttribute('aria-label', state.isShuffle ? 'Shuffle on' : 'Shuffle off');
-    }
-    if (state.isShuffle) {
-        state.shuffledIndices = generateShuffleOrder(state.currentIndex);
-        state.shuffleCurrentPos = 0;
     }
     if (state.isQueueOpen) renderQueueList();
 }
@@ -713,9 +805,7 @@ function playArtistSongs(artist, isShuffle = false) {
     if (isShuffle) {
         state.isShuffle = true;
         if (elements.shuffleButton) elements.shuffleButton.classList.add('active');
-        const startIdx = Math.floor(Math.random() * state.songs.length);
-        state.shuffledIndices = generateShuffleOrder(startIdx);
-        state.shuffleCurrentPos = 0;
+        const startIdx = randomInt(state.songs.length);
         startSong(startIdx);
         showToast(`Shuffling "${artist.name}"`);
     } else {
@@ -1556,9 +1646,7 @@ function shufflePlaylist(playlist) {
     state.songs = [...playlist.songs];
     state.isShuffle = true;
     if (elements.shuffleButton) elements.shuffleButton.classList.add('active');
-    const randomIdx = Math.floor(Math.random() * state.songs.length);
-    state.shuffledIndices = generateShuffleOrder(randomIdx);
-    state.shuffleCurrentPos = 0;
+    const randomIdx = randomInt(state.songs.length);
     startSong(randomIdx);
     showToast(`Shuffling "${playlist.title}"`);
 }
@@ -1814,9 +1902,6 @@ export function renderSongsList() {
         `;
 
         const playTrack = () => {
-            if (state.isShuffle) {
-                state.shuffleCurrentPos = state.shuffledIndices.indexOf(originalIndex);
-            }
             startSong(originalIndex);
             closeSongsOverlay();
         };
@@ -1872,9 +1957,6 @@ function renderQueueList() {
             <span class="queue-item-duration">${formatDuration(song.duration)}</span>
         `;
         li.addEventListener('click', () => {
-            if (state.isShuffle) {
-                state.shuffleCurrentPos = state.shuffledIndices.indexOf(idx);
-            }
             startSong(idx);
         });
         fragment.appendChild(li);
@@ -1943,6 +2025,8 @@ async function startSong(index) {
     const song = getCurrentSong();
     if (!song) return;
 
+    recordPlayedSong(song);
+
     updateNowPlaying(song);
     elements.audio.src = `/api/stream?file_id=${encodeURIComponent(song.file_id)}`;
     elements.audio.load();
@@ -1978,10 +2062,11 @@ function togglePlayPause() {
 function playNext() {
     if (!state.songs.length) return;
 
-    if (state.isShuffle && state.shuffledIndices.length) {
-        state.shuffleCurrentPos = (state.shuffleCurrentPos + 1) % state.shuffledIndices.length;
-        const nextIndex = state.shuffledIndices[state.shuffleCurrentPos];
-        startSong(nextIndex);
+    if (state.isShuffle) {
+        const nextIndex = pickShuffleNextIndex();
+        if (nextIndex >= 0) {
+            startSong(nextIndex);
+        }
     } else {
         const nextIndex = (state.currentIndex + 1) % state.songs.length;
         startSong(nextIndex);
@@ -1991,14 +2076,8 @@ function playNext() {
 function playPrev() {
     if (!state.songs.length) return;
 
-    if (state.isShuffle && state.shuffledIndices.length) {
-        state.shuffleCurrentPos = (state.shuffleCurrentPos - 1 + state.shuffledIndices.length) % state.shuffledIndices.length;
-        const prevIndex = state.shuffledIndices[state.shuffleCurrentPos];
-        startSong(prevIndex);
-    } else {
-        const prevIndex = (state.currentIndex - 1 + state.songs.length) % state.songs.length;
-        startSong(prevIndex);
-    }
+    const prevIndex = (state.currentIndex - 1 + state.songs.length) % state.songs.length;
+    startSong(prevIndex);
 }
 
 function updatePlayButton() {
@@ -2976,6 +3055,7 @@ function bindEvents() {
 }
 
 function init() {
+    clearLegacyShuffleStorage();
     updateRangeStyle(elements.progressBar);
     updateVolumeStyle();
     bindEvents();
