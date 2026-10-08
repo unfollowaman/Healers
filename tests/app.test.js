@@ -1,6 +1,103 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { formatDuration, getSongThumbHtml, loadSongs, generateShuffleOrder, state, elements, openAddSongsModal, closeAddSongsModal, renderArtistTracks, renderPlaylistTracks, renderPlaylistsHub, renderArtistsGrid, renderPlaylistDetail, renderArtistDetail, getSortedSongIndices, renderSongsList, getArtistsList } from '../js/app.js';
+import { formatDuration, getSongThumbHtml, loadSongs, generateShuffleOrder, state, elements, openAddSongsModal, closeAddSongsModal, renderArtistTracks, renderPlaylistTracks, renderPlaylistsHub, renderArtistsGrid, renderPlaylistDetail, renderArtistDetail, getSortedSongIndices, renderSongsList, getArtistsList, randomInt, recentPlayed, recordPlayedSong, pickShuffleNextIndex } from '../js/app.js';
+
+test('randomInt - produces integer within [0, maxExclusive)', (t) => {
+  assert.strictEqual(randomInt(0), 0);
+  assert.strictEqual(randomInt(1), 0);
+  assert.strictEqual(randomInt(-5), 0);
+  assert.strictEqual(randomInt(NaN), 0);
+
+  for (let i = 0; i < 100; i++) {
+    const val = randomInt(5);
+    assert.ok(val >= 0 && val < 5, `Expected 0 <= ${val} < 5`);
+    assert.strictEqual(val, Math.floor(val));
+  }
+});
+
+test('recordPlayedSong and recentPlayed windowing logic', (t) => {
+  recentPlayed.length = 0;
+  state.songs = Array.from({ length: 20 }, (_, i) => ({ file_id: `id_${i}`, file_unique_id: `uid_${i}`, title: `Song ${i}` }));
+
+  // Catalog length = 20 -> Window size = Math.min(10, Math.floor(20/2)) = 10
+  for (let i = 0; i < 15; i++) {
+    recordPlayedSong(state.songs[i]);
+  }
+
+  assert.strictEqual(recentPlayed.length, 10);
+  assert.deepStrictEqual(recentPlayed, Array.from({ length: 10 }, (_, i) => `uid_${i + 5}`));
+
+  // Small catalog window test (catalog = 4 -> window = 2)
+  state.songs = Array.from({ length: 4 }, (_, i) => ({ file_id: `s_${i}`, file_unique_id: `u_${i}` }));
+  recentPlayed.length = 0;
+  for (let i = 0; i < 4; i++) {
+    recordPlayedSong(state.songs[i]);
+  }
+  assert.strictEqual(recentPlayed.length, 2);
+  assert.deepStrictEqual(recentPlayed, ['u_2', 'u_3']);
+});
+
+test('pickShuffleNextIndex - excludes recentPlayed songs and handles edge cases', (t) => {
+  recentPlayed.length = 0;
+  state.songs = [
+    { file_id: 'f1', file_unique_id: 'u1', title: 'Song 1' },
+    { file_id: 'f2', file_unique_id: 'u2', title: 'Song 2' },
+    { file_id: 'f3', file_unique_id: 'u3', title: 'Song 3' },
+    { file_id: 'f4', file_unique_id: 'u4', title: 'Song 4' }
+  ];
+  state.currentIndex = 0; // Current is u1
+
+  // Window size for 4 songs is 2.
+  recordPlayedSong(state.songs[0]); // u1
+  recordPlayedSong(state.songs[1]); // u2
+  // recentPlayed = ['u1', 'u2'].
+  // Eligible = catalog minus recentPlayed = ['u3', 'u4'] (indices 2 and 3)
+
+  for (let i = 0; i < 50; i++) {
+    const nextIdx = pickShuffleNextIndex();
+    assert.ok(nextIdx === 2 || nextIdx === 3, `Expected index 2 or 3, got ${nextIdx}`);
+  }
+
+  // Single song catalog edge case
+  state.songs = [{ file_id: 'single_id', file_unique_id: 'single_uid', title: 'Solo' }];
+  state.currentIndex = 0;
+  recentPlayed.length = 0;
+  recordPlayedSong(state.songs[0]);
+  assert.strictEqual(pickShuffleNextIndex(), 0);
+});
+
+test('pickShuffleNextIndex distribution - 1000 picks from same starting song', (t) => {
+  recentPlayed.length = 0;
+  state.songs = [
+    { file_id: 'f1', file_unique_id: 'u1', title: 'Track 1' },
+    { file_id: 'f2', file_unique_id: 'u2', title: 'Track 2' },
+    { file_id: 'f3', file_unique_id: 'u3', title: 'Track 3' },
+    { file_id: 'f4', file_unique_id: 'u4', title: 'Track 4' },
+    { file_id: 'f5', file_unique_id: 'u5', title: 'Track 5' }
+  ];
+  state.currentIndex = 0; // Current is u1
+
+  // Catalog length = 5. Window size = Math.min(10, Math.floor(5/2)) = 2.
+  // Record current song u1 as played.
+  recordPlayedSong(state.songs[0]); // recentPlayed = ['u1']
+
+  const counts = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0 };
+  const totalRuns = 1000;
+
+  for (let i = 0; i < totalRuns; i++) {
+    const nextIdx = pickShuffleNextIndex();
+    counts[nextIdx]++;
+  }
+
+  // Track 0 (u1) is in recentPlayed, so it must NOT be picked
+  assert.strictEqual(counts[0], 0, 'Current song in recentPlayed must be excluded');
+
+  // Tracks 1, 2, 3, 4 should all receive non-zero picks with balanced distribution (~250 each)
+  assert.ok(counts[1] > 180 && counts[1] < 320, `Track 1 count expected ~250, got ${counts[1]}`);
+  assert.ok(counts[2] > 180 && counts[2] < 320, `Track 2 count expected ~250, got ${counts[2]}`);
+  assert.ok(counts[3] > 180 && counts[3] < 320, `Track 3 count expected ~250, got ${counts[3]}`);
+  assert.ok(counts[4] > 180 && counts[4] < 320, `Track 4 count expected ~250, got ${counts[4]}`);
+});
 
 test('formatDuration - valid positive seconds', (t) => {
   assert.strictEqual(formatDuration(0), '0:00');
