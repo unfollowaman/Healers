@@ -1,3 +1,5 @@
+import MurexSearch from './search.js';
+
 // Bolt Optimization: Reusable Intl.Collator instance avoids reinstantiating
 // Intl.Collator objects on every sort comparison (~50x speedup in sort operations).
 const stringCollator = new Intl.Collator(undefined, { sensitivity: 'base' });
@@ -40,7 +42,14 @@ export const state = {
     statsTimeRange: 'week', // 'week' | 'month' | 'year' | 'all' | 'custom'
     customStartDate: null,
     customEndDate: null,
-    playHistory: []
+    playHistory: [],
+
+    // Search State
+    isSearchOverlayOpen: false,
+    searchQuery: '',
+    searchResults: [],
+    highlightedResultIndex: -1,
+    isCatalogLoaded: false
 };
 
 if (typeof window !== 'undefined') {
@@ -179,7 +188,20 @@ export const elements = typeof document !== 'undefined' ? {
     statMostRepeatedTitle: document.querySelector('#stat-most-repeated-title'),
     statMostRepeatedCount: document.querySelector('#stat-most-repeated-count'),
 
-    recentHistoryList: document.querySelector('#recent-history-list')
+    recentHistoryList: document.querySelector('#recent-history-list'),
+
+    // Global Search Elements
+    searchButton: document.querySelector('#search-button'),
+    searchOverlay: document.querySelector('#search-overlay'),
+    searchOverlayScrim: document.querySelector('#search-overlay-scrim'),
+    globalSearchInput: document.querySelector('#global-search-input'),
+    searchCloseBtn: document.querySelector('#search-close-btn'),
+    recentSearchesWrapper: document.querySelector('#recent-searches-wrapper'),
+    recentSearchesList: document.querySelector('#recent-searches-list'),
+    clearRecentsBtn: document.querySelector('#clear-recents-btn'),
+    searchResultsWrapper: document.querySelector('#search-results-wrapper'),
+    searchResultsStatus: document.querySelector('#search-results-status'),
+    searchResultsList: document.querySelector('#search-results-list')
 } : {};
 
 export function randomInt(maxExclusive) {
@@ -2147,12 +2169,18 @@ export async function loadSongs() {
         }
 
         state.songs = Array.isArray(payload) ? payload : [];
+        state.isCatalogLoaded = true;
+        MurexSearch.buildIndex(state.songs);
+
         if (state.songs.length > 0) {
             state.currentIndex = 0;
             updateNowPlaying(getCurrentSong());
         } else {
             if (elements.nowTitle) elements.nowTitle.textContent = 'No songs found';
             if (elements.nowArtist) elements.nowArtist.textContent = 'Library empty';
+        }
+        if (state.isSearchOverlayOpen) {
+            performSearch(state.searchQuery);
         }
 
         if (state.isSongsOverlayOpen) {
@@ -2205,10 +2233,16 @@ async function refreshCatalog() {
         const newSongs = Array.isArray(payload) ? payload : [];
         const prevCount = state.songs.length;
         state.songs = newSongs;
+        state.isCatalogLoaded = true;
+
+        MurexSearch.buildIndex(state.songs);
 
         if (state.currentIndex === -1 && state.songs.length > 0) {
             state.currentIndex = 0;
             updateNowPlaying(getCurrentSong());
+        }
+        if (state.isSearchOverlayOpen) {
+            performSearch(state.searchQuery);
         }
 
         if (state.isSongsOverlayOpen) renderSongsList();
@@ -2619,6 +2653,291 @@ function renderMilestones(events) {
     }
 }
 
+/* ==========================================================================
+   GLOBAL SONG SEARCH UI & WIRING
+   ========================================================================== */
+
+function getRecentSearches() {
+    try {
+        if (typeof localStorage !== 'undefined') {
+            const raw = localStorage.getItem('murex:search:recent');
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                if (Array.isArray(parsed)) return parsed;
+            }
+        }
+    } catch (e) {
+        console.warn('Error reading recent searches:', e);
+    }
+    return [];
+}
+
+function saveRecentSearch(query) {
+    if (!query || typeof query !== 'string') return;
+    const trimmed = query.trim();
+    if (!trimmed) return;
+
+    try {
+        let list = getRecentSearches();
+        list = list.filter((item) => item.toLowerCase() !== trimmed.toLowerCase());
+        list.unshift(trimmed);
+        list = list.slice(0, 8); // Keep up to 8 recent searches
+        if (typeof localStorage !== 'undefined') {
+            localStorage.setItem('murex:search:recent', JSON.stringify(list));
+        }
+    } catch (e) {
+        console.warn('Error saving recent search:', e);
+    }
+}
+
+function clearRecentSearches() {
+    try {
+        if (typeof localStorage !== 'undefined') {
+            localStorage.removeItem('murex:search:recent');
+        }
+    } catch (e) {
+        console.warn('Error clearing recent searches:', e);
+    }
+    renderRecentSearches();
+}
+
+function getLearnedPicks() {
+    try {
+        if (typeof localStorage !== 'undefined') {
+            const raw = localStorage.getItem('murex:search:picks');
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                if (parsed && typeof parsed === 'object') return parsed;
+            }
+        }
+    } catch (e) {
+        console.warn('Error reading learned picks:', e);
+    }
+    return {};
+}
+
+function saveLearnedPick(query, song) {
+    if (!query || !song) return;
+    const normQuery = MurexSearch.normalize(query, false);
+    if (!normQuery) return;
+    const songId = song.file_unique_id || song.file_id;
+    if (!songId) return;
+
+    try {
+        const picks = getLearnedPicks();
+        if (!picks[normQuery]) {
+            picks[normQuery] = {};
+        }
+        picks[normQuery][songId] = (picks[normQuery][songId] || 0) + 1;
+
+        // Cap at 200 stored queries (drop oldest first)
+        const storedQueries = Object.keys(picks);
+        if (storedQueries.length > 200) {
+            delete picks[storedQueries[0]];
+        }
+
+        if (typeof localStorage !== 'undefined') {
+            localStorage.setItem('murex:search:picks', JSON.stringify(picks));
+        }
+    } catch (e) {
+        console.warn('Error saving learned pick:', e);
+    }
+}
+
+function openSearchOverlay() {
+    state.isSearchOverlayOpen = true;
+    if (elements.searchOverlay) elements.searchOverlay.classList.remove('hidden');
+
+    if (elements.globalSearchInput) {
+        elements.globalSearchInput.value = state.searchQuery;
+        elements.globalSearchInput.focus();
+    }
+
+    if (state.searchQuery.trim()) {
+        performSearch(state.searchQuery);
+    } else {
+        renderRecentSearches();
+    }
+}
+
+function closeSearchOverlay() {
+    state.isSearchOverlayOpen = false;
+    state.highlightedResultIndex = -1;
+    if (elements.searchOverlay) elements.searchOverlay.classList.add('hidden');
+    if (elements.globalSearchInput) {
+        elements.globalSearchInput.blur();
+    }
+}
+
+function renderRecentSearches() {
+    if (!elements.recentSearchesWrapper || !elements.recentSearchesList) return;
+    if (elements.searchResultsWrapper) elements.searchResultsWrapper.classList.add('hidden');
+    elements.recentSearchesWrapper.classList.remove('hidden');
+
+    elements.recentSearchesList.innerHTML = '';
+    const recents = getRecentSearches();
+
+    if (recents.length === 0) {
+        elements.recentSearchesList.innerHTML = `<li style="padding:12px; font-size:13px; color:var(--ink-faint); list-style:none;">No recent searches</li>`;
+        return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    recents.forEach((item) => {
+        const li = document.createElement('li');
+        li.className = 'recent-search-item';
+        li.tabIndex = 0;
+        li.setAttribute('role', 'button');
+        li.setAttribute('aria-label', `Search for ${item}`);
+        li.innerHTML = `
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span></span>
+        `;
+        li.querySelector('span').textContent = item;
+
+        const selectRecent = () => {
+            state.searchQuery = item;
+            if (elements.globalSearchInput) elements.globalSearchInput.value = item;
+            performSearch(item);
+        };
+
+        li.addEventListener('click', selectRecent);
+        li.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                selectRecent();
+            }
+        });
+
+        fragment.appendChild(li);
+    });
+    elements.recentSearchesList.appendChild(fragment);
+}
+
+function performSearch(query) {
+    if (!elements.searchResultsWrapper || !elements.searchResultsList || !elements.searchResultsStatus) return;
+
+    const trimmed = (query || '').trim();
+    if (!trimmed) {
+        renderRecentSearches();
+        return;
+    }
+
+    if (elements.recentSearchesWrapper) elements.recentSearchesWrapper.classList.add('hidden');
+    elements.searchResultsWrapper.classList.remove('hidden');
+
+    if (!state.isCatalogLoaded && (!state.songs || state.songs.length === 0)) {
+        elements.searchResultsStatus.textContent = 'Library is still loading';
+        elements.searchResultsList.innerHTML = '';
+        state.searchResults = [];
+        return;
+    }
+
+    const learnedPicks = getLearnedPicks();
+    const { results, fallback } = MurexSearch.search(trimmed, { picks: learnedPicks });
+    state.searchResults = results;
+    state.highlightedResultIndex = -1;
+
+    elements.searchResultsList.innerHTML = '';
+
+    if (results.length === 0) {
+        elements.searchResultsStatus.textContent = 'No songs found';
+        return;
+    }
+
+    if (fallback) {
+        elements.searchResultsStatus.textContent = 'Closest matches';
+    } else {
+        elements.searchResultsStatus.textContent = `${results.length} result${results.length === 1 ? '' : 's'} found`;
+    }
+
+    const currentSong = getCurrentSong();
+    const isPlaying = elements.audio && !elements.audio.paused && !elements.audio.ended;
+    const fragment = document.createDocumentFragment();
+
+    results.forEach(({ song }, idx) => {
+        const catalogIndex = state.songs.indexOf(song);
+        const isActive = catalogIndex !== -1 && catalogIndex === state.currentIndex;
+
+        const li = document.createElement('li');
+        li.className = `song-item ${isActive ? 'active' : ''}`;
+        li.tabIndex = 0;
+        li.setAttribute('role', 'button');
+        const songTitle = song.title || 'Untitled';
+        const artistName = song.performer || 'Unknown Artist';
+        li.setAttribute('aria-label', `Play "${songTitle}" by ${artistName}`);
+
+        const thumbHtml = getSongThumbHtml(song, isActive, isPlaying);
+
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'song-info';
+
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'song-name';
+        nameSpan.textContent = songTitle;
+
+        const durationSpan = document.createElement('span');
+        durationSpan.className = 'song-duration';
+        durationSpan.textContent = formatDuration(song.duration);
+
+        infoDiv.appendChild(nameSpan);
+        infoDiv.appendChild(durationSpan);
+
+        li.innerHTML = `<div class="song-thumb-wrapper">${thumbHtml}</div>`;
+        li.appendChild(infoDiv);
+
+        const selectResult = () => {
+            saveRecentSearch(trimmed);
+            saveLearnedPick(trimmed, song);
+
+            if (catalogIndex !== -1) {
+                startSong(catalogIndex);
+            }
+            closeSearchOverlay();
+            state.searchQuery = '';
+            if (elements.globalSearchInput) elements.globalSearchInput.value = '';
+        };
+
+        li.addEventListener('click', selectResult);
+        li.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                selectResult();
+            }
+        });
+
+        fragment.appendChild(li);
+    });
+
+    elements.searchResultsList.appendChild(fragment);
+}
+
+function updateHighlightedResult() {
+    if (!elements.searchResultsList) return;
+    const items = elements.searchResultsList.querySelectorAll('.song-item');
+    items.forEach((item, idx) => {
+        if (idx === state.highlightedResultIndex) {
+            item.classList.add('highlighted');
+            item.scrollIntoView({ block: 'nearest' });
+        } else {
+            item.classList.remove('highlighted');
+        }
+    });
+}
+
+let searchDebounceTimer = null;
+
+function handleSearchInput(e) {
+    state.searchQuery = e.target.value;
+    clearTimeout(searchDebounceTimer);
+    searchDebounceTimer = setTimeout(() => {
+        performSearch(state.searchQuery);
+    }, 100);
+}
+
 function renderRecentHistory(events) {
     if (!elements.recentHistoryList) return;
     elements.recentHistoryList.innerHTML = '';
@@ -2988,6 +3307,55 @@ function bindEvents() {
     elements.audio.addEventListener('timeupdate', updateProgress);
     elements.audio.addEventListener('loadedmetadata', updateProgress);
 
+    // Global Search Event Listeners
+    if (elements.searchButton) {
+        elements.searchButton.addEventListener('click', openSearchOverlay);
+    }
+    if (elements.searchCloseBtn) {
+        elements.searchCloseBtn.addEventListener('click', closeSearchOverlay);
+    }
+    if (elements.searchOverlayScrim) {
+        elements.searchOverlayScrim.addEventListener('click', closeSearchOverlay);
+    }
+    if (elements.clearRecentsBtn) {
+        elements.clearRecentsBtn.addEventListener('click', clearRecentSearches);
+    }
+    if (elements.globalSearchInput) {
+        elements.globalSearchInput.addEventListener('input', handleSearchInput);
+        elements.globalSearchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (state.searchResults.length > 0) {
+                    state.highlightedResultIndex = Math.min(state.highlightedResultIndex + 1, state.searchResults.length - 1);
+                    updateHighlightedResult();
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (state.searchResults.length > 0) {
+                    state.highlightedResultIndex = Math.max(state.highlightedResultIndex - 1, -1);
+                    updateHighlightedResult();
+                }
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (state.searchResults.length > 0) {
+                    const pickIndex = state.highlightedResultIndex >= 0 ? state.highlightedResultIndex : 0;
+                    const chosen = state.searchResults[pickIndex];
+                    if (chosen && chosen.song) {
+                        saveRecentSearch(state.searchQuery);
+                        saveLearnedPick(state.searchQuery, chosen.song);
+                        const catalogIndex = state.songs.indexOf(chosen.song);
+                        if (catalogIndex !== -1) {
+                            startSong(catalogIndex);
+                        }
+                        closeSearchOverlay();
+                        state.searchQuery = '';
+                        if (elements.globalSearchInput) elements.globalSearchInput.value = '';
+                    }
+                }
+            }
+        });
+    }
+
     elements.progressBar.addEventListener('input', () => {
         state.isSeeking = true;
         updateRangeStyle(elements.progressBar);
@@ -3004,7 +3372,12 @@ function bindEvents() {
 
         if (e.code === 'Escape') {
             if (isInputFocused && e.target.value) {
-                if (e.target === elements.plSearchInput) {
+                if (e.target === elements.globalSearchInput) {
+                    state.searchQuery = '';
+                    e.target.value = '';
+                    performSearch('');
+                    return;
+                } else if (e.target === elements.plSearchInput) {
                     state.playlistSearchQuery = '';
                     e.target.value = '';
                     renderPlaylistTracks();
@@ -3022,7 +3395,9 @@ function bindEvents() {
                 }
             }
 
-            if (elements.addSongsModal && !elements.addSongsModal.classList.contains('hidden')) {
+            if (state.isSearchOverlayOpen) {
+                closeSearchOverlay();
+            } else if (elements.addSongsModal && !elements.addSongsModal.classList.contains('hidden')) {
                 closeAddSongsModal();
             } else if (state.isNavMenuOpen) {
                 closeNavMenu();
@@ -3036,6 +3411,12 @@ function bindEvents() {
         }
 
         if (isInputFocused) return;
+
+        if (e.key === '/') {
+            e.preventDefault();
+            openSearchOverlay();
+            return;
+        }
 
         if (e.code === 'Space') {
             e.preventDefault();
