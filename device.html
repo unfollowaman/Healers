@@ -756,6 +756,20 @@
             </div>
         </div>
 
+        <aside class="device-panel" id="device-panel" aria-hidden="true">
+            <div class="device-panel-inner">
+                <div class="device-tabs" role="tablist">
+                    <button type="button" role="tab" class="device-tab" id="tab-songs" data-view="songs" aria-selected="true">Songs</button>
+                    <button type="button" role="tab" class="device-tab" id="tab-playlists" data-view="playlists" aria-selected="false">Playlists</button>
+                    <button type="button" role="tab" class="device-tab" id="tab-artists" data-view="artists" aria-selected="false">Artists</button>
+                    <button type="button" role="tab" class="device-tab" id="tab-settings" data-view="settings" aria-selected="false">Settings</button>
+                </div>
+                <div class="device-views" id="device-views">
+                    <div class="device-settings-view" id="device-settings-view" hidden></div>
+                </div>
+            </div>
+        </aside>
+
         <!-- Legacy-hidden wrapper containing remaining old dropdown elements -->
         <div class="legacy-hidden-wrapper" style="display:none;" aria-hidden="true">
             <button class="player-more-tab" id="more-tab" type="button" aria-expanded="false" aria-controls="player-dropdown" aria-label="More options">
@@ -824,6 +838,7 @@
     <script type="module" src="/js/app.js" defer></script>
     <script src="/js/device-ui.js" defer></script>
     <script src="/js/device-crt.js" defer></script>
+    <script src="/js/device-menu.js" defer></script>
 </body>
 
 </html>
