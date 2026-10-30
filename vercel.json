@@ -2,6 +2,18 @@
   "version": 2,
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/device",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/device.html",
+      "destination": "/",
+      "permanent": false
+    }
+  ],
   "crons": [
     {
       "path": "/api/cron/keepalive",
