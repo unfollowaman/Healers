@@ -22,8 +22,10 @@ body.device-ui {
 body.device-ui #player-container {
     position: static !important;
     display: flex !important;
+    flex-direction: row !important;
     align-items: center !important;
     justify-content: center !important;
+    gap: 28px !important;
     min-height: 100dvh !important;
     padding: 24px !important;
     transform: none !important;
@@ -48,7 +50,7 @@ body.device-ui #player-pill {
     width: clamp(300px, 86vw, 380px);
     height: auto !important;
     min-width: 0;
-    margin: 0 auto;
+    margin: 0;
     padding: 26px;
     border-radius: var(--dv-radius-body);
     background-color: var(--dv-body);
@@ -71,7 +73,6 @@ body.device-ui #player-pill {
     right: auto;
     top: auto;
     bottom: auto;
-    margin-inline: auto;
     box-sizing: border-box;
 }
 
@@ -383,22 +384,354 @@ body.device-ui .device-round-btn:active {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 2px 5px rgba(0, 0, 0, 0.6);
 }
 
-body.device-ui .nav-dropdown {
-    background: #171717;
+/* Hamburger Icon Line Morphing */
+body.device-ui #hamburger-button line {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+body.device-ui #hamburger-button.is-open line:nth-child(1),
+body.device-ui #hamburger-button.is-open .line-top {
+    transform: translateY(6px) rotate(45deg);
+}
+
+body.device-ui #hamburger-button.is-open line:nth-child(2),
+body.device-ui #hamburger-button.is-open .line-middle {
+    opacity: 0;
+}
+
+body.device-ui #hamburger-button.is-open line:nth-child(3),
+body.device-ui #hamburger-button.is-open .line-bottom {
+    transform: translateY(-6px) rotate(-45deg);
+}
+
+/* Old Dropdown & Legacy Hidden Elements */
+body.device-ui #nav-dropdown {
+    display: none !important;
+}
+
+body.device-ui .device-hidden-legacy {
+    display: none !important;
+}
+
+/* Device Menu Panel Layout */
+body.device-ui .device-panel {
+    flex: 0 0 auto;
+    width: 0;
+    opacity: 0;
+    overflow: hidden;
+    pointer-events: none;
+    align-self: stretch;
+    margin-left: -28px;
+    transition: width 380ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 260ms ease, margin 380ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+body.device-ui .device-panel.is-open {
+    width: clamp(340px, 36vw, 440px);
+    opacity: 1;
+    pointer-events: auto;
+    margin-left: 0;
+}
+
+body.device-ui .device-panel-inner {
+    width: clamp(340px, 36vw, 440px);
+    height: 100%;
+    box-sizing: border-box;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    background-color: var(--dv-body);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.18'/%3E%3C/svg%3E");
+    background-blend-mode: overlay;
+    border-radius: 40px;
+    box-shadow: var(--dv-shadow-drop), inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 -2px 6px rgba(0, 0, 0, 0.5);
+}
+
+/* Tabs */
+body.device-ui .device-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+body.device-ui .device-tab {
+    height: 40px;
+    border-radius: 999px;
+    border: none;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
     color: var(--dv-text);
-    border-radius: 20px;
-    box-shadow: var(--dv-shadow-drop);
+    background: var(--dv-raised);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.07);
+    transition: background 160ms ease, color 160ms ease, transform 120ms ease;
+    cursor: pointer;
+}
+
+body.device-ui .device-tab:hover {
+    background: #2a2a2a;
+}
+
+body.device-ui .device-tab:active {
+    transform: translateY(1px);
+}
+
+body.device-ui .device-tab[aria-selected="true"] {
+    background: var(--dv-fill);
+    color: #1a1a1a;
+    font-weight: 600;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.6);
+}
+
+/* Device Views Container */
+body.device-ui .device-views {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+    overflow: hidden;
+    border-radius: 24px;
+}
+
+/* Moved Overlays Restyling Inside Panel */
+body.device-ui #songs-overlay:not(.hidden),
+body.device-ui #playlist-overlay:not(.hidden),
+body.device-ui #artists-overlay:not(.hidden) {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    transform: none !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    overflow-y: auto !important;
+    z-index: auto !important;
+}
+
+/* Inner containers within moved overlays */
+body.device-ui .songs-container,
+body.device-ui .playlist-container,
+body.device-ui .artists-container {
+    width: 100% !important;
+    max-width: none !important;
+    height: 100% !important;
+    max-height: none !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 8px !important;
+    border-radius: 0 !important;
+    box-sizing: border-box !important;
+}
+
+/* Hide Page Headers/Back Buttons inside Panel if present */
+body.device-ui #songs-overlay .songs-header,
+body.device-ui #playlist-overlay .playlists-hub-header,
+body.device-ui #artists-overlay .artists-hub-header {
+    display: flex;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+body.device-ui #songs-overlay .songs-title,
+body.device-ui #playlist-overlay .songs-title,
+body.device-ui #artists-overlay .songs-title {
+    font-size: 16px;
+}
+
+body.device-ui #songs-overlay #songs-back-button,
+body.device-ui #playlist-overlay #playlists-back-btn,
+body.device-ui #artists-overlay #artists-back-btn {
+    display: none !important;
+}
+
+/* Songs Overlay Rows Styling */
+body.device-ui .song-item {
+    height: 56px;
+    gap: 12px;
+    padding: 8px 10px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+body.device-ui .song-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+body.device-ui .song-item.active {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+body.device-ui .song-thumb-wrapper {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+}
+
+body.device-ui .song-name {
+    font-size: 15px;
+    color: var(--dv-text);
+}
+
+body.device-ui .song-duration {
+    color: var(--dv-text-muted);
+}
+
+/* Playlists & Artists Grid/Hub inside Panel */
+body.device-ui .playlists-grid,
+body.device-ui .artists-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+}
+
+body.device-ui .playlist-card,
+body.device-ui .artist-grid-card {
+    padding: 10px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+body.device-ui .card-cover,
+body.device-ui .artist-card-avatar-wrapper {
+    border-radius: 12px;
+}
+
+body.device-ui .artist-card-avatar-wrapper {
+    width: 80px;
+    height: 80px;
+}
+
+body.device-ui .card-title,
+body.device-ui .artist-card-name {
+    font-size: 13px;
+    color: var(--dv-text);
+}
+
+body.device-ui .card-count,
+body.device-ui .artist-card-count {
+    color: var(--dv-text-muted);
+}
+
+/* Hide unneeded table columns in detail views */
+body.device-ui .col-album,
+body.device-ui .col-date,
+body.device-ui .track-album-cell,
+body.device-ui .track-date-cell {
+    display: none !important;
+}
+
+body.device-ui .pl-table-header,
+body.device-ui .pl-track-item {
+    grid-template-columns: 32px 1fr 50px 60px !important;
+}
+
+body.device-ui .track-actions-cell .move-up-btn,
+body.device-ui .track-actions-cell .move-down-btn {
+    display: none !important;
+}
+
+/* Scrollbars */
+body.device-ui .device-views,
+body.device-ui .songs-list-container,
+body.device-ui .playlist-container,
+body.device-ui .artists-container,
+body.device-ui #songs-overlay:not(.hidden),
+body.device-ui #playlist-overlay:not(.hidden),
+body.device-ui #artists-overlay:not(.hidden) {
+    scrollbar-width: thin;
+    scrollbar-color: #3a3a3a transparent;
+}
+
+/* Settings View */
+body.device-ui .device-settings-view[hidden] {
+    display: none !important;
+}
+
+body.device-ui .device-settings-view {
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+body.device-ui #refresh-songs-btn {
+    width: 100%;
+    height: 44px;
+    border-radius: 999px;
+    background: var(--dv-raised);
+    border: none;
+    color: var(--dv-text);
+    font-size: 14px;
+    font-weight: 500;
+    font-family: inherit;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.07);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-left: 0;
+    cursor: pointer;
+    transition: background 160ms ease, color 160ms ease;
+}
+
+body.device-ui #refresh-songs-btn:hover {
+    background: #2a2a2a;
+}
+
+body.device-ui #refresh-songs-btn:active {
+    transform: translateY(1px);
 }
 
 /* Legacy Overlays Z-Index */
-body.device-ui .songs-overlay,
-body.device-ui .artists-overlay,
-body.device-ui .playlist-overlay,
 body.device-ui .stats-overlay,
 body.device-ui .modal-overlay,
 body.device-ui .search-overlay,
 body.device-ui .toast-container {
     z-index: 1000;
+}
+
+/* Mobile Breakpoint (max-width: 899px) */
+@media (max-width: 899px) {
+    body.device-ui #player-container {
+        flex-direction: column !important;
+        justify-content: center !important;
+    }
+
+    body.device-ui .device-panel {
+        position: fixed;
+        left: 12px;
+        right: 12px;
+        top: 84px;
+        bottom: 12px;
+        width: auto;
+        margin: 0;
+        z-index: 50;
+        transform: translateY(16px);
+        transition: opacity 240ms ease, transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    body.device-ui .device-panel.is-open {
+        width: auto;
+        transform: translateY(0);
+    }
+
+    body.device-ui .device-panel-inner {
+        width: 100%;
+    }
+
+    body.device-ui .top-nav-container {
+        z-index: 100;
+    }
 }
 
 /* Small Screens Responsive Breakpoint */
@@ -417,7 +750,9 @@ body.device-ui .toast-container {
 
 /* Reduced Motion Override */
 @media (prefers-reduced-motion: reduce) {
-    body.device-ui * {
+    body.device-ui .device-panel,
+    body.device-ui .device-tab,
+    body.device-ui #hamburger-button * {
         transition-duration: 0.01ms !important;
         animation-duration: 0.01ms !important;
     }
