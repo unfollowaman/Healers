@@ -36,30 +36,60 @@ body.device-ui #player-container {
     background: transparent !important;
 }
 
+body.device-ui .player-wrapper {
+    width: auto;
+    max-width: none;
+    display: block;
+}
+
 /* Device Body (reskins #player-pill) */
 body.device-ui .device-body,
 body.device-ui #player-pill {
     width: clamp(300px, 86vw, 380px);
-    aspect-ratio: 0.69;
-    padding: 7%;
+    height: auto !important;
+    min-width: 0;
+    margin: 0 auto;
+    padding: 26px;
     border-radius: var(--dv-radius-body);
     background-color: var(--dv-body);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.18'/%3E%3C/svg%3E");
     background-blend-mode: overlay;
     box-shadow: var(--dv-shadow-drop), inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 -2px 6px rgba(0, 0, 0, 0.5);
-    display: flex;
-    flex-direction: column;
-    gap: 3%;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    flex-wrap: nowrap !important;
+    gap: 14px;
     backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
     border: none !important;
-    transition: none !important;
+    transform: none !important;
+    max-width: none;
     position: relative;
+    left: auto;
+    right: auto;
+    top: auto;
+    bottom: auto;
+    margin-inline: auto;
     box-sizing: border-box;
+}
+
+/* Direct Children of Device Body */
+body.device-ui .device-body > *,
+body.device-ui #player-pill > * {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    flex: none;
+    margin: 0;
 }
 
 /* CRT Screen */
 body.device-ui .device-screen {
-    flex: 0 0 40%;
+    flex: none;
+    width: 100%;
+    aspect-ratio: 16 / 10;
     border-radius: var(--dv-radius-inner);
     background: #000;
     box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.9), inset 0 0 0 5px var(--dv-recess), 0 1px 0 rgba(255, 255, 255, 0.06);
@@ -84,6 +114,8 @@ body.device-ui .device-scanlines {
 
 /* Slider Well */
 body.device-ui .device-slider-well {
+    flex: none;
+    width: 100%;
     background: var(--dv-recess);
     border-radius: 22px;
     padding: 10px 14px 8px;
@@ -170,6 +202,8 @@ body.device-ui #total-time {
 
 /* Info Section */
 body.device-ui .device-info {
+    flex: none;
+    width: 100%;
     text-align: center;
 }
 
@@ -200,8 +234,10 @@ body.device-ui #now-artist {
 
 /* Secondary Bar */
 body.device-ui .device-secondary-bar {
-    display: flex;
+    flex: none;
+    width: 100%;
     height: 44px;
+    display: flex;
     border-radius: 999px;
     background: var(--dv-raised);
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.07);
@@ -265,11 +301,15 @@ body.device-ui .sr-only {
 
 /* Primary Controls Grid */
 body.device-ui .device-primary {
+    flex: none;
+    width: 100%;
+    min-height: 92px;
+    height: 92px;
     display: grid;
     grid-template-columns: 1fr 1.1fr 1fr;
     gap: 6px;
-    flex: 1;
-    min-height: 0;
+    align-items: stretch;
+    justify-items: stretch;
 }
 
 body.device-ui .device-primary .control-btn {
@@ -283,6 +323,8 @@ body.device-ui .device-primary .control-btn {
     display: grid;
     place-items: center;
     padding: 0;
+    margin: 0;
+    min-width: 0;
     width: 100% !important;
     height: 100% !important;
 }
@@ -357,6 +399,20 @@ body.device-ui .modal-overlay,
 body.device-ui .search-overlay,
 body.device-ui .toast-container {
     z-index: 1000;
+}
+
+/* Small Screens Responsive Breakpoint */
+@media (max-width: 380px) {
+    body.device-ui .device-body,
+    body.device-ui #player-pill {
+        padding: 20px;
+        gap: 12px;
+    }
+
+    body.device-ui .device-primary {
+        height: 84px;
+        min-height: 84px;
+    }
 }
 
 /* Reduced Motion Override */
