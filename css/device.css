@@ -748,12 +748,340 @@ body.device-ui .toast-container {
     }
 }
 
+/* Step 1 — Sideways Search Pill (body.device-ui) */
+body.device-ui #search-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 90 !important;
+    background: transparent !important;
+    padding: 0 !important;
+    display: flex !important;
+    justify-content: flex-start !important;
+    align-items: flex-start !important;
+}
+
+body.device-ui #search-overlay.hidden {
+    display: none !important;
+}
+
+body.device-ui #search-overlay-scrim {
+    position: absolute !important;
+    inset: 0 !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    z-index: 1 !important;
+}
+
+body.device-ui .search-modal-container {
+    position: fixed !important;
+    top: var(--sb-top, 20px) !important;
+    right: var(--sb-right, 86px) !important;
+    left: auto !important;
+    width: min(360px, calc(100vw - var(--sb-right, 86px) - 12px)) !important;
+    max-width: none !important;
+    height: auto !important;
+    max-height: none !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    transform: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    align-items: stretch !important;
+    z-index: 2 !important;
+}
+
+body.device-ui .search-header {
+    height: var(--sb-size, 52px) !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0 !important;
+    padding: 0 0 0 16px !important;
+    background-color: #171717 !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.18'/%3E%3C/svg%3E") !important;
+    background-blend-mode: overlay !important;
+    border-radius: 999px !important;
+    box-shadow: 0 10px 16px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+    position: relative !important;
+    animation: device-search-reveal 320ms cubic-bezier(0.2, 0.8, 0.2, 1) both !important;
+}
+
+@keyframes device-search-reveal {
+    from {
+        clip-path: inset(0 0 0 calc(100% - var(--sb-size, 52px)) round 999px);
+    }
+    to {
+        clip-path: inset(0 0 0 0 round 999px);
+    }
+}
+
+body.device-ui .search-input-wrapper {
+    flex: 1 !important;
+    min-width: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+}
+
+body.device-ui .search-input-wrapper .search-icon {
+    position: static !important;
+    color: #929292 !important;
+    flex-shrink: 0 !important;
+}
+
+body.device-ui .global-search-input {
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    color: #F0EDE5 !important;
+    font-size: 15px !important;
+    font-family: inherit !important;
+    padding: 0 !important;
+    width: 100% !important;
+    box-shadow: none !important;
+}
+
+body.device-ui .global-search-input::placeholder {
+    color: #929292 !important;
+}
+
+body.device-ui #search-close-btn {
+    flex: none !important;
+    width: var(--sb-size, 52px) !important;
+    height: var(--sb-size, 52px) !important;
+    border-radius: 50% !important;
+    background: radial-gradient(circle at 35% 30%, #2c2c2c, #151515) !important;
+    color: #F0EDE5 !important;
+    border: none !important;
+    box-shadow: 0 10px 16px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+    cursor: pointer !important;
+    display: grid !important;
+    place-items: center !important;
+    padding: 0 !important;
+    transition: transform 120ms ease, box-shadow 120ms ease, filter 160ms ease !important;
+}
+
+body.device-ui #search-close-btn:hover {
+    filter: brightness(1.1) !important;
+}
+
+body.device-ui #search-close-btn:active {
+    transform: translateY(2px) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 2px 5px rgba(0, 0, 0, 0.6) !important;
+}
+
+body.device-ui .search-body {
+    background-color: #171717 !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.18'/%3E%3C/svg%3E") !important;
+    background-blend-mode: overlay !important;
+    border-radius: 28px !important;
+    padding: 10px !important;
+    max-height: min(60vh, 420px) !important;
+    overflow-y: auto !important;
+    scrollbar-width: thin !important;
+    scrollbar-color: #3a3a3a transparent !important;
+    box-shadow: var(--dv-shadow-drop), inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 -2px 6px rgba(0, 0, 0, 0.5) !important;
+    animation: device-search-body-fade 200ms ease 120ms both !important;
+}
+
+@keyframes device-search-body-fade {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Results & Recent Searches Row Styling */
+body.device-ui .recent-searches-header,
+body.device-ui .search-results-status {
+    padding: 6px 10px !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: #929292 !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.08em !important;
+}
+
+body.device-ui .recent-title {
+    color: #929292 !important;
+    font-size: 12px !important;
+}
+
+body.device-ui .clear-recents-btn {
+    color: #929292 !important;
+    font-size: 12px !important;
+}
+
+body.device-ui .clear-recents-btn:hover {
+    color: #F0EDE5 !important;
+}
+
+body.device-ui .recent-search-item {
+    height: 52px !important;
+    padding: 8px 10px !important;
+    border-radius: 12px !important;
+    background: transparent !important;
+    color: #F0EDE5 !important;
+    font-size: 15px !important;
+}
+
+body.device-ui .recent-search-item:hover,
+body.device-ui .recent-search-item:focus-visible {
+    background: rgba(255, 255, 255, 0.06) !important;
+}
+
+body.device-ui #search-results-list .song-item {
+    height: 52px !important;
+    gap: 12px !important;
+    padding: 8px 10px !important;
+    border-radius: 12px !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+body.device-ui #search-results-list .song-item:hover {
+    background: rgba(255, 255, 255, 0.06) !important;
+}
+
+body.device-ui #search-results-list .song-item.active,
+body.device-ui #search-results-list .song-item.highlighted {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+body.device-ui #search-results-list .song-thumb-wrapper {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 8px !important;
+    border: none !important;
+}
+
+body.device-ui #search-results-list .song-name {
+    font-size: 15px !important;
+    color: #F0EDE5 !important;
+}
+
+body.device-ui #search-results-list .song-duration {
+    color: #929292 !important;
+}
+
+/* Step 3 — Height Fit (body.device-ui) */
+body.device-ui .device-body {
+    zoom: var(--dv-zoom, 1);
+}
+
+@media (min-width: 900px) {
+    body.device-ui .device-panel {
+        zoom: var(--dv-zoom, 1);
+    }
+}
+
+/* Step 2 — Queue View Inside Panel (body.device-ui) */
+body.device-ui #queue-container {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-height: none !important;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 8px !important;
+    box-sizing: border-box !important;
+    overflow-y: auto !important;
+    display: block !important;
+    z-index: 10 !important;
+}
+
+body.device-ui #queue-container.hidden {
+    display: none !important;
+}
+
+body.device-ui .queue-header {
+    position: sticky !important;
+    top: -8px !important;
+    z-index: 5 !important;
+    background-color: #171717 !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.18'/%3E%3C/svg%3E") !important;
+    background-blend-mode: overlay !important;
+    color: #929292 !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.08em !important;
+    text-transform: uppercase !important;
+    padding: 8px 10px !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    margin-bottom: 6px !important;
+}
+
+body.device-ui .queue-list {
+    list-style: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+}
+
+body.device-ui .queue-item {
+    height: 52px !important;
+    min-height: 52px !important;
+    padding: 8px 12px !important;
+    border-radius: 12px !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    cursor: pointer !important;
+    box-sizing: border-box !important;
+}
+
+body.device-ui .queue-item:hover {
+    background: rgba(255, 255, 255, 0.06) !important;
+}
+
+body.device-ui .queue-item.active {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.18) !important;
+}
+
+body.device-ui .queue-item-title {
+    font-size: 15px !important;
+    color: #F0EDE5 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: none !important;
+    flex: 1 !important;
+}
+
+body.device-ui .queue-item-duration {
+    font-size: 13px !important;
+    color: #929292 !important;
+    flex-shrink: 0 !important;
+}
+
 /* Reduced Motion Override */
 @media (prefers-reduced-motion: reduce) {
     body.device-ui .device-panel,
     body.device-ui .device-tab,
-    body.device-ui #hamburger-button * {
+    body.device-ui #hamburger-button *,
+    body.device-ui .search-header,
+    body.device-ui .search-body {
         transition-duration: 0.01ms !important;
-        animation-duration: 0.01ms !important;
+        animation: none !important;
     }
 }
