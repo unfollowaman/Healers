@@ -23,11 +23,15 @@
         var tabSettings = document.getElementById('tab-settings');
         var tabs = [tabSongs, tabPlaylists, tabArtists, tabSettings].filter(Boolean);
 
+        var queueContainer = document.getElementById('queue-container');
+        var queueBtn = document.getElementById('queue-button');
+
         // A. Re-parenting & permanently hiding legacy elements
         if (deviceViews) {
             if (songsOverlay) deviceViews.appendChild(songsOverlay);
             if (playlistOverlay) deviceViews.appendChild(playlistOverlay);
             if (artistsOverlay) deviceViews.appendChild(artistsOverlay);
+            if (queueContainer) deviceViews.appendChild(queueContainer);
         }
 
         if (settingsView && refreshBtn) {
@@ -112,6 +116,11 @@
 
         function closePanel() {
             if (!panel) return;
+
+            if (queueContainer && !queueContainer.classList.contains('hidden') && queueBtn) {
+                queueBtn.click();
+            }
+
             panel.classList.remove('is-open');
             if (hamburgerBtn) {
                 hamburgerBtn.classList.remove('is-open');
@@ -152,6 +161,9 @@
         // D. Tab click handlers
         tabs.forEach(function (tab) {
             tab.addEventListener('click', function () {
+                if (queueContainer && !queueContainer.classList.contains('hidden') && queueBtn) {
+                    queueBtn.click();
+                }
                 var view = tab.getAttribute('data-view');
                 if (view) {
                     switchTab(view);
@@ -169,6 +181,114 @@
                 }
             }
         });
+
+        // F. Step 1 — Sideways Search Pill Observer & Positioning
+        var searchOverlay = document.getElementById('search-overlay');
+        var searchButton = document.getElementById('search-button');
+
+        function updateSearchPosition() {
+            if (!searchOverlay || !searchButton) return;
+            if (searchOverlay.classList.contains('hidden')) return;
+
+            var rect = searchButton.getBoundingClientRect();
+            var sbTop = rect.top;
+            var sbRight = window.innerWidth - rect.right;
+            var sbSize = rect.height;
+
+            searchOverlay.style.setProperty('--sb-top', sbTop + 'px');
+            searchOverlay.style.setProperty('--sb-right', sbRight + 'px');
+            searchOverlay.style.setProperty('--sb-size', sbSize + 'px');
+        }
+
+        if (searchOverlay && searchButton) {
+            var searchObserver = new MutationObserver(function () {
+                if (!searchOverlay.classList.contains('hidden')) {
+                    updateSearchPosition();
+                }
+            });
+            searchObserver.observe(searchOverlay, { attributes: true, attributeFilter: ['class', 'style', 'hidden'] });
+
+            window.addEventListener('resize', function () {
+                if (!searchOverlay.classList.contains('hidden')) {
+                    updateSearchPosition();
+                }
+            });
+        }
+
+        // G. Step 2 — Queue Observer inside panel
+        if (queueContainer) {
+            var queueObserver = new MutationObserver(function () {
+                var isQueueVisible = !queueContainer.classList.contains('hidden');
+                if (isQueueVisible) {
+                    if (panel && !panel.classList.contains('is-open')) {
+                        panel.classList.add('is-open');
+                        if (hamburgerBtn) {
+                            hamburgerBtn.classList.add('is-open');
+                            hamburgerBtn.setAttribute('aria-expanded', 'true');
+                        }
+                        document.body.classList.add('device-menu-open');
+                        panel.setAttribute('aria-hidden', 'false');
+                    }
+
+                    tabs.forEach(function (t) {
+                        t.setAttribute('aria-selected', 'false');
+                    });
+
+                    closeOpenOverlays();
+                    if (settingsView) {
+                        settingsView.hidden = true;
+                    }
+                } else {
+                    if (panel && panel.classList.contains('is-open')) {
+                        var songsHidden = !songsOverlay || songsOverlay.classList.contains('hidden');
+                        var playlistHidden = !playlistOverlay || playlistOverlay.classList.contains('hidden');
+                        var artistsHidden = !artistsOverlay || artistsOverlay.classList.contains('hidden');
+                        var settingsHidden = !settingsView || settingsView.hidden;
+
+                        if (songsHidden && playlistHidden && artistsHidden && settingsHidden) {
+                            switchTab('songs');
+                        }
+                    }
+                }
+            });
+            queueObserver.observe(queueContainer, { attributes: true, attributeFilter: ['class', 'style', 'hidden'] });
+        }
+
+        // H. Step 3 — Height Fit
+        var playerContainer = document.getElementById('player-container');
+        var deviceBody = document.querySelector('.device-body');
+        var fitRafId = null;
+
+        function fitDevice() {
+            if (!playerContainer || !deviceBody) return;
+
+            playerContainer.style.setProperty('--dv-zoom', '1');
+            var natural = deviceBody.offsetHeight;
+            var isDesktop = window.innerWidth >= 900;
+            var avail = window.innerHeight - (isDesktop ? 48 : 168);
+            var scale = Math.min(1, Math.max(0.55, avail / natural));
+            var rounded = Math.round(scale * 1000) / 1000;
+
+            playerContainer.style.setProperty('--dv-zoom', rounded.toString());
+        }
+
+        function debouncedFitDevice() {
+            if (fitRafId !== null) return;
+            fitRafId = requestAnimationFrame(function () {
+                fitRafId = null;
+                fitDevice();
+            });
+        }
+
+        fitDevice();
+
+        window.addEventListener('load', fitDevice);
+        window.addEventListener('resize', debouncedFitDevice);
+        window.addEventListener('orientationchange', fitDevice);
+
+        if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(fitDevice).catch(function () {});
+        }
     }
 
     if (document.readyState === 'loading') {
