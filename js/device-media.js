@@ -102,7 +102,7 @@
                     navigator.mediaSession.metadata = new MediaMetadata({
                         title: titleText,
                         artist: artistText || 'Unknown Artist',
-                        album: 'Murex',
+                        album: 'Healers',
                         artwork: defaultArtwork || []
                     });
                 }
@@ -129,7 +129,7 @@
                             navigator.mediaSession.metadata = new MediaMetadata({
                                 title: titleText,
                                 artist: artistText || 'Unknown Artist',
-                                album: 'Murex',
+                                album: 'Healers',
                                 artwork: [{ src: absUrl, sizes: w + 'x' + h, type: type }]
                             });
                         }
@@ -276,6 +276,21 @@
                 console.warn('Failed to set mediaSession action handler for ' + actionName + ':', err);
             }
         });
+
+        // Test whether the browser's default 10-second seek buttons can be hidden in the media notification.
+        // Explicitly clearing seek actions signals to the browser that no custom seek intervals are supported.
+        // Note: Default seek buttons may still appear if drawn unilaterally by the host browser or OS media UI (experiment).
+        try {
+            navigator.mediaSession.setActionHandler('seekbackward', null);
+        } catch (err) {
+            console.warn('Failed to clear seekbackward handler:', err);
+        }
+
+        try {
+            navigator.mediaSession.setActionHandler('seekforward', null);
+        } catch (err) {
+            console.warn('Failed to clear seekforward handler:', err);
+        }
 
         updateMetadata();
         syncPosition();

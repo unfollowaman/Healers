@@ -3205,7 +3205,7 @@ function bindEvents() {
     if (elements.plShareBtn) {
         elements.plShareBtn.addEventListener('click', () => {
             const pl = getActivePlaylist();
-            const shareText = pl ? `Check out "${pl.title}" playlist on Telegram Music!` : 'Check out this playlist!';
+            const shareText = pl ? `Check out "${pl.title}" playlist on Healers!` : 'Check out this playlist!';
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(shareText).then(() => {
                     showToast('Playlist link copied to clipboard!');

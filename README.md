@@ -1,4 +1,4 @@
-# Telegram Personal Music Player
+# Healers
 
 A private, single-user music streaming website that uses a Telegram channel as the audio storage backend. The browser talks only to your Vercel API routes; your Telegram bot token is never exposed to frontend JavaScript.
 
