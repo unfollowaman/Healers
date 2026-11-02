@@ -38,12 +38,6 @@ body.device-ui #player-container {
     background: transparent !important;
 }
 
-body.device-ui .player-wrapper {
-    width: auto;
-    max-width: none;
-    display: block;
-}
-
 /* Device Body (reskins #player-pill) */
 body.device-ui .device-body,
 body.device-ui #player-pill {
