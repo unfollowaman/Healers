@@ -80,8 +80,7 @@ export async function getLastRefreshTime() {
     if (!data || data.error) return 0;
 
     return data.result ? parseInt(data.result, 10) : 0;
-  } catch (error) {
-    console.warn('Failed to read murex:refresh:lastrun:', error.message);
+  } catch {
     return 0;
   }
 }
@@ -104,12 +103,9 @@ export async function setLastRefreshTime(timestamp) {
 
     if (!response.ok) return;
 
-    const data = await response.json().catch(() => null);
-    if (data?.error) {
-      console.warn('Failed to write murex:refresh:lastrun:', data.error);
-    }
-  } catch (error) {
-    console.warn('Failed to write murex:refresh:lastrun:', error.message);
+    await response.json().catch(() => null);
+  } catch {
+    // Cooldown timestamp write is best-effort
   }
 }
 
