@@ -87,10 +87,11 @@
                     newBag[i] = newBag[j];
                     newBag[j] = tmp;
                 }
-                if (newBag[0] === lastPatternOfOldBag && newBag.length > 1) {
-                    var swapIdx = 1 + Math.floor(Math.random() * (newBag.length - 1));
-                    var t = newBag[0];
-                    newBag[0] = newBag[swapIdx];
+                var lastIdx = newBag.length - 1;
+                if (newBag[lastIdx] === lastPatternOfOldBag && newBag.length > 1) {
+                    var swapIdx = Math.floor(Math.random() * lastIdx);
+                    var t = newBag[lastIdx];
+                    newBag[lastIdx] = newBag[swapIdx];
                     newBag[swapIdx] = t;
                 }
                 bag = newBag;
@@ -115,6 +116,7 @@
         var TRANSITION_DURATION = 1.2;
         var incomingPatternIndex = -1;
         var incomingPatternTime = 0;
+        var incomingPatternDuration = 0;
 
         // Helper hash for rain
         function hashCol(c) {
@@ -305,12 +307,13 @@
             } else if (currentState === 'playing') {
                 timeScaleTarget = 1.0;
                 brightnessMultTarget = 1.0;
-                if (prevState === 'idle') {
+                if (prevState === 'idle' || activePatternIndex === 4) {
                     // transition to first rotated pattern on play
                     activePatternIndex = getNextPattern();
                     activePatternTime = 0;
                     activePatternDuration = getRandomDuration();
                 }
+                startLoop();
             } else if (currentState === 'paused') {
                 timeScaleTarget = 0.25;
                 brightnessMultTarget = 0.40;
@@ -406,7 +409,8 @@
                 renderStaticFrame();
                 return;
             }
-            if (!animId && !loopFailed) {
+            if (!animId) {
+                loopFailed = false;
                 lastTimestamp = 0;
                 animId = requestAnimationFrame(frame);
             }
@@ -461,7 +465,7 @@
             audio.addEventListener('emptied', function () {
                 if (!audio.src) {
                     updateStateTargets('idle');
-                } else {
+                } else if (currentState !== 'idle') {
                     updateStateTargets('paused');
                 }
             });
