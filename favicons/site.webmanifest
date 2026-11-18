@@ -1,6 +1,6 @@
 {
-  "name": "Murex",
-  "short_name": "Murex",
+  "name": "Healers",
+  "short_name": "Healers",
   "icons": [
     {
       "src": "/favicons/web-app-manifest-192x192.png",
@@ -15,7 +15,7 @@
       "purpose": "maskable"
     }
   ],
-  "theme_color": "#0a0a10",
-  "background_color": "#0a0a10",
+  "theme_color": "#FFFFFF",
+  "background_color": "#FFFFFF",
   "display": "standalone"
 }

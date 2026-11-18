@@ -1,22 +1,8 @@
 import https from 'node:https';
-import { requireEnv } from './_lib/utils.js';
-import { telegramRequest } from './songs.js';
+import { requireEnv, validateFileId } from './_lib/utils.js';
+import { telegramRequest } from './_lib/telegram.js';
 
 const TELEGRAM_FILE_BASE = 'https://api.telegram.org/file/bot';
-
-function validateFileId(fileId) {
-  if (!fileId || typeof fileId !== 'string') {
-    const error = new Error('Missing required file_id query parameter.');
-    error.statusCode = 400;
-    throw error;
-  }
-
-  if (!/^[\w-]{10,512}$/.test(fileId)) {
-    const error = new Error('Invalid file_id query parameter.');
-    error.statusCode = 400;
-    throw error;
-  }
-}
 
 async function getTelegramFilePath(token, fileId) {
   try {

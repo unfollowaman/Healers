@@ -21,7 +21,8 @@ This file provides critical guidelines, architectural constraints, and performan
 ├── api/
 │   ├── _lib/
 │   │   ├── catalogStore.js     # Upstash Redis REST access (read, write, parallel fetch)
-│   │   └── utils.js            # Environment validation (requireEnv)
+│   │   ├── telegram.js         # Telegram Bot API client & request handling
+│   │   └── utils.js            # Environment validation & file ID checking (requireEnv, validateFileId)
 │   ├── cron/
 │   │   └── keepalive.js        # Scheduled daily keepalive cron (0 3 * * *)
 │   ├── cover.js                # Thumbnail/album artwork proxy
@@ -124,6 +125,10 @@ Review `.Jules/palette.md` for UI and accessibility requirements:
   - `tests/songs.test.js` — Telegram update parsing, channel ID matching, deduplication, 30s throttling.
   - `tests/stream.test.js` — Audio range proxying, file ID validation, error mapping.
   - `tests/catalogStore.test.js` — Upstash Redis REST operations, parallel fetch verification.
+  - `tests/cover.test.js` — Cover art proxy, HTTP method validation, HEAD requests, error mapping.
+  - `tests/keepalive.test.js` — Vercel keepalive cron handler, bearer authorization, Upstash health checks.
+  - `tests/utils.test.js` — Serverless utilities, environment validation, file ID validation bounds.
+  - `tests/build.test.js` — Static configuration validation, manifest assets, HTML asset integrity, ES module resolution.
 
 ---
 
@@ -135,4 +140,4 @@ Review `.Jules/palette.md` for UI and accessibility requirements:
 - [ ] Does iterated DOM rendering use `DocumentFragment`?
 - [ ] Are array lookups inside loops protected by pre-computed `Set` or `Map` structures?
 - [ ] Are global hotkeys guarded against focused form inputs?
-- [ ] Do all 66+ tests in `tests/*.test.js` pass with zero failures?
+- [ ] Do all 86 tests in `tests/*.test.js` pass with zero failures?
