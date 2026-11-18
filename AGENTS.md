@@ -40,7 +40,6 @@ This file provides critical guidelines, architectural constraints, and performan
 │   └── search.js               # MurexSearch: phonetic pipeline, fuzzy scoring, learned picks
 ├── favicons/                   # Manifest icons, touch icons, SVG favicons
 ├── tests/                      # Native test suites executed via node:test
-├── .Jules/                     # Recorded performance & UI design learnings
 ├── AGENTS.md                   # Agent guidelines & project memory (this file)
 ├── ARCHITECTURE.md             # Deep-dive technical system specification
 ├── index.html                  # Single-page application entry point
@@ -73,7 +72,7 @@ All serverless Redis keys use the `murex:` namespace:
 
 ## 4. Mandatory Performance & Optimization Rules
 
-Before making any frontend or backend changes, review `.Jules/bolt.md`. Always uphold these patterns:
+Before making any frontend or backend changes, always uphold these patterns:
 
 1. **DocumentFragment Batching for DOM Updates**:
    Never append elements to live DOM containers in a loop. Always collect list items in a `document.createDocumentFragment()` and perform a single `container.appendChild(fragment)`.
@@ -99,7 +98,7 @@ Before making any frontend or backend changes, review `.Jules/bolt.md`. Always u
 
 ## 5. Accessibility & Interaction Guidelines
 
-Review `.Jules/palette.md` for UI and accessibility requirements:
+Always uphold these UI and accessibility requirements:
 
 1. **Hotkey Safety**:
    Always guard global keyboard shortcuts (e.g., `Space` for play/pause, `/` for search, arrow keys for seeking) by verifying `e.target` is not an `INPUT`, `TEXTAREA`, `SELECT`, or `isContentEditable` element.
