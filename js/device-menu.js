@@ -4,6 +4,8 @@
     function initDeviceMenu() {
         var panel = document.getElementById('device-panel');
         var hamburgerBtn = document.getElementById('hamburger-button');
+        var playerContainer = document.getElementById('player-container');
+        var deviceBody = document.querySelector('.device-body') || document.getElementById('player-pill');
         var deviceViews = document.getElementById('device-views');
         var settingsView = document.getElementById('device-settings-view');
 
@@ -114,7 +116,7 @@
             }
         }
 
-        function closePanel() {
+        function closePanel(options) {
             if (!panel) return;
 
             if (queueContainer && !queueContainer.classList.contains('hidden') && queueBtn) {
@@ -134,7 +136,8 @@
                 settingsView.hidden = true;
             }
 
-            if (hamburgerBtn) {
+            var skipFocus = options && options.skipFocus;
+            if (!skipFocus && hamburgerBtn) {
                 hamburgerBtn.focus();
             }
         }
@@ -157,6 +160,52 @@
                 togglePanel();
             }
         }, true);
+
+        // C. Outside click handling (close panel on mobile/desktop if clicking outside panel and player)
+        document.addEventListener('click', function (e) {
+            if (!panel || !panel.classList.contains('is-open')) {
+                return;
+            }
+
+            var target = e.target;
+            if (!target) return;
+            var elTarget = (target.nodeType === 3) ? target.parentElement : target;
+
+            // 1. Ignore hamburger button clicks (handled by hamburger toggle listener)
+            if (elTarget && elTarget.closest && elTarget.closest('#hamburger-button')) {
+                return;
+            }
+
+            // 2. Ignore clicks inside the device panel (song list menu, tabs, overlays)
+            if (elTarget && elTarget.closest && elTarget.closest('#device-panel')) {
+                return;
+            }
+
+            // 3. Ignore clicks inside the device player body (controls, progress bar, screen, etc.)
+            if (elTarget && elTarget.closest && elTarget.closest('#player-pill, .device-body')) {
+                return;
+            }
+
+            // 4. Ignore clicks inside active modal overlays (e.g. Add Songs modal)
+            if (elTarget && elTarget.closest && elTarget.closest('#add-songs-modal, .modal-overlay:not(.hidden)')) {
+                return;
+            }
+
+            // 5. Check composedPath to protect against elements removed from the DOM during click handling
+            if (e.composedPath) {
+                var path = e.composedPath();
+                for (var i = 0; i < path.length; i++) {
+                    var el = path[i];
+                    if (!el || typeof el.getAttribute !== 'function') continue;
+                    if (el === panel || el.id === 'device-panel') return;
+                    if (el === deviceBody || el.id === 'player-pill' || (el.classList && el.classList.contains('device-body'))) return;
+                    if (el === hamburgerBtn || el.id === 'hamburger-button') return;
+                    if (el.id === 'add-songs-modal' || (el.classList && el.classList.contains('modal-overlay'))) return;
+                }
+            }
+
+            closePanel({ skipFocus: true });
+        });
 
         // D. Tab click handlers
         tabs.forEach(function (tab) {
@@ -255,8 +304,8 @@
         }
 
         // H. Step 3 — Height Fit
-        var playerContainer = document.getElementById('player-container');
-        var deviceBody = document.querySelector('.device-body');
+        playerContainer = playerContainer || document.getElementById('player-container');
+        deviceBody = deviceBody || document.querySelector('.device-body') || document.getElementById('player-pill');
         var fitRafId = null;
 
         function fitDevice() {
